@@ -20,7 +20,7 @@ A shared, mobile-first web app for Cohort A1 that centralizes ongoing projects, 
 ## 3. Scope (MVP)
 
 - Open access via shared link — no login required
-- Cohort A1 only (25 students, 6 courses, Mon–Thu)
+- Cohort A1 only (25 students, 7 courses, Mon–Thu)
 - Projects and milestones are the core unit — no per-student progress tracking
 - Past/upcoming status is derived purely from milestone due dates
 
@@ -97,7 +97,9 @@ A flat, chronological list of all milestones across all projects, sorted by `due
 Overdue milestones (past due date) appear at the top, visually distinct. No grouping buckets — clean sorted list.
 
 ### Course View (tab 2: קורסים → course detail)
-A vertical timeline. Projects are numbered dots (e.g. "01 — פוסטר טיפוגרפי") in chronological order by their earliest milestone. Milestones are smaller dots nested within each project on the timeline. The current active project (nearest upcoming milestone) is expanded by default; earlier work is scrollable upward. Tapping any dot expands it to show full details.
+A vertical timeline. Projects are numbered dots (e.g. "01 — פוסטר טיפוגרפי") in chronological order by their earliest milestone. Milestones are smaller dots nested within each project on the timeline. The current active project (nearest upcoming milestone) is expanded by default; if all milestones are past, the most recent project is expanded. Earlier work is scrollable upward.
+
+Tapping a project dot expands it inline to show its milestones and a brief summary. A "פתח פרויקט" (open project) button navigates to the full Project Detail screen.
 
 ### Courses List (tab 2: קורסים)
 A list of all courses showing day/time, lecturer, and a tappable `courseUrl` link. Tapping a course opens its timeline view. Any student can edit course fields inline.
