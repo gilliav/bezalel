@@ -15,14 +15,14 @@ export default function Schedule() {
   return (
     <div className="text-right">
       <div className="px-4 py-3 border-b border-gray-200">
-        <h1 className="text-lg font-bold">לוח זמנים</h1>
+        <h1 className="text-lg font-bold">מערכת שעות</h1>
       </div>
       {DAY_ORDER.map(day => {
         const dayCourses = byDay[day]
         if (!dayCourses.length) return null
         return (
           <div key={day} className="border-b border-gray-100">
-            <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide bg-gray-50">
+            <div className="px-4 py-2 text-xs font-semibold text-gray-600 uppercase tracking-wide bg-gray-200">
               {day}
             </div>
             {dayCourses.map(course => (

@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 30% 93%;         /* #F5F0E8 parchment */
+    --foreground: 0 0% 17%;           /* #2C2C2C ink */
+    --card: 40 40% 97%;               /* #FDFAF4 card surface */
+    --card-foreground: 0 0% 17%;
+    --primary: 25 75% 31%;            /* #8B4513 terracotta */
+    --primary-foreground: 0 0% 100%;
+    --muted: 38 28% 85%;              /* #E8E0D0 */
+    --muted-foreground: 0 0% 42%;     /* #6B6B6B */
+    --border: 38 24% 76%;             /* #D4C9B0 */
+    --destructive: 4 65% 46%;         /* #C0392B */
+    --destructive-foreground: 0 0% 100%;
+    --radius: 8px;
+  }
+}
+
+body {
+  @apply bg-background text-foreground font-body;
+  direction: rtl;
+}
+
+h1, h2, h3 {
+  @apply font-display;
+}

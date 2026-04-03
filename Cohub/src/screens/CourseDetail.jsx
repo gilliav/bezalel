@@ -14,6 +14,7 @@ export default function CourseDetail({ onError }) {
   const error = cError || pError || mError
   useEffect(() => {
     if (error) onError?.('שגיאה בטעינת הקורס')
+      console.error(error)
   }, [error, onError])
 
   const course = courses.find(c => c.id === courseId)

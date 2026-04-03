@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { dayIndexToHe } from '../utils/dates'
 
 export function CourseCard({ course, onSave }) {
   const [editing, setEditing] = useState(false)
@@ -33,7 +34,7 @@ export function CourseCard({ course, onSave }) {
       </div>
 
       <div className="text-sm text-gray-500 mt-1">
-        {course.day} · {course.hours} · {course.lecturer} · {course.location}
+        {dayIndexToHe(course.day)} · {course.hours} · {course.lecturer} · {course.location}
       </div>
 
       {course.courseUrl && !editing && (

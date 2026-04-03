@@ -5,7 +5,7 @@ import { db } from '../firebase'
 import { useProject } from '../hooks/useProject'
 import { useCourses } from '../hooks/useCourses'
 import { FileUpload } from '../components/FileUpload'
-import { formatDateHe, isOverdue } from '../utils/dates'
+import { formatDateHe, isOverdue, nextDatesForDay, dayIndexToHe } from '../utils/dates'
 
 export default function ProjectDetail({ onError }) {
   const { projectId } = useParams()
@@ -21,6 +21,7 @@ export default function ProjectDetail({ onError }) {
   }, [error, onError])
 
   const course = courses.find(c => c.id === project?.courseId)
+  const quickDates = course ? nextDatesForDay(course.day) : []
 
   async function handleDelete() {
     if (!confirm('למחוק את הפרויקט?')) return
@@ -47,7 +48,7 @@ export default function ProjectDetail({ onError }) {
       setMilestoneDue('')
       setAddingMilestone(false)
     } catch {
-      onError?.('שגיאה בהוספת אבן דרך')
+      onError?.('שגיאה בהוספת הגשה')
     }
   }
 
@@ -86,9 +87,9 @@ export default function ProjectDetail({ onError }) {
             onClick={() => setAddingMilestone(a => !a)}
             className="text-xs text-blue-600"
           >
-            + אבן דרך
+            + הגשה
           </button>
-          <h2 className="text-sm font-semibold text-gray-700">אבני דרך</h2>
+          <h2 className="text-sm font-semibold text-gray-700">הגשות</h2>
         </div>
 
         {addingMilestone && (
@@ -97,18 +98,45 @@ export default function ProjectDetail({ onError }) {
               type="text"
               value={milestoneTitle}
               onChange={e => setMilestoneTitle(e.target.value)}
-              placeholder="שם האבן דרך"
+              placeholder="שם ההגשה"
               required
               className="w-full border border-gray-200 rounded px-2 py-1 text-sm text-right"
             />
-            <input
-              type="date"
-              value={milestoneDue}
-              onChange={e => setMilestoneDue(e.target.value)}
-              required
-              className="w-full border border-gray-200 rounded px-2 py-1 text-sm"
-              dir="ltr"
-            />
+            {quickDates.length > 0 ? (
+              <div className="space-y-1.5">
+                <div className="text-xs text-gray-400">בחר תאריך ({dayIndexToHe(course.day)})</div>
+                <div className="flex flex-wrap gap-2">
+                  {quickDates.map(d => (
+                    <button
+                      key={d}
+                      type="button"
+                      onClick={() => setMilestoneDue(d)}
+                      className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                        milestoneDue === d
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'border-gray-300 text-gray-600'
+                      }`}
+                    >
+                      {new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'numeric' }).format(new Date(d + 'T00:00:00'))}
+                    </button>
+                  ))}
+                </div>
+                {milestoneDue && (
+                  <div className="text-xs text-gray-400">
+                    נבחר: {new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(milestoneDue + 'T00:00:00'))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <input
+                type="date"
+                value={milestoneDue}
+                onChange={e => setMilestoneDue(e.target.value)}
+                required
+                className="w-full border border-gray-200 rounded px-2 py-1 text-sm"
+                dir="ltr"
+              />
+            )}
             <button
               type="submit"
               className="text-sm bg-blue-600 text-white px-3 py-1 rounded"
@@ -119,7 +147,7 @@ export default function ProjectDetail({ onError }) {
         )}
 
         {milestones.length === 0 && !addingMilestone && (
-          <div className="text-sm text-gray-400">אין אבני דרך</div>
+          <div className="text-sm text-gray-400">אין הגשות</div>
         )}
         {milestones.map(m => (
           <div key={m.id} className={`py-2 border-b border-gray-50 ${isOverdue(m.dueDate) ? 'text-red-500' : 'text-gray-700'}`}>

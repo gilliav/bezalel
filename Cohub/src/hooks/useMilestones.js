@@ -16,8 +16,13 @@ export function useMilestones() {
         setLoading(false)
       },
       (err) => {
-        setError(err)
-        setLoading(false)
+        if (err.code === 'failed-precondition' || err.code === 'not-found') {
+          setMilestones([])
+          setLoading(false)
+        } else {
+          setError(err)
+          setLoading(false)
+        }
       },
     )
   }, [])

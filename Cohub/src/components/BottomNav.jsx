@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom'
 const TABS = [
   { to: '/', label: 'פרויקטים' },
   { to: '/courses', label: 'קורסים' },
-  { to: '/schedule', label: 'לוח זמנים' },
+  { to: '/schedule', label: 'מערכת שעות' },
 ]
 
 export function BottomNav() {
