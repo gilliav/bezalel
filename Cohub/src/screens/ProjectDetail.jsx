@@ -6,15 +6,21 @@ import { useProject } from '../hooks/useProject'
 import { useCourses } from '../hooks/useCourses'
 import { FileUpload } from '../components/FileUpload'
 import { formatDateHe, isOverdue, nextDatesForDay, dayIndexToHe } from '../utils/dates'
+import { Pencil, Trash2, ChevronRight, Maximize2, X } from 'lucide-react'
+import { Button } from '../components/ui/button'
+import { Input } from '../components/ui/input'
+import {Tag} from '../components/ui/tag';
 
 export default function ProjectDetail({ onError }) {
   const { projectId } = useParams()
   const navigate = useNavigate()
-  const { project, milestones, briefs, loading, error } = useProject(projectId)
+  const { project, milestones, attachments, loading, error } = useProject(projectId)
   const { courses } = useCourses()
   const [addingMilestone, setAddingMilestone] = useState(false)
   const [milestoneTitle, setMilestoneTitle] = useState('')
   const [milestoneDue, setMilestoneDue] = useState('')
+  const [lightbox, setLightbox] = useState(null) // { url, type }
+
 
   useEffect(() => {
     if (error) onError?.('שגיאה בטעינת הפרויקט')
@@ -52,125 +58,183 @@ export default function ProjectDetail({ onError }) {
     }
   }
 
-  if (loading) return <div className="p-4 text-right text-gray-400">טוען...</div>
-  if (!project) return <div className="p-4 text-right text-gray-400">פרויקט לא נמצא</div>
+  if (loading) return <div className="state-loading">טוען...</div>
+  if (!project) return <div className="state-loading">פרויקט לא נמצא</div>
 
   return (
     <div className="text-right">
-      <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-        <div className="flex gap-3">
-          <Link to={`/projects/${projectId}/edit`} className="text-sm text-blue-600">ערוך</Link>
-          <button onClick={handleDelete} className="text-sm text-red-500">מחק</button>
+      <header className="page-header">
+        <div className="flex flex-col gap-1">
+          <button onClick={() => navigate(-1)} className="text-muted-foreground flex items-center gap-0.5 text-sm mb-0.5">
+            <ChevronRight size={16} />
+            {course?.name}
+          </button>
+          <h1>{project.title}</h1>
+        </div>
+        <div className="flex gap-3 items-center">
+          <Link to={`/projects/${projectId}/edit`} className="text-muted-foreground">
+            <Pencil size={18} />
+          </Link>
+          <button onClick={handleDelete} className="text-destructive">
+            <Trash2 size={18} />
+          </button>
+        </div>
+      </header>
+
+      <div className="page-body">
+        <div className="flex flex-row gap-6">
+        <div>
+        <body>
+                      <Tag value={course.name} color={course.color} to={`/courses/${course.id}`} />
+        
+          </body>
         </div>
         <div>
-          <h1 className="text-lg font-bold">{project.title}</h1>
-          {course && (
+        <body>{formatDateHe(project.dueDate)}</body>
+        </div>
+        </div>
+
+        <section className="flex flex-col gap-2">
+                  <section className="flex flex-col gap-2">
+           {project.description && (
+          <body>{project.description}</body>
+        )}
+          {attachments?.map(b => (
+            <div key={b.id} className="flex flex-col gap-1">
+              {['png', 'jpg', 'jpeg'].includes(b.fileType) ? (
+                <img
+                  src={b.fileUrl}
+                  alt={b.fileName}
+                  className="max-w-full rounded-md border border-border cursor-zoom-in"
+                  onClick={() => setLightbox({ url: b.fileUrl, type: 'image' })}
+                />
+              ) : b.fileType === 'pdf' ? (
+                <div className="relative">
+                  <iframe
+                    src={b.fileUrl}
+                    title={b.fileName}
+                    className="w-full rounded-md border border-border"
+                    style={{ height: '500px' }}
+                  />
+                  <button
+                    onClick={() => setLightbox({ url: b.fileUrl, type: 'pdf' })}
+                    className="absolute top-2 left-2 bg-background/80 rounded p-1 text-muted-foreground"
+                  >
+                    <Maximize2 size={16} />
+                  </button>
+                </div>
+              ) : (
+                <a href={b.fileUrl} target="_blank" rel="noreferrer" className="action-link text-base block py-1">
+                  {b.fileName}
+                </a>
+              )}
+            </div>
+          ))}
+
+          {lightbox && (
             <div
-              className="text-xs text-white px-2 py-0.5 rounded-full inline-block mt-0.5"
-              style={{ backgroundColor: course.color }}
+              className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+              onClick={() => setLightbox(null)}
             >
-              {course.name}
+              <button
+                onClick={() => setLightbox(null)}
+                className="absolute top-4 left-4 text-white bg-black/40 rounded-full p-1.5 z-10"
+              >
+                <X size={20} />
+              </button>
+              {lightbox.type === 'image' ? (
+                <img
+                  src={lightbox.url}
+                  alt=""
+                  className="max-w-full max-h-full object-contain"
+                  style={{ touchAction: 'pinch-zoom' }}
+                  onClick={e => e.stopPropagation()}
+                />
+              ) : (
+                <iframe
+                  src={lightbox.url}
+                  className="w-full h-full"
+                  onClick={e => e.stopPropagation()}
+                />
+              )}
             </div>
           )}
-        </div>
-      </div>
-
-      {project.description && (
-        <div className="px-4 py-3 text-sm text-gray-700 border-b border-gray-100">
-          {project.description}
-        </div>
-      )}
-
-      <div className="px-4 py-3 border-b border-gray-100">
-        <div className="flex items-center justify-between mb-2">
-          <button
-            onClick={() => setAddingMilestone(a => !a)}
-            className="text-xs text-blue-600"
-          >
-            + הגשה
-          </button>
-          <h2 className="text-sm font-semibold text-gray-700">הגשות</h2>
-        </div>
-
-        {addingMilestone && (
-          <form onSubmit={handleAddMilestone} className="mb-3 space-y-2">
-            <input
-              type="text"
-              value={milestoneTitle}
-              onChange={e => setMilestoneTitle(e.target.value)}
-              placeholder="שם ההגשה"
-              required
-              className="w-full border border-gray-200 rounded px-2 py-1 text-sm text-right"
-            />
-            {quickDates.length > 0 ? (
-              <div className="space-y-1.5">
-                <div className="text-xs text-gray-400">בחר תאריך ({dayIndexToHe(course.day)})</div>
-                <div className="flex flex-wrap gap-2">
-                  {quickDates.map(d => (
-                    <button
-                      key={d}
-                      type="button"
-                      onClick={() => setMilestoneDue(d)}
-                      className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                        milestoneDue === d
-                          ? 'bg-blue-600 text-white border-blue-600'
-                          : 'border-gray-300 text-gray-600'
-                      }`}
-                    >
-                      {new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'numeric' }).format(new Date(d + 'T00:00:00'))}
-                    </button>
-                  ))}
-                </div>
-                {milestoneDue && (
-                  <div className="text-xs text-gray-400">
-                    נבחר: {new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(milestoneDue + 'T00:00:00'))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <input
-                type="date"
-                value={milestoneDue}
-                onChange={e => setMilestoneDue(e.target.value)}
-                required
-                className="w-full border border-gray-200 rounded px-2 py-1 text-sm"
-                dir="ltr"
-              />
-            )}
-            <button
-              type="submit"
-              className="text-sm bg-blue-600 text-white px-3 py-1 rounded"
+        </section>
+          {milestones.map(m => (
+            <div
+              key={m.id}
+              className={`flex flex-col gap-0.5 py-2 border-b border-border ${
+                isOverdue(m.dueDate) ? 'text-destructive' : 'text-foreground'
+              }`}
             >
-              הוסף
+              <span className="text-base font-medium">{m.title}</span>
+              <span className="text-sm text-muted-foreground">{formatDateHe(m.dueDate)}</span>
+            </div>
+          ))}
+                    <div className="flex items-center justify-between">
+                      {!addingMilestone && (
+            <button
+              onClick={() => setAddingMilestone(a => !a)}
+              className="action-link text-sm"
+
+            >
+              + הוספת שלב
             </button>
-          </form>
-        )}
-
-        {milestones.length === 0 && !addingMilestone && (
-          <div className="text-sm text-gray-400">אין הגשות</div>
-        )}
-        {milestones.map(m => (
-          <div key={m.id} className={`py-2 border-b border-gray-50 ${isOverdue(m.dueDate) ? 'text-red-500' : 'text-gray-700'}`}>
-            <div className="text-sm font-medium">{m.title}</div>
-            <div className="text-xs text-gray-400">{formatDateHe(m.dueDate)}</div>
+          )}
           </div>
-        ))}
-      </div>
 
-      <div className="px-4 py-3">
-        <h2 className="text-sm font-semibold text-gray-700 mb-2">בריפים וקבצים</h2>
-        <FileUpload projectId={projectId} onError={onError} />
-        {briefs.map(b => (
-          <a
-            key={b.id}
-            href={b.fileUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="block text-sm text-blue-600 py-1"
-          >
-            {b.fileName}
-          </a>
-        ))}
+          {addingMilestone && (
+            <form onSubmit={handleAddMilestone} className="flex flex-col gap-2">
+              <Input
+                type="text"
+                value={milestoneTitle}
+                onChange={e => setMilestoneTitle(e.target.value)}
+                placeholder="שם השלב"
+                required
+              />
+              {quickDates.length > 0 ? (
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-sm text-muted-foreground">
+                    בחר תאריך ({dayIndexToHe(course.day)})
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {quickDates.map(d => (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => setMilestoneDue(d)}
+                        className={`text-sm px-2.5 py-1 rounded-full border transition-colors ${
+                          milestoneDue === d
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'border-border text-muted-foreground'
+                        }`}
+                      >
+                        {new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'numeric' }).format(new Date(d + 'T00:00:00'))}
+                      </button>
+                    ))}
+                  </div>
+                  {milestoneDue && (
+                    <span className="text-sm text-muted-foreground">
+                      נבחר: {new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(milestoneDue + 'T00:00:00'))}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <input
+                  type="date"
+                  value={milestoneDue}
+                  onChange={e => setMilestoneDue(e.target.value)}
+                  required
+                  className="field-input"
+                  dir="ltr"
+                />
+              )}
+              <Button type="submit" size="sm">הוסף</Button>
+              <Button type="button" size="sm" variant="outline" onClick={() => setAddingMilestone(false)}>ביטול</Button>
+            </form>
+          )}
+
+        </section>
       </div>
     </div>
   )

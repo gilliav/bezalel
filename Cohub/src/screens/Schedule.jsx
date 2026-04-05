@@ -5,7 +5,7 @@ const DAY_ORDER = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמיש
 export default function Schedule() {
   const { courses, loading } = useCourses()
 
-  if (loading) return <div className="p-4 text-right text-gray-400">טוען...</div>
+  if (loading) return <div className="state-loading">טוען...</div>
 
   const byDay = DAY_ORDER.reduce((acc, day) => {
     acc[day] = courses.filter(c => c.day === day)
@@ -14,29 +14,26 @@ export default function Schedule() {
 
   return (
     <div className="text-right">
-      <div className="px-4 py-3 border-b border-gray-200">
-        <h1 className="text-lg font-bold">מערכת שעות</h1>
-      </div>
+      <header className="page-header">
+        <h1>מערכת שעות</h1>
+      </header>
       {DAY_ORDER.map(day => {
         const dayCourses = byDay[day]
         if (!dayCourses.length) return null
         return (
-          <div key={day} className="border-b border-gray-100">
-            <div className="px-4 py-2 text-xs font-semibold text-gray-600 uppercase tracking-wide bg-gray-200">
-              {day}
+          <div key={day} className="border-b border-border">
+            <div className="px-4 py-2 bg-muted">
+              <body>{day}</body>
             </div>
             {dayCourses.map(course => (
-              <div key={course.id} className="px-4 py-3 flex items-start gap-3">
-                <div
-                  className="w-3 h-3 rounded-full mt-0.5 shrink-0"
-                  style={{ backgroundColor: course.color }}
-                />
-                <div>
-                  <div className="text-sm font-medium text-gray-900">{course.name}</div>
-                  <div className="text-xs text-gray-500">{course.hours} · {course.location}</div>
-                  <div className="text-xs text-gray-400">{course.lecturer}</div>
+              <div key={course.id} className="list-row items-start">
+                <div className="color-dot mt-0.5" style={{ backgroundColor: course.color }} />
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-base font-medium text-foreground">{course.name}</span>
+                  <span className="text-sm text-muted-foreground">{course.hours} · {course.location}</span>
+                  <span className="text-sm text-muted-foreground">{course.lecturer}</span>
                   {course.notes && (
-                    <div className="text-xs text-gray-400 mt-0.5">{course.notes}</div>
+                    <span className="text-sm text-muted-foreground">{course.notes}</span>
                   )}
                 </div>
               </div>

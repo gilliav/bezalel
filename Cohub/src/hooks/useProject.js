@@ -1,3 +1,5 @@
+
+
 import { useEffect, useState } from 'react'
 import { doc, collection, query, orderBy, onSnapshot } from 'firebase/firestore'
 import { db } from '../firebase'
@@ -5,7 +7,7 @@ import { db } from '../firebase'
 export function useProject(projectId) {
   const [project, setProject] = useState(null)
   const [milestones, setMilestones] = useState([])
-  const [briefs, setBriefs] = useState([])
+  const [attachments, setAttachments] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -26,13 +28,13 @@ export function useProject(projectId) {
       (snap) => setMilestones(snap.docs.map(d => ({ id: d.id, ...d.data() }))),
     )
 
-    const unsubBriefs = onSnapshot(
-      query(collection(db, 'projects', projectId, 'briefs'), orderBy('uploadedAt')),
-      (snap) => setBriefs(snap.docs.map(d => ({ id: d.id, ...d.data() }))),
+    const unsubAttachments = onSnapshot(
+      query(collection(db, 'projects', projectId, 'attachments'), orderBy('uploadedAt')),
+      (snap) => setAttachments(snap.docs.map(d => ({ id: d.id, ...d.data() }))),
     )
 
-    return () => { unsubProject(); unsubMilestones(); unsubBriefs() }
+    return () => { unsubProject(); unsubMilestones(); unsubAttachments() }
   }, [projectId])
 
-  return { project, milestones, briefs, loading, error }
+  return { project, milestones, attachments, loading, error }
 }

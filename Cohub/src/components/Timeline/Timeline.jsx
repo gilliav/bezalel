@@ -25,7 +25,7 @@ export function Timeline({ projects, milestones }) {
 
   const defaultExpandedId = useMemo(() => {
     const active = sortedProjects.find(p =>
-      (milestonesByProject[p.id] ?? []).some(m => m.dueDate.toDate() > now),
+      (milestonesByProject[p.id] ?? []).some(m => m.dueDate?.toDate() > now),
     )
     return active?.id ?? sortedProjects[sortedProjects.length - 1]?.id ?? null
   }, [sortedProjects, milestonesByProject])

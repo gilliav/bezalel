@@ -65,7 +65,9 @@ const COURSES = [
     name: 'רישום 03 - צבע',
     day: 3,
     hours: '10:00-13:00',
-    lecturer: 'טוביס אלכסנדר',
+    lecturer: 'טוביס 
+    
+    אלכסנדר',
     location: 'כיתת רישום 212',
     courseUrl: '',
     notes: '7 שבועות אחרונים',

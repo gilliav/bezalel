@@ -10,6 +10,42 @@ import { nextDatesForDay, dayIndexToHe } from '../utils/dates'
 import { Input } from '../components/ui/input'
 import { Button } from '../components/ui/button'
 
+const HE_WEEK_NUMS = ['', 'א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳']
+
+function WeekPicker({ dates, value, onChange, dayName }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-sm text-muted-foreground">יום {dayName}</span>
+      <div className="grid grid-cols-6 gap-1">
+        {dates.map((d, i) => {
+          const isSelected = value === d
+          const dateObj = new Date(d + 'T00:00:00')
+          const dateLabel = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'numeric' }).format(dateObj)
+          return (
+            <button
+              key={d}
+              type="button"
+              onClick={() => onChange(isSelected ? '' : d)}
+              className={`
+                flex flex-col items-center gap-0.5 py-2 rounded-md border text-center transition-all
+                ${isSelected
+                  ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                  : 'border-border text-muted-foreground hover:border-primary/50 hover:text-foreground bg-card'
+                }
+              `}
+            >
+              <span className={`text-xs font-bold leading-none ${isSelected ? 'text-primary-foreground/70' : 'text-muted-foreground/60'}`}>
+                שב׳ {HE_WEEK_NUMS[i + 1]}
+              </span>
+              <span className="text-sm font-medium leading-none mt-0.5">{dateLabel}</span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export default function ProjectForm({ onError }) {
   const { projectId } = useParams()
   const [searchParams] = useSearchParams()
@@ -236,37 +272,19 @@ export default function ProjectForm({ onError }) {
             }}
             className="w-4 h-4 accent-primary"
           />
-          <span className="text-base text-muted-foreground font-medium">פרויקט עם כמה שלבים</span>
+          <span className="text-base text-foreground font-medium">פרויקט עם כמה שלבים</span>
         </label>
 
         {!isMultiDeadline && (
           <div className="flex flex-col gap-2 border border-border rounded-md p-3">
             <span className="text-base text-muted-foreground font-medium">תאריך הגשה (אופציונלי)</span>
             {quickDates.length > 0 ? (
-              <div className="flex flex-col gap-1.5">
-                <span className="text-sm text-muted-foreground">בחר תאריך ({dayIndexToHe(selectedCourse.day)})</span>
-                <div className="flex flex-wrap gap-2">
-                  {quickDates.map(d => (
-                    <button
-                      key={d}
-                      type="button"
-                      onClick={() => setDueDate(dueDate === d ? '' : d)}
-                      className={`text-sm px-2.5 py-1 rounded-full border transition-colors ${
-                        dueDate === d
-                          ? 'bg-primary text-primary-foreground border-primary'
-                          : 'border-border text-muted-foreground'
-                      }`}
-                    >
-                      {new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'numeric' }).format(new Date(d + 'T00:00:00'))}
-                    </button>
-                  ))}
-                </div>
-                {dueDate && (
-                  <span className="text-sm text-muted-foreground">
-                    נבחר: {new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(dueDate + 'T00:00:00'))}
-                  </span>
-                )}
-              </div>
+              <WeekPicker
+                dates={quickDates}
+                value={dueDate}
+                onChange={setDueDate}
+                dayName={dayIndexToHe(selectedCourse.day)}
+              />
             ) : (
               <input
                 type="date"
@@ -285,48 +303,28 @@ export default function ProjectForm({ onError }) {
 
             {localMilestones.map(m => (
               <div key={m.localId} className="flex flex-col gap-2 pb-3 border-b border-border last:border-b-0 last:pb-0">
-                <div className="flex items-center gap-2">
+                <div className="flex flex-row gap-2">
                   <Input
                     type="text"
                     value={m.title}
                     onChange={e => updateMilestone(m.localId, 'title', e.target.value)}
                     placeholder="שם השלב"
-                    className="flex-1"
                   />
                   <button
                     type="button"
                     onClick={() => removeMilestone(m.localId)}
-                    className="text-muted-foreground hover:text-destructive transition-colors"
+                    className="text-muted-foreground hover:text-destructive transition-colors shrink-0"
                   >
                     <Trash2 size={16} />
                   </button>
                 </div>
-
                 {quickDates.length > 0 ? (
-                  <div className="flex flex-col gap-1.5">
-                    <span className="text-sm text-muted-foreground">בחר תאריך ({dayIndexToHe(selectedCourse.day)})</span>
-                    <div className="flex flex-wrap gap-2">
-                      {quickDates.map(d => (
-                        <button
-                          key={d}
-                          type="button"
-                          onClick={() => updateMilestone(m.localId, 'dueDate', m.dueDate === d ? '' : d)}
-                          className={`text-sm px-2.5 py-1 rounded-full border transition-colors ${
-                            m.dueDate === d
-                              ? 'bg-primary text-primary-foreground border-primary'
-                              : 'border-border text-muted-foreground'
-                          }`}
-                        >
-                          {new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'numeric' }).format(new Date(d + 'T00:00:00'))}
-                        </button>
-                      ))}
-                    </div>
-                    {m.dueDate && (
-                      <span className="text-sm text-muted-foreground">
-                        נבחר: {new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(m.dueDate + 'T00:00:00'))}
-                      </span>
-                    )}
-                  </div>
+                  <WeekPicker
+                    dates={quickDates}
+                    value={m.dueDate}
+                    onChange={val => updateMilestone(m.localId, 'dueDate', val)}
+                    dayName={dayIndexToHe(selectedCourse.day)}
+                  />
                 ) : (
                   <input
                     type="date"

@@ -17,7 +17,6 @@ export default function Dashboard({ onError }) {
 
   const courseMap = Object.fromEntries(courses.map(c => [c.id, c]))
 
-  // Normalize projects-with-dueDate into milestone-shaped items
   const projectItems = projects
     .filter(p => p.dueDate)
     .map(p => ({
@@ -38,23 +37,19 @@ export default function Dashboard({ onError }) {
   const upcoming = allItems.filter(m => !isOverdue(m.dueDate))
 
   if (mlLoading || cLoading || pLoading) {
-    return <div className="p-4 text-right text-gray-400">טוען...</div>
+    return <div className="state-loading">טוען...</div>
   }
 
   return (
     <div className="text-right">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-        <Link to="/projects/new" className="text-sm text-blue-600 font-medium">
-          + פרויקט חדש
-        </Link>
-        <h1 className="text-lg font-bold">פרויקטים</h1>
-      </div>
+      <header className="page-header bg-muted">
+        <h1>הגשות</h1>
+        <Link to="/projects/new" className="action-link">+ פרויקט חדש</Link>
+      </header>
 
       {overdue.length > 0 && (
         <section>
-          <h2 className="px-4 py-2 text-xs font-semibold text-red-500 uppercase tracking-wide">
-            עבר הזמן
-          </h2>
+          <body className="section-label text-destructive">דדליין עבר</body>
           {overdue.map(m => (
             <MilestoneItem key={m.id} milestone={m} course={courseMap[m.courseId]} />
           ))}
@@ -63,11 +58,6 @@ export default function Dashboard({ onError }) {
 
       {upcoming.length > 0 && (
         <section>
-          {overdue.length > 0 && (
-            <h2 className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide">
-              קרוב
-            </h2>
-          )}
           {upcoming.map(m => (
             <MilestoneItem key={m.id} milestone={m} course={courseMap[m.courseId]} />
           ))}
@@ -75,9 +65,7 @@ export default function Dashboard({ onError }) {
       )}
 
       {allItems.length === 0 && (
-        <div className="p-8 text-center text-gray-400 text-sm">
-          אין פרויקטים פעילים
-        </div>
+        <div className="state-empty">אין פרויקטים פעילים</div>
       )}
     </div>
   )
