@@ -51,10 +51,11 @@ export function nextDatesForDay(dayIndex, count = 6) {
 }
 
 export function formatRelativeDateHe(firestoreTimestamp) {
+  if (!firestoreTimestamp) return ''
   const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  today.setUTCHours(0, 0, 0, 0)
   const target = firestoreTimestamp.toDate()
-  target.setHours(0, 0, 0, 0)
+  target.setUTCHours(0, 0, 0, 0)
   const diff = Math.round((target - today) / 86_400_000)
 
   if (diff === -2) return 'שלשום'
@@ -64,8 +65,6 @@ export function formatRelativeDateHe(firestoreTimestamp) {
   if (diff === 2) return 'מחרתיים'
   if (diff === -7) return 'לפני שבוע'
   if (diff === 7) return 'בעוד שבוע'
-  if (diff === -14) return 'לפני שבועיים'
-  if (diff === 14) return 'בעוד שבועיים'
 
   const absDiff = Math.abs(diff)
 
@@ -75,6 +74,7 @@ export function formatRelativeDateHe(firestoreTimestamp) {
 
   if (absDiff <= 83) {
     const weeks = Math.round(absDiff / 7)
+    if (weeks === 2) return diff < 0 ? 'לפני שבועיים' : 'בעוד שבועיים'
     return diff < 0 ? `לפני ${weeks} שבועות` : `בעוד ${weeks} שבועות`
   }
 

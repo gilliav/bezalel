@@ -1,11 +1,11 @@
 import { Timestamp } from 'firebase/firestore'
 import { isOverdue, formatDateHe, sortByDueDate, formatRelativeDateHe } from './dates'
 
-// Helper: Firestore Timestamp N days from today (midnight-aligned)
+// Helper: Firestore Timestamp N days from today (UTC midnight-aligned)
 function tsOffsetDays(n) {
   const d = new Date()
-  d.setHours(0, 0, 0, 0)
-  d.setDate(d.getDate() + n)
+  d.setUTCHours(0, 0, 0, 0)
+  d.setUTCDate(d.getUTCDate() + n)
   return Timestamp.fromDate(d)
 }
 
@@ -86,14 +86,19 @@ describe('formatRelativeDateHe', () => {
   it('returns בעוד N שבועות for +28 days', () => {
     expect(formatRelativeDateHe(tsOffsetDays(28))).toBe('בעוד 4 שבועות')
   })
-  it('falls back to absolute date for +90 days', () => {
-    const ts = tsOffsetDays(90)
-    const result = formatRelativeDateHe(ts)
-    expect(result).toBe(formatDateHe(ts))
+  it('returns בעוד N שבועות for +83 days (last relative value)', () => {
+    expect(formatRelativeDateHe(tsOffsetDays(83))).toBe('בעוד 12 שבועות')
   })
-  it('falls back to absolute date for -90 days', () => {
-    const ts = tsOffsetDays(-90)
-    const result = formatRelativeDateHe(ts)
-    expect(result).toBe(formatDateHe(ts))
+  it('falls back to absolute date for +84 days (first absolute value)', () => {
+    const ts = tsOffsetDays(84)
+    expect(formatRelativeDateHe(ts)).toBe(formatDateHe(ts))
+  })
+  it('falls back to absolute date for a far future date', () => {
+    const ts = Timestamp.fromDate(new Date('2099-06-15'))
+    expect(formatRelativeDateHe(ts)).toBe(formatDateHe(ts))
+  })
+  it('falls back to absolute date for a far past date', () => {
+    const ts = Timestamp.fromDate(new Date('2020-01-01'))
+    expect(formatRelativeDateHe(ts)).toBe(formatDateHe(ts))
   })
 })
