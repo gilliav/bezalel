@@ -9,6 +9,7 @@ import { useProject } from '../hooks/useProject'
 import { nextDatesForDay, dayIndexToHe } from '../utils/dates'
 import { Input } from '../components/ui/input'
 import { Button } from '../components/ui/button'
+import { PageHeader } from '../components/PageHeader'
 
 const HE_WEEK_NUMS = ['', 'א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳']
 
@@ -27,9 +28,9 @@ function WeekPicker({ dates, value, onChange, dayName }) {
               type="button"
               onClick={() => onChange(isSelected ? '' : d)}
               className={`
-                flex flex-col items-center gap-0.5 py-2 rounded-md border text-center transition-all
+                flex flex-col items-center gap-0.5 py-2 border text-center transition-all
                 ${isSelected
-                  ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                  ? 'bg-primary text-primary-foreground border-primary'
                   : 'border-border text-muted-foreground hover:border-primary/50 hover:text-foreground bg-card'
                 }
               `}
@@ -213,12 +214,14 @@ export default function ProjectForm({ onError }) {
 
   return (
     <div className="text-right">
-      <header className="page-header">
-        <h1>{isEdit ? 'עריכת פרויקט' : 'פרויקט חדש'}</h1>
-        <Link to={isEdit ? `/projects/${projectId}` : '/'} className="text-base text-muted-foreground">
-          ביטול
-        </Link>
-      </header>
+      <PageHeader
+        title={isEdit ? 'עריכת פרויקט' : 'פרויקט חדש'}
+        action={
+          <Link to={isEdit ? `/projects/${projectId}` : '/'} className="text-base text-muted-foreground">
+            ביטול
+          </Link>
+        }
+      />
 
       <form onSubmit={handleSubmit} className="page-body">
         <div className="field">
@@ -276,7 +279,7 @@ export default function ProjectForm({ onError }) {
         </label>
 
         {!isMultiDeadline && (
-          <div className="flex flex-col gap-2 border border-border rounded-md p-3">
+          <div className="flex flex-col gap-2 border-t border-border pt-3">
             <span className="text-base text-muted-foreground font-medium">תאריך הגשה (אופציונלי)</span>
             {quickDates.length > 0 ? (
               <WeekPicker
@@ -298,7 +301,7 @@ export default function ProjectForm({ onError }) {
         )}
 
         {isMultiDeadline && (
-          <div className="flex flex-col gap-3 border border-border rounded-md p-3">
+          <div className="flex flex-col gap-3 border-t border-border pt-3">
             <span className="text-base text-muted-foreground font-medium">שלבים</span>
 
             {localMilestones.map(m => (
@@ -348,7 +351,7 @@ export default function ProjectForm({ onError }) {
         )}
 
         {!isEdit && (
-          <div className="flex flex-col gap-2 border border-border rounded-md p-3">
+          <div className="flex flex-col gap-2 border-t border-border pt-3">
             <span className="text-base text-muted-foreground font-medium">בריף (אופציונלי)</span>
             <input
               ref={fileInputRef}
@@ -360,7 +363,7 @@ export default function ProjectForm({ onError }) {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="border border-dashed border-border rounded-md px-3 py-2 text-base text-muted-foreground text-center"
+              className="border border-dashed border-border px-3 py-2 text-base text-muted-foreground text-center"
             >
               {attachmentFile ? attachmentFile.name : 'בחר קובץ PDF / תמונה'}
             </button>
