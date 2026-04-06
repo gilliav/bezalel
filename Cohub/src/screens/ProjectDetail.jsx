@@ -5,7 +5,7 @@ import { db } from '../firebase'
 import { useProject } from '../hooks/useProject'
 import { useCourses } from '../hooks/useCourses'
 import { FileUpload } from '../components/FileUpload'
-import { formatDateHe, formatRelativeDateHe, isOverdue, nextDatesForDay, dayIndexToHe } from '../utils/dates'
+import { formatRelativeDateHe, nextDatesForDay, dayIndexToHe } from '../utils/dates'
 import { Pencil, Trash2, ChevronRight, Maximize2, X } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -189,8 +189,7 @@ export default function ProjectDetail({ onError }) {
           {sortedMilestones.map((m, i) => (
             <div
               key={m.id}
-              className="flex items-center justify-between py-2.5"
-              style={{ borderBottom: '1px solid rgba(26,23,20,0.09)' }}
+              className="flex items-center justify-between py-2.5 border-b border-border"
             >
               <span className="text-base font-medium">
                 {formatIndex(i + 1)} {m.title}
