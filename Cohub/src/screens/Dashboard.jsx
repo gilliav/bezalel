@@ -3,46 +3,26 @@ import { Link } from 'react-router-dom'
 import { useMilestones } from '../hooks/useMilestones'
 import { useCourses } from '../hooks/useCourses'
 import { useAllProjects } from '../hooks/useProjects'
-import { isOverdue } from '../utils/dates'
+import { isOverdue, formatDateHe } from '../utils/dates'
+import { Tag } from '../components/ui/tag'
 import { SectionTier } from '../components/SectionTier'
-import { ProjectRow } from '../components/ProjectRow'
 import { PageHeader } from '../components/PageHeader'
 import { EmptyState } from '../components/EmptyState'
+import { Calendar } from 'lucide-react'
 
-// Returns the next upcoming (non-overdue) milestone for a project, with its 1-based index.
-function getNextMilestone(projectId, milestones) {
-  const projectMs = milestones
-    .filter(m => m.projectId === projectId)
-    .sort((a, b) => a.dueDate.toDate() - b.dueDate.toDate())
-
-  const nextIdx = projectMs.findIndex(m => !isOverdue(m.dueDate))
-  if (nextIdx === -1) return null
-
-  const ms = projectMs[nextIdx]
-  return { title: ms.title, index: nextIdx + 1, dueDate: ms.dueDate }
-}
-
-function effectiveDate(project, nextMilestone) {
-  if (nextMilestone) return nextMilestone.dueDate
-  return project.dueDate ?? null
-}
-
-// Splits projects into tiers. If fewer than 2 in 7-day window, expands to 14 days.
-export function splitIntoTiers(projects, milestonesByProject) {
+// Splits a flat list of deadline items into tiers by date.
+// If fewer than 2 items fall within 7 days, expands hot window to 14 days.
+export function splitIntoTiers(items) {
   const now = new Date()
   const day = 86_400_000
-
-  const withDates = projects
-    .map(p => ({ project: p, next: milestonesByProject[p.id] ?? null }))
-    .filter(({ project, next }) => effectiveDate(project, next) !== null)
 
   const past = []
   const upcoming7 = []
   const upcoming14 = []
   const later = []
 
-  for (const item of withDates) {
-    const date = effectiveDate(item.project, item.next).toDate()
+  for (const item of items) {
+    const date = item.dueDate.toDate()
     if (date < now) {
       past.push(item)
     } else {
@@ -53,15 +33,41 @@ export function splitIntoTiers(projects, milestonesByProject) {
     }
   }
 
-  const hotItems = upcoming7.length >= 2
-    ? upcoming7
-    : [...upcoming7, ...upcoming14]
+  const sort = arr => [...arr].sort((a, b) => a.dueDate.toDate() - b.dueDate.toDate())
+  const sortDesc = arr => [...arr].sort((a, b) => b.dueDate.toDate() - a.dueDate.toDate())
+
+  const hotItems = upcoming7.length >= 2 ? upcoming7 : [...upcoming7, ...upcoming14]
+  const laterItems = upcoming7.length >= 2 ? [...upcoming14, ...later] : later
 
   return {
-    hot: hotItems.sort((a, b) => effectiveDate(a.project, a.next).toDate() - effectiveDate(b.project, b.next).toDate()),
-    later: later.sort((a, b) => effectiveDate(a.project, a.next).toDate() - effectiveDate(b.project, b.next).toDate()),
-    past: past.sort((a, b) => effectiveDate(b.project, b.next).toDate() - effectiveDate(a.project, a.next).toDate()),
+    hot: sort(hotItems),
+    later: sort(laterItems),
+    past: sortDesc(past),
   }
+}
+
+function DashboardItem({ item, course }) {
+  const overdue = isOverdue(item.dueDate)
+  return (
+    <Link
+      to={`/projects/${item.projectId}`}
+      className={`list-row-stacked ${overdue ? 'opacity-60' : ''}`}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-base font-medium text-foreground">{item.title}</span>
+        {course && (
+          <Tag value={course.name} color={course.color} />
+        )}
+      </div>
+      {item.projectTitle && (
+        <div className="text-sm text-muted-foreground">{item.projectTitle}</div>
+      )}
+      <div className={`flex gap-1 items-center text-sm ${overdue ? 'text-destructive' : 'text-muted-foreground'}`}>
+        <Calendar className="size-3" />
+        {formatDateHe(item.dueDate)}
+      </div>
+    </Link>
+  )
 }
 
 export default function Dashboard({ onError }) {
@@ -76,11 +82,22 @@ export default function Dashboard({ onError }) {
 
   const courseMap = Object.fromEntries(courses.map(c => [c.id, c]))
 
-  const milestonesByProject = Object.fromEntries(
-    projects.map(p => [p.id, getNextMilestone(p.id, milestones)])
-  )
+  // Single-deadline projects (no milestones shown — they appear via their milestones)
+  // A project appears as an item only if it has a dueDate
+  const projectItems = projects
+    .filter(p => p.dueDate)
+    .map(p => ({
+      id: `project-${p.id}`,
+      projectId: p.id,
+      title: p.title,
+      projectTitle: '',
+      dueDate: p.dueDate,
+      courseId: p.courseId,
+    }))
 
-  const { hot, later, past } = splitIntoTiers(projects, milestonesByProject)
+  const allItems = [...milestones, ...projectItems]
+
+  const { hot, later, past } = splitIntoTiers(allItems)
 
   if (mlLoading || cLoading || pLoading) {
     return <div className="state-loading">טוען...</div>
@@ -100,13 +117,8 @@ export default function Dashboard({ onError }) {
       {hot.length > 0 && (
         <section>
           <SectionTier label="השבוע" variant="hot" />
-          {hot.map(({ project, next }) => (
-            <ProjectRow
-              key={project.id}
-              project={project}
-              course={courseMap[project.courseId]}
-              nextMilestone={next}
-            />
+          {hot.map(item => (
+            <DashboardItem key={item.id} item={item} course={courseMap[item.courseId]} />
           ))}
         </section>
       )}
@@ -114,13 +126,8 @@ export default function Dashboard({ onError }) {
       {later.length > 0 && (
         <section>
           <SectionTier label="בהמשך" variant="normal" />
-          {later.map(({ project, next }) => (
-            <ProjectRow
-              key={project.id}
-              project={project}
-              course={courseMap[project.courseId]}
-              nextMilestone={next}
-            />
+          {later.map(item => (
+            <DashboardItem key={item.id} item={item} course={courseMap[item.courseId]} />
           ))}
         </section>
       )}
@@ -136,13 +143,8 @@ export default function Dashboard({ onError }) {
             </span>
             <div className="tier-line" />
           </button>
-          {pastExpanded && past.map(({ project, next }) => (
-            <ProjectRow
-              key={project.id}
-              project={project}
-              course={courseMap[project.courseId]}
-              nextMilestone={next}
-            />
+          {pastExpanded && past.map(item => (
+            <DashboardItem key={item.id} item={item} course={courseMap[item.courseId]} />
           ))}
         </section>
       )}
