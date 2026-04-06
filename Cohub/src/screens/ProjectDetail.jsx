@@ -5,24 +5,12 @@ import { db } from '../firebase'
 import { useProject } from '../hooks/useProject'
 import { useCourses } from '../hooks/useCourses'
 import { FileUpload } from '../components/FileUpload'
-import { formatRelativeDateHe, nextDatesForDay, dayIndexToHe } from '../utils/dates'
-import { Pencil, Trash2, ChevronRight, Maximize2, X } from 'lucide-react'
+import { formatDateHe, isOverdue, nextDatesForDay, dayIndexToHe } from '../utils/dates'
+import { Pencil, Trash2, ChevronRight, Maximize2, X, Calendar } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { PageHeader } from '../components/PageHeader'
-import { CourseTag } from '../components/CourseTag'
-import { UrgencyPill } from '../components/UrgencyPill'
-
-function pillVariant(dueDate) {
-  if (!dueDate) return 'muted'
-  const date = dueDate.toDate()
-  if (date < new Date()) return 'danger'
-  return (date - new Date()) / 86_400_000 <= 7 ? 'dark' : 'muted'
-}
-
-function formatIndex(n) {
-  return String(n).padStart(2, '0')
-}
+import { Tag } from '../components/ui/tag'
 
 export default function ProjectDetail({ onError }) {
   const { projectId } = useParams()
@@ -102,21 +90,9 @@ export default function ProjectDetail({ onError }) {
           </button>
         </div>
 
-        <div className="flex items-center gap-3">
-          {course && (
-            <CourseTag
-              name={course.name}
-              color={course.color}
-              to={`/courses/${course.id}`}
-            />
-          )}
-          {project.dueDate && (
-            <UrgencyPill
-              label={formatRelativeDateHe(project.dueDate)}
-              variant={pillVariant(project.dueDate)}
-            />
-          )}
-        </div>
+        {course && (
+          <Tag value={course.name} color={course.color} />
+        )}
 
         {project.description && (
           <p className="text-base text-foreground">{project.description}</p>
@@ -186,20 +162,24 @@ export default function ProjectDetail({ onError }) {
 
         {/* Milestones */}
         <section className="flex flex-col">
-          {sortedMilestones.map((m, i) => (
-            <div
-              key={m.id}
-              className="flex items-center justify-between py-2.5 border-b border-border"
-            >
-              <span className="text-base font-medium">
-                {formatIndex(i + 1)} {m.title}
-              </span>
-              <UrgencyPill
-                label={formatRelativeDateHe(m.dueDate)}
-                variant={pillVariant(m.dueDate)}
-              />
-            </div>
-          ))}
+          {sortedMilestones.map((m) => {
+            const overdue = isOverdue(m.dueDate)
+            return (
+              <div
+                key={m.id}
+                className={`list-row-stacked ${overdue ? 'opacity-60' : ''}`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-base font-medium text-foreground">{m.title}</span>
+                  {course && <Tag value={course.name} color={course.color} />}
+                </div>
+                <div className={`flex gap-1 items-center text-sm ${overdue ? 'text-destructive' : 'text-muted-foreground'}`}>
+                  <Calendar className="size-3" />
+                  {formatDateHe(m.dueDate)}
+                </div>
+              </div>
+            )
+          })}
 
           {!addingMilestone && (
             <button

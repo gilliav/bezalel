@@ -107,7 +107,8 @@ export default function Dashboard({ onError }) {
       courseId: p.courseId,
     }))
 
-  const allItems = [...milestones, ...projectItems]
+  // Only include items that have a valid dueDate (guard against corrupt data)
+  const allItems = [...milestones, ...projectItems].filter(i => i.dueDate?.toDate)
 
   const { hot, later, past } = splitIntoTiers(allItems)
 
