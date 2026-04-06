@@ -22,7 +22,7 @@
   body {
     @apply font-body text-foreground text-xl;
     direction: rtl;
-    background-color: #f7f3ec;
+    /* background-color: #f7f3ec; */
   }
 
   h1 {

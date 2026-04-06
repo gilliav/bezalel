@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Approaches</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Almoni Tzar ML v5 AAA", "Almoni ML v5 AAA", Arial, sans-serif;
+  background: #e8e2d6;
+  color: #1a1714;
+  padding: 28px 16px 48px;
+  direction: rtl;
+}
+
+h2 {
+  font-family: "Almoni ML v5 AAA", Arial, sans-serif;
+  font-size: 18px; font-weight: 700;
+  margin-bottom: 6px;
+}
+.subtitle {
+  font-size: 13px; color: rgba(26,23,20,0.45);
+  margin-bottom: 28px; line-height: 1.6;
+}
+
+.options { display: flex; flex-direction: column; gap: 28px; }
+
+.option {
+  cursor: pointer;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.option:hover { border-color: rgba(26,23,20,0.18); }
+.option.selected { border-color: #1a1714; box-shadow: 0 4px 16px rgba(0,0,0,0.13); }
+
+.opt-label {
+  padding: 10px 16px;
+  font-family: "Almoni ML v5 AAA", Arial, sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(26,23,20,0.4); background: #ddd7cb;
+  border-bottom: 1px solid rgba(26,23,20,0.08);
+  display: flex; align-items: center; gap: 10px;
+}
+.opt-letter {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid rgba(26,23,20,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: rgba(26,23,20,0.5);
+}
+.option.selected .opt-letter { background: #1a1714; border-color: #1a1714; color: #f5eee2; }
+
+.opt-desc {
+  padding: 10px 14px 12px;
+  font-size: 12px; color: rgba(26,23,20,0.5);
+  background: #ddd7cb;
+  border-bottom: 1px solid rgba(26,23,20,0.08);
+  line-height: 1.5;
+}
+.opt-desc strong { color: rgba(26,23,20,0.75); font-weight: 700; }
+
+/* ─── shared phone atoms ─── */
+.phone {
+  background: #f5eee2;
+  direction: rtl;
+  font-family: "Almoni Tzar ML v5 AAA", "Almoni ML v5 AAA", Arial, sans-serif;
+}
+.ph-header {
+  padding: 13px 16px 10px;
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-bottom: 1px solid rgba(26,23,20,0.09);
+}
+.ph-title { font-family: "Almoni ML v5 AAA", Arial, sans-serif; font-size: 22px; font-weight: 700; }
+.ph-action { font-size: 13px; color: rgba(26,23,20,0.35); }
+
+.sec-hdr {
+  padding: 10px 16px 5px;
+  font-family: "Almoni ML v5 AAA", Arial, sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(26,23,20,0.32);
+}
+.sec-hdr.danger { color: #c0392b; }
+
+.card-list { padding: 5px 12px 10px; display: flex; flex-direction: column; gap: 7px; }
+
+.proj-card {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07), 0 0 0 1px rgba(0,0,0,0.04);
+  position: relative;
+}
+.proj-accent { position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.proj-top { padding: 9px 14px 7px 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.proj-name { font-family: "Almoni ML v5 AAA", Arial, sans-serif; font-size: 15px; font-weight: 700; color: #1a1714; line-height: 1.2; }
+.tag { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; margin-top: 3px; }
+.ms-list { border-top: 1px solid rgba(0,0,0,0.05); }
+.ms-row { padding: 6px 14px 6px 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid rgba(0,0,0,0.04); }
+.ms-row:last-child { border-bottom: none; }
+.ms-name { font-size: 13px; color: rgba(26,23,20,0.65); }
+.pill { display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+.pill-dark { background: #1a1714; color: #f5eee2; }
+.pill-muted { background: rgba(26,23,20,0.08); color: rgba(26,23,20,0.45); }
+
+/* atoms preview strip */
+.atoms-strip {
+  background: #f5eee2;
+  padding: 12px 14px;
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  border-top: 1px solid rgba(26,23,20,0.06);
+}
+.atom-chip {
+  font-size: 10px; padding: 3px 8px; border-radius: 6px;
+  background: rgba(26,23,20,0.06); color: rgba(26,23,20,0.45);
+  font-family: "IBM Plex Mono", monospace;
+  letter-spacing: 0.04em;
+}
+
+/* greyed-out screens (approach A) */
+.other-screens {
+  background: #f5eee2;
+  padding: 10px 14px;
+  border-top: 1px solid rgba(26,23,20,0.06);
+  display: flex; gap: 8px;
+}
+.screen-pill {
+  font-size: 11px; padding: 4px 10px; border-radius: 6px;
+  background: rgba(26,23,20,0.05); color: rgba(26,23,20,0.3);
+}
+.screen-pill.active { background: rgba(26,23,20,0.1); color: rgba(26,23,20,0.6); font-weight: 600; }
+
+/* approach B — atom-first diagram */
+.atom-diagram {
+  background: #f5eee2;
+  padding: 14px;
+  border-top: 1px solid rgba(26,23,20,0.06);
+}
+.atom-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.atom-box {
+  background: #fff;
+  border: 1px solid rgba(26,23,20,0.1);
+  border-radius: 8px;
+  padding: 6px 11px;
+  font-size: 11px;
+  font-family: "IBM Plex Mono", monospace;
+  color: rgba(26,23,20,0.6);
+}
+.atom-box.highlight { border-color: rgba(26,23,20,0.3); color: #1a1714; font-weight: 600; }
+.arrow { font-size: 11px; color: rgba(26,23,20,0.3); align-self: center; }
+.screens-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.screen-box {
+  background: rgba(26,23,20,0.05);
+  border-radius: 8px; padding: 6px 11px;
+  font-size: 11px; color: rgba(26,23,20,0.5);
+}
+
+/* approach C — sweep */
+.sweep-list {
+  background: #f5eee2;
+  border-top: 1px solid rgba(26,23,20,0.06);
+  padding: 0;
+}
+.sweep-row {
+  padding: 8px 14px;
+  font-size: 12px; color: rgba(26,23,20,0.5);
+  border-bottom: 1px solid rgba(26,23,20,0.06);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.sweep-row:last-child { border-bottom: none; }
+.sweep-badge {
+  font-size: 10px; padding: 2px 7px; border-radius: 20px;
+  background: rgba(26,23,20,0.07); color: rgba(26,23,20,0.4);
+}
+</style>
+</head>
+<body>
+
+<h2>שלוש גישות לרפקטור</h2>
+<p class="subtitle">כל גישה — תוצאה זהה, סדר שונה. בחר מה מרגיש נכון.</p>
+
+<div class="options">
+
+  <!-- ─── APPROACH A ─── -->
+  <div class="option" data-choice="a" onclick="pick(this)">
+    <div class="opt-label"><div class="opt-letter">A</div> דשבורד קודם, שאר המסכים אחרי · המלצה שלי</div>
+    <div class="opt-desc">
+      <strong>מתחילים בדשבורד.</strong> כל הקומפוננטות החדשות (ProjectCard, MilestoneRow, SectionTier) נבנות בהקשר אמיתי. אחרי שהדשבורד עובד — שאר המסכים מיישרים קו.
+    </div>
+
+    <!-- Live dashboard preview -->
+    <div class="phone">
+      <div class="ph-header">
+        <span class="ph-title">הגשות</span>
+        <span class="ph-action">+ חדש</span>
+      </div>
+      <div class="sec-hdr danger">השבוע</div>
+      <div class="card-list">
+        <div class="proj-card">
+          <div class="proj-accent" style="background:#b8ddb0;"></div>
+          <div class="proj-top">
+            <div>
+              <div class="proj-name">פוסטר טיפוגרפי</div>
+              <span class="tag" style="background:rgba(184,221,176,0.35);color:#2d6a25;">עיצוב גרפי א׳</span>
+            </div>
+          </div>
+          <div class="ms-list">
+            <div class="ms-row">
+              <span class="ms-name">סקיצות ראשוניות</span>
+              <span class="pill pill-dark">מחר</span>
+            </div>
+            <div class="ms-row">
+              <span class="ms-name">מצגת ביניים</span>
+              <span style="font-size:12px;color:rgba(26,23,20,0.38)">15.4</span>
+            </div>
+          </div>
+        </div>
+        <div class="proj-card">
+          <div class="proj-accent" style="background:#f5c9a3;"></div>
+          <div class="proj-top">
+            <div>
+              <div class="proj-name">פרויקט צילום</div>
+              <span class="tag" style="background:rgba(245,201,163,0.35);color:#8a4a10;">צילום</span>
+            </div>
+            <span class="pill pill-dark">בעוד 5 ימים</span>
+          </div>
+        </div>
+      </div>
+      <div class="sec-hdr">בהמשך</div>
+      <div class="card-list">
+        <div class="proj-card">
+          <div class="proj-accent" style="background:#c4bfe8;"></div>
+          <div class="proj-top">
+            <div>
+              <div class="proj-name">אנימציה 2D</div>
+              <span class="tag" style="background:rgba(196,191,232,0.35);color:#3535a0;">אנימציה</span>
+            </div>
+            <span class="pill pill-muted">בעוד שבועיים</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- atoms extracted -->
+    <div class="atoms-strip">
+      <span style="font-size:10px;color:rgba(26,23,20,0.35);letter-spacing:0.08em;text-transform:uppercase;">קומפוננטות שיצאו מזה ←</span>
+      <span class="atom-chip">ProjectCard</span>
+      <span class="atom-chip">MilestoneRow</span>
+      <span class="atom-chip">SectionTier</span>
+      <span class="atom-chip">UrgencyPill</span>
+      <span class="atom-chip">CourseTag</span>
+    </div>
+    <!-- other screens greyed -->
+    <div class="other-screens">
+      <span class="screen-pill active">Dashboard ✓</span>
+      <span class="screen-pill">ProjectDetail</span>
+      <span class="screen-pill">ProjectForm</span>
+      <span class="screen-pill">CourseDetail</span>
+      <span class="screen-pill">Schedule</span>
+    </div>
+  </div>
+
+  <!-- ─── APPROACH B ─── -->
+  <div class="option" data-choice="b" onclick="pick(this)">
+    <div class="opt-label"><div class="opt-letter">B</div> אטומים קודם, אחר כך מסכים</div>
+    <div class="opt-desc">
+      <strong>מגדירים את כל הקומפוננטות תחילה</strong> — ללא מסך ספציפי בראש. אחרי שהספרייה מוכנה, כל מסך נבנה ממנה.
+    </div>
+    <div class="atom-diagram">
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(26,23,20,0.35);margin-bottom:8px;">שלב א׳ — בניית אטומים</div>
+      <div class="atom-row">
+        <span class="atom-box highlight">ProjectCard</span>
+        <span class="atom-box highlight">MilestoneRow</span>
+        <span class="atom-box highlight">SectionTier</span>
+        <span class="atom-box highlight">UrgencyPill</span>
+        <span class="atom-box highlight">CourseTag</span>
+        <span class="atom-box highlight">EmptyState</span>
+        <span class="atom-box highlight">PageHeader</span>
+      </div>
+      <div style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(26,23,20,0.35);margin:10px 0 8px;">שלב ב׳ — הרכבת מסכים</div>
+      <div class="screens-row">
+        <span class="screen-box">Dashboard</span>
+        <span class="screen-box">ProjectDetail</span>
+        <span class="screen-box">ProjectForm</span>
+        <span class="screen-box">CourseDetail</span>
+        <span class="screen-box">Schedule</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── APPROACH C ─── -->
+  <div class="option" data-choice="c" onclick="pick(this)">
+    <div class="opt-label"><div class="opt-letter">C</div> מסך-מסך, הכל במקביל</div>
+    <div class="opt-desc">
+      <strong>עוברים מסך אחרי מסך</strong> — עיצוב + רפקטור ביחד. כל מסך יוצא שלם. סיכון: חוסר עקביות בין מסכים שנגעים בהם בנפרד.
+    </div>
+    <div class="sweep-list">
+      <div class="sweep-row">Dashboard <span class="sweep-badge">ראשון</span></div>
+      <div class="sweep-row">ProjectDetail <span class="sweep-badge">שני</span></div>
+      <div class="sweep-row">CourseDetail <span class="sweep-badge">שלישי</span></div>
+      <div class="sweep-row">ProjectForm <span class="sweep-badge">רביעי</span></div>
+      <div class="sweep-row">Schedule <span class="sweep-badge">חמישי</span></div>
+      <div class="sweep-row">CoursesList <span class="sweep-badge">שישי</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function pick(el) {
+  document.querySelectorAll('.option').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+  if (window.recordChoice) window.recordChoice(el.dataset.choice, el.querySelector('.opt-label').textContent.trim());
+}
+</script>
+</body>
+</html>

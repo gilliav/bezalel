@@ -10,7 +10,7 @@ export function TimelineProject({ project, milestones, index, isExpanded, onTogg
         className="relative flex items-center gap-3 py-2 w-full text-right"
       >
         <div className="flex items-baseline gap-6 bg-muted rounded-xl px-4 py-2">
-          <span className="text-primary text-sm text-muted-foreground ">{formatDateShort(project.dueDate)}</span>
+          <span className="text-primary text-sm text-muted-foreground ">{formatDateShort(project.dueDate ?? milestones[0]?.dueDate)}</span>
           <span className="text-base font-medium text-foreground">{project.title}</span>
         </div>
       </Link>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design 4×5</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Almoni Tzar ML v5 AAA", "Almoni ML v5 AAA", Arial, sans-serif;
+  background: #e0d9cc;
+  color: #1a1714;
+  padding: 28px 16px 56px;
+  direction: rtl;
+}
+
+h2 { font-family: "Almoni ML v5 AAA", Arial, sans-serif; font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.subtitle { font-size: 13px; color: rgba(26,23,20,0.45); margin-bottom: 28px; line-height: 1.6; }
+
+.grid { display: flex; flex-direction: column; gap: 32px; }
+
+.wrap {
+  cursor: pointer;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2.5px solid transparent;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.wrap:hover { border-color: rgba(26,23,20,0.2); }
+.wrap.selected { border-color: #1a1714; box-shadow: 0 6px 24px rgba(0,0,0,0.16); }
+
+.wrap-label {
+  padding: 11px 16px; background: #d4cdc0;
+  border-bottom: 1px solid rgba(26,23,20,0.09);
+  display: flex; align-items: center; gap: 10px;
+}
+.letter {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 1.5px solid rgba(26,23,20,0.22);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: rgba(26,23,20,0.5);
+  font-weight: 700; flex-shrink: 0;
+}
+.wrap.selected .letter { background: #1a1714; border-color: #1a1714; color: #f5eee2; }
+.lbl-main { font-family: "Almoni ML v5 AAA", Arial, sans-serif; font-size: 13px; font-weight: 700; color: rgba(26,23,20,0.65); }
+.lbl-sub { font-size: 11px; color: rgba(26,23,20,0.35); margin-right: auto; }
+
+/* ═══════════════════════════════════════════
+   SHARED PHONE SHELL
+   ═══════════════════════════════════════════ */
+.phone {
+  background: #f7f3ec;
+  font-family: "Almoni Tzar ML v5 AAA", "Almoni ML v5 AAA", Arial, sans-serif;
+  direction: rtl;
+  color: #1a1714;
+}
+
+.ph-hdr {
+  padding: 14px 16px 12px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 2px solid #1a1714;
+}
+.ph-title { font-family: "Almoni ML v5 AAA", Arial, sans-serif; font-size: 23px; font-weight: 900; }
+.ph-plus { font-size: 22px; font-weight: 300; line-height: 1; color: #1a1714; }
+
+/* Section tier — 5-style: text + extending hairline */
+.tier-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px 5px;
+}
+.tier-line { flex: 1; height: 1px; background: rgba(26,23,20,0.12); }
+.tier-txt {
+  font-family: "Almoni ML v5 AAA", Arial, sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(26,23,20,0.32); white-space: nowrap;
+}
+.tier-txt.hot { color: #b83220; }
+
+/* Project rows — 4-style: sharp, no boxes */
+.proj-row {
+  position: relative;
+  border-bottom: 1px solid rgba(26,23,20,0.09);
+}
+.proj-row:last-child { border-bottom: none; }
+
+/* Color accent stripe */
+.acc { position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+
+/* Project header line */
+.proj-head {
+  padding: 9px 14px 7px 12px;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
+}
+.proj-name { font-family: "Almoni ML v5 AAA", Arial, sans-serif; font-size: 16px; font-weight: 700; color: #1a1714; line-height: 1.2; }
+
+/* Underline-only tag (design 4 style) */
+.tag {
+  font-size: 11px; font-weight: 600;
+  padding: 0 0 1px;
+  border-bottom: 1.5px solid;
+  background: transparent;
+  display: inline-block;
+  margin-top: 3px;
+}
+
+/* Pills — sharp */
+.pill { font-size: 11px; font-weight: 700; padding: 2px 9px; border: 1.5px solid; white-space: nowrap; flex-shrink: 0; }
+.pill-dk { background: #1a1714; color: #f7f3ec; border-color: #1a1714; }
+.pill-mu { background: transparent; color: rgba(26,23,20,0.4); border-color: rgba(26,23,20,0.18); }
+
+/* Milestone sub-row — shared base */
+.ms-row {
+  margin-right: 18px;
+  border-top: 1px solid rgba(26,23,20,0.07);
+  padding: 6px 12px 6px 12px;
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+}
+.ms-name { font-size: 13px; color: rgba(26,23,20,0.55); }
+
+/* Nav */
+.ph-nav { border-top: 2px solid #1a1714; display: flex; background: #f7f3ec; }
+.ni { flex: 1; padding: 10px 4px; text-align: center; font-family: "Almoni ML v5 AAA", Arial, sans-serif; font-size: 12px; font-weight: 600; color: rgba(26,23,20,0.28); }
+.ni.on { color: #1a1714; border-top: 2px solid #1a1714; margin-top: -2px; }
+
+
+/* ═══════════════════════════════════════════
+   VARIANT A — next milestone inline, phase dots below name
+   ═══════════════════════════════════════════ */
+
+/* Phase dots: ● ○ ○ — horizontal, sit below project name */
+.phase-dots { display: flex; gap: 4px; align-items: center; margin-top: 3px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; border: 1.5px solid rgba(26,23,20,0.3); background: transparent; }
+.dot.filled { background: #1a1714; border-color: #1a1714; }
+.dot.active { background: transparent; border-color: #1a1714; border-width: 1.5px; }
+
+
+/* ═══════════════════════════════════════════
+   VARIANT B — phase shown as "שלב 1/3" label
+   ═══════════════════════════════════════════ */
+.phase-label {
+  font-size: 10px; color: rgba(26,23,20,0.35); font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-top: 1px;
+}
+
+
+/* ═══════════════════════════════════════════
+   VARIANT C — compact: phase fraction + milestone on one row
+   ═══════════════════════════════════════════ */
+.phase-fraction {
+  font-size: 10px; font-weight: 700; color: rgba(26,23,20,0.3);
+  border: 1px solid rgba(26,23,20,0.18);
+  padding: 1px 5px;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<h2>4×5 — שלוש גרסאות לפרויקט עם כמה שלבים</h2>
+<p class="subtitle">חיבור בין הסגנון החד של 4 לקווי-המפרידים של 5. כל וריאנט מציג את השלב הקרוב ביותר בדרך אחרת.</p>
+
+<div class="grid">
+
+  <!-- ══ VARIANT A: phase dots ══ -->
+  <div class="wrap" data-choice="a" onclick="pick(this)">
+    <div class="wrap-label">
+      <div class="letter">A</div>
+      <span class="lbl-main">נקודות שלבים מתחת לשם הפרויקט</span>
+      <span class="lbl-sub">● ○ ○</span>
+    </div>
+    <div class="phone">
+      <div class="ph-hdr"><span class="ph-title">הגשות</span><span class="ph-plus">+</span></div>
+
+      <div class="tier-row"><span class="tier-txt hot">השבוע</span><div class="tier-line"></div></div>
+
+      <!-- Multi-milestone project -->
+      <div class="proj-row">
+        <div class="acc" style="background:#b8ddb0;"></div>
+        <div class="proj-head">
+          <div>
+            <div class="proj-name">פוסטר טיפוגרפי</div>
+            <div class="phase-dots">
+              <div class="dot filled"></div>
+              <div class="dot active"></div>
+              <div class="dot"></div>
+            </div>
+            <span class="tag" style="color:#2d6a25; border-color:#b8ddb0;">עיצוב גרפי א׳</span>
+          </div>
+        </div>
+        <div class="ms-row" style="margin-right:0; border-top:none; padding-top:0; margin-top:-4px; padding-bottom:10px;">
+          <!-- this ms-row is inside proj-head conceptually — we pull it out below -->
+        </div>
+      </div>
+      <!-- milestone shown separately, indented -->
+      <div class="proj-row" style="border-bottom: 1px solid rgba(26,23,20,0.09); margin-top: -1px;">
+        <div class="acc" style="background:#b8ddb0;"></div>
+        <div class="ms-row" style="border-top: none;">
+          <span class="ms-name">סקיצות ראשוניות</span>
+          <span class="pill pill-dk">מחר</span>
+        </div>
+      </div>
+
+      <!-- Single-deadline project -->
+      <div class="proj-row">
+        <div class="acc" style="background:#f5c9a3;"></div>
+        <div class="proj-head">
+          <div>
+            <div class="proj-name">פרויקט צילום</div>
+            <span class="tag" style="color:#8a4a10; border-color:#f5c9a3;">צילום</span>
+          </div>
+          <span class="pill pill-dk">בעוד 5 ימים</span>
+        </div>
+      </div>
+
+      <div class="tier-row"><span class="tier-txt">בהמשך</span><div class="tier-line"></div></div>
+
+      <div class="proj-row">
+        <div class="acc" style="background:#c4bfe8;"></div>
+        <div class="proj-head">
+          <div>
+            <div class="proj-name">אנימציה 2D</div>
+            <div class="phase-dots">
+              <div class="dot filled"></div>
+              <div class="dot active"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+            <span class="tag" style="color:#3535a0; border-color:#c4bfe8;">אנימציה</span>
+          </div>
+        </div>
+      </div>
+      <div class="proj-row">
+        <div class="acc" style="background:#c4bfe8;"></div>
+        <div class="ms-row" style="border-top:none;">
+          <span class="ms-name">סטוריבורד</span>
+          <span class="pill pill-mu">בעוד שבועיים</span>
+        </div>
+      </div>
+
+      <div class="ph-nav"><div class="ni on">הגשות</div><div class="ni">קורסים</div><div class="ni">מערכת</div></div>
+    </div>
+  </div>
+
+  <!-- ══ VARIANT B: "שלב 2 מתוך 3" label ══ -->
+  <div class="wrap" data-choice="b" onclick="pick(this)">
+    <div class="wrap-label">
+      <div class="letter">B</div>
+      <span class="lbl-main">תווית "שלב X מתוך Y" בשורת המיילסטון</span>
+      <span class="lbl-sub">שלב 1/3</span>
+    </div>
+    <div class="phone">
+      <div class="ph-hdr"><span class="ph-title">הגשות</span><span class="ph-plus">+</span></div>
+
+      <div class="tier-row"><span class="tier-txt hot">השבוע</span><div class="tier-line"></div></div>
+
+      <div class="proj-row">
+        <div class="acc" style="background:#b8ddb0;"></div>
+        <div class="proj-head">
+          <div>
+            <div class="proj-name">פוסטר טיפוגרפי</div>
+            <span class="tag" style="color:#2d6a25; border-color:#b8ddb0;">עיצוב גרפי א׳</span>
+          </div>
+        </div>
+        <div class="ms-row">
+          <div>
+            <div class="ms-name">סקיצות ראשוניות</div>
+            <div class="phase-label">שלב 1 מתוך 3</div>
+          </div>
+          <span class="pill pill-dk">מחר</span>
+        </div>
+      </div>
+
+      <div class="proj-row">
+        <div class="acc" style="background:#f5c9a3;"></div>
+        <div class="proj-head">
+          <div>
+            <div class="proj-name">פרויקט צילום</div>
+            <span class="tag" style="color:#8a4a10; border-color:#f5c9a3;">צילום</span>
+          </div>
+          <span class="pill pill-dk">בעוד 5 ימים</span>
+        </div>
+      </div>
+
+      <div class="tier-row"><span class="tier-txt">בהמשך</span><div class="tier-line"></div></div>
+
+      <div class="proj-row">
+        <div class="acc" style="background:#c4bfe8;"></div>
+        <div class="proj-head">
+          <div>
+            <div class="proj-name">אנימציה 2D</div>
+            <span class="tag" style="color:#3535a0; border-color:#c4bfe8;">אנימציה</span>
+          </div>
+        </div>
+        <div class="ms-row">
+          <div>
+            <div class="ms-name">סטוריבורד</div>
+            <div class="phase-label">שלב 2 מתוך 4</div>
+          </div>
+          <span class="pill pill-mu">בעוד שבועיים</span>
+        </div>
+      </div>
+
+      <div class="ph-nav"><div class="ni on">הגשות</div><div class="ni">קורסים</div><div class="ni">מערכת</div></div>
+    </div>
+  </div>
+
+  <!-- ══ VARIANT C: fraction badge inline ══ -->
+  <div class="wrap" data-choice="c" onclick="pick(this)">
+    <div class="wrap-label">
+      <div class="letter">C</div>
+      <span class="lbl-main">מספר שלב כתווית קצרה ליד השם</span>
+      <span class="lbl-sub">⌗1/3</span>
+    </div>
+    <div class="phone">
+      <div class="ph-hdr"><span class="ph-title">הגשות</span><span class="ph-plus">+</span></div>
+
+      <div class="tier-row"><span class="tier-txt hot">השבוע</span><div class="tier-line"></div></div>
+
+      <div class="proj-row">
+        <div class="acc" style="background:#b8ddb0;"></div>
+        <div class="proj-head">
+          <div>
+            <div class="proj-name">פוסטר טיפוגרפי</div>
+            <span class="tag" style="color:#2d6a25; border-color:#b8ddb0;">עיצוב גרפי א׳</span>
+          </div>
+        </div>
+        <div class="ms-row">
+          <span class="ms-name">סקיצות ראשוניות</span>
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            <span class="phase-fraction">1/3</span>
+            <span class="pill pill-dk">מחר</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="proj-row">
+        <div class="acc" style="background:#f5c9a3;"></div>
+        <div class="proj-head">
+          <div>
+            <div class="proj-name">פרויקט צילום</div>
+            <span class="tag" style="color:#8a4a10; border-color:#f5c9a3;">צילום</span>
+          </div>
+          <span class="pill pill-dk">בעוד 5 ימים</span>
+        </div>
+      </div>
+
+      <div class="tier-row"><span class="tier-txt">בהמשך</span><div class="tier-line"></div></div>
+
+      <div class="proj-row">
+        <div class="acc" style="background:#c4bfe8;"></div>
+        <div class="proj-head">
+          <div>
+            <div class="proj-name">אנימציה 2D</div>
+            <span class="tag" style="color:#3535a0; border-color:#c4bfe8;">אנימציה</span>
+          </div>
+        </div>
+        <div class="ms-row">
+          <span class="ms-name">סטוריבורד</span>
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            <span class="phase-fraction">2/4</span>
+            <span class="pill pill-mu">בעוד שבועיים</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ph-nav"><div class="ni on">הגשות</div><div class="ni">קורסים</div><div class="ni">מערכת</div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function pick(el) {
+  document.querySelectorAll('.wrap').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  if (window.recordChoice) window.recordChoice(el.dataset.choice, el.querySelector('.lbl-main').textContent.trim());
+}
+</script>
+</body>
+</html>
