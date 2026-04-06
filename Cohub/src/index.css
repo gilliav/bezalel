@@ -4,24 +4,25 @@
 
 @layer base {
   :root {
-    --background: 40 30% 93%;         /* #F5F0E8 parchment */
-    --foreground: 0 0% 17%;           /* #2C2C2C ink */
-    --card: 40 40% 97%;               /* #FDFAF4 card surface */
-    --card-foreground: 0 0% 17%;
-    --primary: 25 75% 31%;            /* #8B4513 terracotta */
-    --primary-foreground: 0 0% 100%;
-    --muted: 38 28% 85%;              /* #E8E0D0 */
-    --muted-foreground: 0 0% 42%;     /* #6B6B6B */
-    --border: 38 24% 76%;             /* #D4C9B0 */
-    --destructive: 4 65% 46%;         /* #C0392B */
+    --background: 36 28% 96%;          /* #f7f3ec */
+    --foreground: 20 5% 10%;           /* #1a1714 */
+    --card: 36 28% 96%;
+    --card-foreground: 20 5% 10%;
+    --primary: 20 5% 10%;              /* #1a1714 — sharp black */
+    --primary-foreground: 36 28% 96%;  /* #f7f3ec */
+    --muted: 36 18% 88%;               /* #e8e2d6 */
+    --muted-foreground: 20 5% 42%;     /* rgba(26,23,20,0.42) approx */
+    --border: 20 5% 10% / 0.09;        /* rgba(26,23,20,0.09) */
+    --destructive: 4 65% 46%;          /* #c0392b */
     --destructive-foreground: 0 0% 100%;
-    --radius: 8px;
+    --radius: 0px;
     font-size: 18px;
   }
 
   body {
     @apply font-body text-foreground text-xl;
     direction: rtl;
+    background-color: #f7f3ec;
   }
 
   h1 {
@@ -39,13 +40,13 @@
   label {
     @apply font-display text-sm font-bold text-muted-foreground;
   }
-
 }
 
 @layer components {
   /* Page structure */
   .page-header {
-    @apply flex items-center justify-between px-4 py-3 border-b border-border;
+    @apply flex items-center justify-between px-4 py-3;
+    border-bottom: 2px solid #1a1714;
   }
 
   .page-body {
@@ -54,16 +55,59 @@
 
   /* List rows */
   .list-row {
-    @apply flex items-center gap-3 px-4 py-3 border-b border-border;
+    @apply flex items-center gap-3 px-4 py-3;
+    border-bottom: 1px solid rgba(26,23,20,0.09);
   }
 
   .list-row-stacked {
-    @apply flex flex-col gap-0.5 px-4 py-3 border-b border-border;
+    @apply flex flex-col gap-0.5 px-4 py-3;
+    border-bottom: 1px solid rgba(26,23,20,0.09);
   }
 
-  /* Section label (replaces h2 with px-4 py-2 pattern) */
-  .section-label {
-    @apply px-4 py-2 text-sm font-semibold uppercase tracking-wide;
+  /* Section tier (label + hairline) */
+  .tier-row {
+    @apply flex items-center gap-2.5 px-4 py-2;
+  }
+
+  .tier-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(26,23,20,0.12);
+  }
+
+  .tier-label {
+    @apply font-display text-[10px] font-bold tracking-[0.14em] uppercase whitespace-nowrap;
+    color: rgba(26,23,20,0.32);
+  }
+
+  .tier-label-hot {
+    @apply font-display text-[10px] font-bold tracking-[0.14em] uppercase whitespace-nowrap;
+    color: #b83220;
+  }
+
+  /* Urgency pills */
+  .pill {
+    @apply inline-flex items-center text-[11px] font-bold px-2 py-0.5 whitespace-nowrap flex-shrink-0;
+    border-radius: 2px;
+    border: 1.5px solid;
+  }
+
+  .pill-dark {
+    background: #1a1714;
+    color: #f7f3ec;
+    border-color: #1a1714;
+  }
+
+  .pill-muted {
+    background: transparent;
+    color: rgba(26,23,20,0.4);
+    border-color: rgba(26,23,20,0.18);
+  }
+
+  .pill-danger {
+    background: #c0392b;
+    color: #fff;
+    border-color: #c0392b;
   }
 
   /* Form elements */
@@ -76,8 +120,9 @@
   }
 
   .field-input {
-    @apply w-full border border-border rounded-md px-3 py-2 text-base text-right bg-card
+    @apply w-full border border-border px-3 py-2 text-base text-right bg-card
            focus:outline-none focus:ring-2 focus:ring-primary/40;
+    border-radius: 0;
   }
 
   /* Loading / empty states */
@@ -89,7 +134,7 @@
     @apply p-4 text-right text-muted-foreground;
   }
 
-  /* Action link (replaces text-blue-600 pattern) */
+  /* Action link */
   .action-link {
     @apply text-base text-primary font-medium;
   }
@@ -97,5 +142,10 @@
   /* Inline color dot */
   .color-dot {
     @apply w-3 h-3 rounded-full shrink-0;
+  }
+
+  /* Section label (legacy, keep for CourseDetail) */
+  .section-label {
+    @apply px-4 py-2 text-sm font-semibold uppercase tracking-wide;
   }
 }
