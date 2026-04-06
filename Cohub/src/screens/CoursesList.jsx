@@ -3,6 +3,8 @@ import { doc, updateDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 import { useCourses } from '../hooks/useCourses'
 import { CourseCard } from '../components/CourseCard'
+import { PageHeader } from '../components/PageHeader'
+import { EmptyState } from '../components/EmptyState'
 
 export default function CoursesList({ onError }) {
   const { courses, loading, error } = useCourses()
@@ -22,16 +24,17 @@ export default function CoursesList({ onError }) {
     }
   }
 
-  if (loading) return <div className="p-4 text-right text-gray-400">טוען...</div>
+  if (loading) return <div className="state-loading">טוען...</div>
 
   return (
     <div className="text-right">
-      <div className="px-4 py-3 border-b border-gray-200">
-        <h1 className="text-lg font-bold">קורסים</h1>
-      </div>
-      {courses.map(course => (
-        <CourseCard key={course.id} course={course} onSave={handleSave} />
-      ))}
+      <PageHeader title="קורסים" />
+      {courses.length === 0
+        ? <EmptyState message="אין קורסים" />
+        : courses.map(course => (
+            <CourseCard key={course.id} course={course} onSave={handleSave} />
+          ))
+      }
     </div>
   )
 }

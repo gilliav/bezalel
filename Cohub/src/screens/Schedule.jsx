@@ -1,4 +1,7 @@
 import { useCourses } from '../hooks/useCourses'
+import { PageHeader } from '../components/PageHeader'
+import { SectionTier } from '../components/SectionTier'
+import { EmptyState } from '../components/EmptyState'
 
 const DAY_ORDER = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי']
 
@@ -12,19 +15,18 @@ export default function Schedule() {
     return acc
   }, {})
 
+  const hasAny = DAY_ORDER.some(day => byDay[day].length > 0)
+
   return (
     <div className="text-right">
-      <header className="page-header">
-        <h1>מערכת שעות</h1>
-      </header>
+      <PageHeader title="מערכת שעות" />
+      {!hasAny && <EmptyState message="אין קורסים" />}
       {DAY_ORDER.map(day => {
         const dayCourses = byDay[day]
         if (!dayCourses.length) return null
         return (
-          <div key={day} className="border-b border-border">
-            <div className="px-4 py-2 bg-muted">
-              <body>{day}</body>
-            </div>
+          <div key={day}>
+            <SectionTier label={day} variant="normal" />
             {dayCourses.map(course => (
               <div key={course.id} className="list-row items-start">
                 <div className="color-dot mt-0.5" style={{ backgroundColor: course.color }} />
