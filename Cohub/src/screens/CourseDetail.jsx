@@ -10,6 +10,7 @@ import { dayIndexToHe } from '../utils/dates'
 import { Pencil, ChevronRight } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
+import { PageHeader } from '../components/PageHeader'
 
 const DAY_OPTIONS = [0, 1, 2, 3, 4, 5, 6]
 
@@ -75,18 +76,20 @@ export default function CourseDetail({ onError }) {
 
   return (
     <div className="text-right">
-      <header className="page-header bg-muted">
-        <div className="flex flex-col gap-0.5 items-end">
-          <Link to="/" className="text-muted-foreground flex items-center gap-0.5 text-sm mb-0.5">
-            <ChevronRight size={16} />
-            חזרה
+      <PageHeader
+        title={course?.name}
+        action={
+          <Link to={`/projects/new?courseId=${courseId}`} className="action-link text-sm">
+            + פרויקט חדש
           </Link>
-          <h1>{course?.name}</h1>
-        </div>
-        <Link to={`/projects/new?courseId=${courseId}`} className="action-link">
-          + פרויקט חדש
+        }
+      />
+      <div className="px-4 pt-3">
+        <Link to="/" className="text-muted-foreground flex items-center gap-0.5 text-sm">
+          <ChevronRight size={16} />
+          חזרה
         </Link>
-      </header>
+      </div>
 
       {form && (
         <div className="page-body border-b border-border pb-4">
