@@ -7,7 +7,7 @@ import { CourseCard } from './CourseCard'
 const course = {
   id: 'c1',
   name: 'טיפוגרפיה א׳',
-  day: 'שני',
+  day: 1,
   hours: '10:00-13:00',
   lecturer: 'חופשי יהודה',
   location: 'סטודיו 135',
