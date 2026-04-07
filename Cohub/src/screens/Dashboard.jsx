@@ -82,9 +82,9 @@ export default function Dashboard({ onError }) {
             onClick={() => setPastExpanded(e => !e)}
             className="tier-row w-full text-right"
           >
-            <p className="tier-label">
+            <span className="tier-label">
               פרויקטים ישנים ({past.length}) {pastExpanded ? '▴' : '▾'}
-            </p>
+            </span>
             <div className="tier-line" />
           </button>
           {pastExpanded && past.map(item => (
