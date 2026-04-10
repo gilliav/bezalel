@@ -1,42 +1,58 @@
 // src/components/DashboardItem.jsx
 import { Link } from 'react-router-dom'
-import { Calendar } from 'lucide-react'
-import { isOverdue, formatDateHe } from '../utils/dates'
+import { ChevronsLeftIcon } from 'lucide-react'
+import { isOverdue } from '../utils/dates'
 import { Tag } from './ui/tag'
+import { DateTag } from './DateTag'
+import { ProgressIndicator } from './ProgressIndicator'
+import { useAuth } from '../hooks/useAuth'
+import { useProgress } from '../hooks/useProgress'
 
 export function DashboardItem({ item, course }) {
   const overdue = isOverdue(item.dueDate)
   const isMilestone = Boolean(item.projectTitle)
+  const { user, signIn } = useAuth()
+  const { progressMap, cycleProgress } = useProgress(user?.uid ?? null)
+
+  const status = progressMap[item.id] ?? 'not_started'
+  const itemType = isMilestone ? 'milestone' : 'project'
 
   return (
-    <Link
-      to={`/projects/${item.projectId}`}
-      className={`list-row-stacked ${overdue ? 'opacity-60' : ''}`}
+    <div
+      className={`flex flex-row justify-between gap-1 border-primary list-row-stacked ${overdue ? 'opacity-60' : ''}`}
     >
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-baseline gap-0 overflow-hidden min-w-0">
-          {isMilestone ? (
-            <>
-              <strong className="font-display font-bold text-base text-foreground whitespace-nowrap shrink-0">
-                {item.projectTitle}
-              </strong>
-              <p className="mx-1.5 text-sm shrink-0 text-muted-foreground">›</p>
-              <p className="text-base text-foreground whitespace-nowrap overflow-hidden text-ellipsis">
+      <div className="flex flex-col gap-0">
+        <Link to={`/projects/${item.projectId}`} className="col-span-2">
+          <div className="flex items-center gap-1 overflow-hidden min-w-0">
+            {isMilestone ? (
+              <>
+                <p className="font-display font-bold text-base text-foreground whitespace-nowrap shrink-0">
+                  {item.projectTitle}
+                </p>
+                <ChevronsLeftIcon className="size-3" />
+                <p className="text-base text-foreground whitespace-nowrap overflow-hidden text-ellipsis">
+                  {item.title}
+                </p>
+              </>
+            ) : (
+              <p className="font-display font-bold text-base text-foreground">
                 {item.title}
               </p>
-            </>
-          ) : (
-            <strong className="font-display font-bold text-base text-foreground">
-              {item.title}
-            </strong>
-          )}
-        </div>
-        {course && <Tag value={course.name} color={course.color} />}
+            )}
+          </div>
+        </Link>
+        {course && <Tag className="text-base w-max px-1 leading-none" value={course.name} color={course.color} />}
       </div>
-      <p className={`flex gap-1 items-center text-sm ${overdue ? 'text-destructive' : 'text-muted-foreground'}`}>
-        <Calendar className="size-3" />
-        {formatDateHe(item.dueDate)}
-      </p>
-    </Link>
+      <div className="flex items-center gap-2">
+        <p className={`flex gap-1 justify-end items-center ${overdue ? 'text-destructive' : 'text-muted-foreground'}`}>
+          <DateTag dueDate={item.dueDate} includeRelative />
+        </p>
+        <ProgressIndicator
+          status={status}
+          onCycle={user ? () => cycleProgress(item.id, itemType) : undefined}
+          onSignInPrompt={user ? undefined : signIn}
+        />
+      </div>
+    </div>
   )
 }
