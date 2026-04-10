@@ -2,7 +2,7 @@
 
 ## Goal
 
-Allow individual students to optionally sign in and track their personal progress on assignments (marking milestones/projects as in progress or done). The app remains fully public — login is opt-in. Phase 2 assumes all users are A1 Visual Communication students.
+Allow individual students to optionally sign in and track their personal progress on assignments (marking milestones/projects as not started, in progress, or done). The app remains fully public — login is opt-in. Phase 2 assumes all users are A1 Visual Communication students.
 
 ---
 
@@ -50,7 +50,7 @@ users/{uid}
 
 ### `progress/{uid}_{itemId}`
 
-One document per student per tracked item.
+One document per student per tracked item. A missing document means `not_started` — no document is created until the student first interacts with an item. Cycling back to `not_started` deletes the document.
 
 ```
 progress/{uid}_{itemId}
@@ -84,7 +84,7 @@ Phase 2 skips the cohort-selection screen entirely — all users are A1. The onb
 
 ### Logged-in state
 - The status indicator is active
-- Clicking cycles: `(none) → in_progress → done → (none)`
+- Clicking cycles: `not_started → in_progress → done → not_started`
 - State is written to Firestore immediately on each click
 - Visual treatment: distinct icon/color per state (e.g. grey dot → yellow clock → green check)
 
