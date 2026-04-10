@@ -51,7 +51,7 @@ export default function Dashboard({ onError }) {
 
   const hasContent = hot.length > 0 || later.length > 0 || past.length > 0
 
-  const authSlot = user ? (
+  const authSlot = user === undefined ? null : user ? (
     <button onClick={signOut} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
       {user.photoURL && (
         <img src={user.photoURL} alt={user.displayName} className="w-6 h-6 rounded-full" referrerPolicy="no-referrer" />
