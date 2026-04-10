@@ -32,14 +32,20 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(undefined) // undefined = loading, null = signed out
 
   useEffect(() => {
-    return onAuthStateChanged(auth, async (firebaseUser) => {
+    let mounted = true
+    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
-        await ensureUserDoc(firebaseUser)
-        setUser(firebaseUser)
+        try {
+          await ensureUserDoc(firebaseUser)
+        } catch (err) {
+          console.error('ensureUserDoc failed:', err)
+        }
+        if (mounted) setUser(firebaseUser)
       } else {
-        setUser(null)
+        if (mounted) setUser(null)
       }
     })
+    return () => { mounted = false; unsub() }
   }, [])
 
   function signIn() {
