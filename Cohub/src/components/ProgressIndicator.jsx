@@ -41,6 +41,7 @@ export function ProgressIndicator({ status = 'not_started', onCycle, onSignInPro
 
   return (
     <button
+      type="button"
       onClick={handleClick}
       title={isLoggedOut ? 'התחבר כדי לעקוב אחרי ההתקדמות שלך' : label}
       className={`flex items-center justify-center p-1 rounded transition-opacity hover:opacity-80 ${className}`}

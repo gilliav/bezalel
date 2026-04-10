@@ -12,17 +12,14 @@ export function useMilestones() {
     return onSnapshot(
       q,
       (snap) => {
-        setMilestones(snap.docs.map(d => ({ id: d.id, ...d.data() })))
+        const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        setMilestones(docs)
         setLoading(false)
       },
       (err) => {
-        if (err.code === 'failed-precondition' || err.code === 'not-found') {
-          setMilestones([])
-          setLoading(false)
-        } else {
-          setError(err)
-          setLoading(false)
-        }
+        console.error('[useMilestones] error', err)
+        setError(err)
+        setLoading(false)
       },
     )
   }, [])

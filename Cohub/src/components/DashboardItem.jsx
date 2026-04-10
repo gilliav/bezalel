@@ -5,17 +5,10 @@ import { isOverdue } from '../utils/dates'
 import { Tag } from './ui/tag'
 import { DateTag } from './DateTag'
 import { ProgressIndicator } from './ProgressIndicator'
-import { useAuth } from '../hooks/useAuth'
-import { useProgress } from '../hooks/useProgress'
 
-export function DashboardItem({ item, course }) {
+export function DashboardItem({ item, course, progressStatus = 'not_started', onProgressCycle, onSignInPrompt }) {
   const overdue = isOverdue(item.dueDate)
   const isMilestone = Boolean(item.projectTitle)
-  const { user, signIn } = useAuth()
-  const { progressMap, cycleProgress } = useProgress(user?.uid ?? null)
-
-  const status = progressMap[item.id] ?? 'not_started'
-  const itemType = isMilestone ? 'milestone' : 'project'
 
   return (
     <div
@@ -48,9 +41,9 @@ export function DashboardItem({ item, course }) {
           <DateTag dueDate={item.dueDate} includeRelative />
         </p>
         <ProgressIndicator
-          status={status}
-          onCycle={user ? () => cycleProgress(item.id, itemType) : undefined}
-          onSignInPrompt={user ? undefined : signIn}
+          status={progressStatus}
+          onCycle={onProgressCycle}
+          onSignInPrompt={onSignInPrompt}
         />
       </div>
     </div>

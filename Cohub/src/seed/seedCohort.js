@@ -21,12 +21,14 @@ async function seed() {
 
   const coursesSnapshot = await db.collection('courses').get()
 
-  if (coursesSnapshot.empty) {
-    console.warn('Warning: No documents found in the courses collection. Writing cohort with empty courseIds.')
-  }
-
   // All courses in the collection belong to cohort A1
   const courseIds = coursesSnapshot.docs.map(doc => doc.id)
+
+  if (courseIds.length === 0) {
+    console.error('No courses found in Firestore. Aborting — run seedCourses first.')
+    process.exit(1)
+  }
+
   console.log(`Found ${courseIds.length} course(s):`, courseIds)
 
   await cohortRef.set({

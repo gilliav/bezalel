@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { useProgress } from '../hooks/useProgress'
 import { useMilestones } from '../hooks/useMilestones'
 import { useCourses } from '../hooks/useCourses'
 import { useAllProjects } from '../hooks/useProjects'
@@ -13,6 +14,7 @@ import { EmptyState } from '../components/EmptyState'
 
 export default function Dashboard({ onError }) {
   const { user, signIn, signOut } = useAuth()
+  const { progressMap, cycleProgress } = useProgress(user?.uid ?? null)
   const { milestones, loading: mlLoading, error: mlError } = useMilestones()
   const { courses, loading: cLoading, error: cError } = useCourses()
   const { projects, loading: pLoading, error: pError } = useAllProjects()
@@ -77,18 +79,40 @@ export default function Dashboard({ onError }) {
       {hot.length > 0 && (
         <section className="flex flex-col">
           <SectionTier label="השבוע" variant="hot" />
-          {hot.map(item => (
-            <DashboardItem key={item.id} item={item} course={courseMap[item.courseId]} />
-          ))}
+          {hot.map(item => {
+            const isMilestone = Boolean(item.projectTitle)
+            const status = user ? (progressMap[item.id] ?? 'not_started') : 'not_started'
+            return (
+              <DashboardItem
+                key={item.id}
+                item={item}
+                course={courseMap[item.courseId]}
+                progressStatus={status}
+                onProgressCycle={user ? () => cycleProgress(item.id, isMilestone ? 'milestone' : 'project') : undefined}
+                onSignInPrompt={user === null ? signIn : undefined}
+              />
+            )
+          })}
         </section>
       )}
 
       {later.length > 0 && (
         <section className="flex flex-col">
           <SectionTier label="בהמשך" variant="normal" />
-          {later.map(item => (
-            <DashboardItem key={item.id} item={item} course={courseMap[item.courseId]} />
-          ))}
+          {later.map(item => {
+            const isMilestone = Boolean(item.projectTitle)
+            const status = user ? (progressMap[item.id] ?? 'not_started') : 'not_started'
+            return (
+              <DashboardItem
+                key={item.id}
+                item={item}
+                course={courseMap[item.courseId]}
+                progressStatus={status}
+                onProgressCycle={user ? () => cycleProgress(item.id, isMilestone ? 'milestone' : 'project') : undefined}
+                onSignInPrompt={user === null ? signIn : undefined}
+              />
+            )
+          })}
         </section>
       )}
 
@@ -103,9 +127,20 @@ export default function Dashboard({ onError }) {
             </span>
             <div className="tier-line" />
           </button>
-          {pastExpanded && past.map(item => (
-            <DashboardItem key={item.id} item={item} course={courseMap[item.courseId]} />
-          ))}
+          {pastExpanded && past.map(item => {
+            const isMilestone = Boolean(item.projectTitle)
+            const status = user ? (progressMap[item.id] ?? 'not_started') : 'not_started'
+            return (
+              <DashboardItem
+                key={item.id}
+                item={item}
+                course={courseMap[item.courseId]}
+                progressStatus={status}
+                onProgressCycle={user ? () => cycleProgress(item.id, isMilestone ? 'milestone' : 'project') : undefined}
+                onSignInPrompt={user === null ? signIn : undefined}
+              />
+            )
+          })}
         </section>
       )}
     </div>
