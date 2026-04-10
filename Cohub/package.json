@@ -10,7 +10,8 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "seed": "node src/seed/seedCourses.js",
-    "migrate:attachments": "node src/seed/migrateBriefsToAttachments.js"
+    "migrate:attachments": "node src/seed/migrateBriefsToAttachments.js",
+    "seed:cohort": "node src/seed/seedCohort.js"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
