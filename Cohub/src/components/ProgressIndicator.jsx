@@ -24,12 +24,16 @@ const CONFIG = {
 // - onSignInPrompt: () => void — when user is signed out; clicking triggers sign-in
 export function ProgressIndicator({ status = 'not_started', onCycle, onSignInPrompt }) {
   const isLoggedOut = !onCycle
-  const { icon: Icon, className, label } = CONFIG[status]
+  const { icon: Icon, className, label } = CONFIG[status] ?? CONFIG['not_started']
 
   function handleClick(e) {
     e.preventDefault() // prevent Link navigation from parent DashboardItem
     if (isLoggedOut) {
-      onSignInPrompt?.()
+      if (onSignInPrompt) {
+        onSignInPrompt()
+      } else {
+        console.warn('ProgressIndicator: onSignInPrompt is not provided in logged-out mode')
+      }
     } else {
       onCycle()
     }
