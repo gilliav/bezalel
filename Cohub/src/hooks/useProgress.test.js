@@ -5,6 +5,10 @@ describe('progressDocId', () => {
   it('combines uid and itemId with underscore', () => {
     expect(progressDocId('user123', 'item456')).toBe('user123_item456')
   })
+
+  it('handles IDs that contain underscores', () => {
+    expect(progressDocId('user_a', 'item_1')).toBe('user_a_item_1')
+  })
 })
 
 describe('nextStatus', () => {

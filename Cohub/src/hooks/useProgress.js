@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { collection, query, where, onSnapshot, doc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '../firebase'
 
@@ -16,9 +16,11 @@ export function nextStatus(current) {
 // Items with no Firestore document are implicitly 'not_started'.
 export function useProgress(uid) {
   const [progressMap, setProgressMap] = useState({})
+  const progressMapRef = useRef({})
 
   useEffect(() => {
     if (!uid) {
+      progressMapRef.current = {}
       setProgressMap({})
       return
     }
@@ -29,13 +31,14 @@ export function useProgress(uid) {
       snap.docs.forEach(d => {
         map[d.data().itemId] = d.data().status
       })
+      progressMapRef.current = map
       setProgressMap(map)
     })
   }, [uid])
 
-  async function cycleProgress(itemId, itemType) {
+  const cycleProgress = useCallback(async (itemId, itemType) => {
     if (!uid) return
-    const current = progressMap[itemId] ?? 'not_started'
+    const current = progressMapRef.current[itemId] ?? 'not_started'
     const next = nextStatus(current)
     const ref = doc(db, 'progress', progressDocId(uid, itemId))
 
@@ -44,7 +47,7 @@ export function useProgress(uid) {
     } else {
       await setDoc(ref, { uid, itemId, itemType, status: next, updatedAt: serverTimestamp() })
     }
-  }
+  }, [uid])
 
   return { progressMap, cycleProgress }
 }
