@@ -1,6 +1,7 @@
 // src/screens/Dashboard.jsx
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
 import { useMilestones } from '../hooks/useMilestones'
 import { useCourses } from '../hooks/useCourses'
 import { useAllProjects } from '../hooks/useProjects'
@@ -11,6 +12,7 @@ import { PageHeader } from '../components/PageHeader'
 import { EmptyState } from '../components/EmptyState'
 
 export default function Dashboard({ onError }) {
+  const { user, signIn, signOut } = useAuth()
   const { milestones, loading: mlLoading, error: mlError } = useMilestones()
   const { courses, loading: cLoading, error: cError } = useCourses()
   const { projects, loading: pLoading, error: pError } = useAllProjects()
@@ -49,17 +51,31 @@ export default function Dashboard({ onError }) {
 
   const hasContent = hot.length > 0 || later.length > 0 || past.length > 0
 
+  const authSlot = user ? (
+    <button onClick={signOut} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
+      {user.photoURL && (
+        <img src={user.photoURL} alt={user.displayName} className="w-6 h-6 rounded-full" referrerPolicy="no-referrer" />
+      )}
+      <span className="text-xs">{user.displayName?.split(' ')[0]}</span>
+    </button>
+  ) : (
+    <button onClick={signIn} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+      התחבר
+    </button>
+  )
+
   return (
     <div className="text-right">
       <PageHeader
         title="הגשות"
         action={<Link to="/projects/new" className="action-link text-sm">+ פרויקט חדש</Link>}
+        authSlot={authSlot}
       />
 
       {!hasContent && <EmptyState message="אין פרויקטים פעילים" />}
 
       {hot.length > 0 && (
-        <section>
+        <section className="flex flex-col">
           <SectionTier label="השבוע" variant="hot" />
           {hot.map(item => (
             <DashboardItem key={item.id} item={item} course={courseMap[item.courseId]} />
@@ -68,7 +84,7 @@ export default function Dashboard({ onError }) {
       )}
 
       {later.length > 0 && (
-        <section>
+        <section className="flex flex-col">
           <SectionTier label="בהמשך" variant="normal" />
           {later.map(item => (
             <DashboardItem key={item.id} item={item} course={courseMap[item.courseId]} />
