@@ -26,7 +26,7 @@ No existing screens break. Everything is additive.
 Cohort IDs are stable and never renamed. Display name is separate.
 
 ```
-cohorts/{cohortId}         // e.g. "cohort_viscom_2024_A1"
+cohorts/{cohortId}         // e.g. "cohort_viscom_2026_A1"
   displayName: string      // e.g. "א'1"
   department: string       // e.g. "visual_communication"
   year: number             // intake year, e.g. 2024
@@ -41,7 +41,7 @@ Seeded at first login. `courseIds` is pre-populated from the cohort's default li
 users/{uid}
   email: string
   displayName: string
-  cohortId: string         // e.g. "cohort_viscom_2024_A1"
+  cohortId: string         // e.g. "cohort_viscom_2026_A1"
   department: string       // e.g. "visual_communication"
   yearIndex: number        // 1 for all phase 2 users
   courseIds: string[]      // seeded from cohort, reserved for per-student customization in phase 3
@@ -106,7 +106,7 @@ No new screens needed for phase 2. Onboarding (cohort selection) is deferred to 
 
 ## Seeding
 
-The `cohorts` collection has no admin UI in phase 2. The A1 cohort document (`cohort_viscom_2024_A1`) is seeded manually via a seed script or directly in the Firebase console before launch.
+The `cohorts` collection has no admin UI in phase 2. The A1 cohort document (`cohort_viscom_2026_A1`) is seeded manually via a seed script or directly in the Firebase console before launch.
 
 ---
 

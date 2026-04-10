@@ -16,7 +16,7 @@
 - `DashboardItem` renders one deadline row — milestone or project. It receives `item` and `course` props.
 - `PageHeader` is used on every screen. Its `action` prop renders a slot on the right side (the app is RTL). Sign-in should go in this slot on Dashboard only, or as a persistent element in the header itself.
 - Progress doc ID is `{uid}_{itemId}`. Missing doc = `not_started`. Cycling back to `not_started` deletes the doc.
-- All phase 2 users are hardcoded to cohort `cohort_viscom_2024_A1`, `department: "visual_communication"`, `yearIndex: 1`. The cohort doc must exist in Firestore (see Task 1).
+- All phase 2 users are hardcoded to cohort `cohort_viscom_2026_A1`, `department: "visual_communication"`, `yearIndex: 1`. The cohort doc must exist in Firestore (see Task 1).
 
 ---
 
@@ -62,7 +62,7 @@ const serviceAccount = require('../../serviceAccountKey.json')
 initializeApp({ credential: cert(serviceAccount) })
 const db = getFirestore()
 
-const COHORT_ID = 'cohort_viscom_2024_A1'
+const COHORT_ID = 'cohort_viscom_2026_A1'
 
 // Replace these with the actual Firestore document IDs from the `courses` collection
 const COURSE_IDS = [
@@ -94,7 +94,7 @@ In `package.json`, add to `"scripts"`:
 npm run seed:cohort
 ```
 
-Expected output: `Seeded cohort: cohort_viscom_2024_A1`
+Expected output: `Seeded cohort: cohort_viscom_2026_A1`
 
 Verify in Firebase console → Firestore → `cohorts` collection that the document exists.
 
@@ -127,7 +127,7 @@ import { auth, db } from '../firebase'
 
 const AuthContext = createContext(null)
 
-const COHORT_ID = 'cohort_viscom_2024_A1'
+const COHORT_ID = 'cohort_viscom_2026_A1'
 
 async function ensureUserDoc(firebaseUser) {
   const ref = doc(db, 'users', firebaseUser.uid)
