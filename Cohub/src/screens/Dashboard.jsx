@@ -14,7 +14,7 @@ import { EmptyState } from '../components/EmptyState'
 
 export default function Dashboard({ onError }) {
   const { user, signIn, signOut } = useAuth()
-  const { progressMap, cycleProgress } = useProgress(user?.uid ?? null)
+  const { progressMap, setProgress } = useProgress(user?.uid ?? null)
   const { milestones, loading: mlLoading, error: mlError } = useMilestones()
   const { courses, loading: cLoading, error: cError } = useCourses()
   const { projects, loading: pLoading, error: pError } = useAllProjects()
@@ -88,7 +88,7 @@ export default function Dashboard({ onError }) {
                 item={item}
                 course={courseMap[item.courseId]}
                 progressStatus={status}
-                onProgressCycle={user ? () => cycleProgress(item.id, isMilestone ? 'milestone' : 'project') : undefined}
+                onProgressSelect={user ? (newStatus) => setProgress(item.id, isMilestone ? 'milestone' : 'project', newStatus) : undefined}
                 onSignInPrompt={user === null ? signIn : undefined}
               />
             )
@@ -108,7 +108,7 @@ export default function Dashboard({ onError }) {
                 item={item}
                 course={courseMap[item.courseId]}
                 progressStatus={status}
-                onProgressCycle={user ? () => cycleProgress(item.id, isMilestone ? 'milestone' : 'project') : undefined}
+                onProgressSelect={user ? (newStatus) => setProgress(item.id, isMilestone ? 'milestone' : 'project', newStatus) : undefined}
                 onSignInPrompt={user === null ? signIn : undefined}
               />
             )
@@ -123,9 +123,8 @@ export default function Dashboard({ onError }) {
             className="tier-row w-full text-right"
           >
             <span className="tier-label">
-              פרויקטים ישנים ({past.length}) {pastExpanded ? '▴' : '▾'}
+              הגשות קודמות ({past.length}) {pastExpanded ?  '▲'  : '▼'}
             </span>
-            <div className="tier-line" />
           </button>
           {pastExpanded && past.map(item => {
             const isMilestone = Boolean(item.projectTitle)
@@ -136,7 +135,7 @@ export default function Dashboard({ onError }) {
                 item={item}
                 course={courseMap[item.courseId]}
                 progressStatus={status}
-                onProgressCycle={user ? () => cycleProgress(item.id, isMilestone ? 'milestone' : 'project') : undefined}
+                onProgressSelect={user ? (newStatus) => setProgress(item.id, isMilestone ? 'milestone' : 'project', newStatus) : undefined}
                 onSignInPrompt={user === null ? signIn : undefined}
               />
             )
