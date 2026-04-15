@@ -49,5 +49,15 @@ export function useProgress(uid) {
     }
   }, [uid])
 
-  return { progressMap, cycleProgress }
+  const setProgress = useCallback(async (itemId, itemType, status) => {
+    if (!uid) return
+    const ref = doc(db, 'progress', progressDocId(uid, itemId))
+    if (status === 'not_started') {
+      await deleteDoc(ref)
+    } else {
+      await setDoc(ref, { uid, itemId, itemType, status, updatedAt: serverTimestamp() })
+    }
+  }, [uid])
+
+  return { progressMap, cycleProgress, setProgress }
 }
