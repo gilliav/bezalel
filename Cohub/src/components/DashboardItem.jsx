@@ -6,7 +6,7 @@ import { Tag } from './ui/tag'
 import { DateTag } from './DateTag'
 import { ProgressIndicator } from './ProgressIndicator'
 
-export function DashboardItem({ item, course, progressStatus = 'not_started', onProgressCycle, onSignInPrompt }) {
+export function DashboardItem({ item, course, progressStatus = 'not_started', onProgressSelect, onSignInPrompt }) {
   const overdue = isOverdue(item.dueDate)
   const isMilestone = Boolean(item.projectTitle)
 
@@ -42,7 +42,7 @@ export function DashboardItem({ item, course, progressStatus = 'not_started', on
         </p>
         <ProgressIndicator
           status={progressStatus}
-          onCycle={onProgressCycle}
+          onSelect={onProgressSelect}
           onSignInPrompt={onSignInPrompt}
         />
       </div>
