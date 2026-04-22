@@ -1,4 +1,4 @@
-import { Circle, Clock, CheckCircle, LogIn } from 'lucide-react'
+import { Circle, Clock, CheckCircle, LogIn, Square, SquareCheck, SquareCheckBig, SquareDot } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -8,29 +8,25 @@ import {
 
 const CONFIG = {
   not_started: {
-    icon: Circle,
-    label: 'לא התחלתי',
+    icon: Square,
+    label: 'חדש',
     pillClass: 'pill pill-muted',
     style: {},
   },
   in_progress: {
-    icon: Clock,
+    icon: SquareDot,
     label: 'בתהליך',
     pillClass: 'pill',
     style: {
-      backgroundColor: 'rgb(251 191 36 / 0.15)',
       color: 'rgb(217 119 6)',
-      borderColor: 'rgb(217 119 6 / 0.4)',
     },
   },
   done: {
-    icon: CheckCircle,
+    icon: SquareCheckBig,
     label: 'סיימתי',
     pillClass: 'pill',
     style: {
-      backgroundColor: 'rgb(22 163 74 / 0.12)',
       color: 'rgb(22 163 74)',
-      borderColor: 'rgb(22 163 74 / 0.4)',
     },
   },
 }
@@ -46,21 +42,7 @@ export function ProgressIndicator({ status = 'not_started', onSelect, onSignInPr
   const { icon: Icon, label, pillClass, style } = CONFIG[status] ?? CONFIG['not_started']
 
   if (isLoggedOut) {
-    return (
-      <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault()
-          onSignInPrompt?.()
-        }}
-        className="pill pill-muted"
-        title="התחבר כדי לעקוב אחרי ההתקדמות שלך"
-        aria-label="התחבר כדי לעקוב אחרי ההתקדמות שלך"
-      >
-        <LogIn size={12} className="ms-0.5 me-1" />
-        התחבר למעקב
-      </button>
-    )
+    return <></>
   }
 
   return (
@@ -74,7 +56,7 @@ export function ProgressIndicator({ status = 'not_started', onSelect, onSignInPr
         style={style}
         onClick={(e) => e.preventDefault()}
       >
-        <Icon size={12} className="shrink-0" />
+        <Icon size={16} className="shrink-0" />
         <span>{label}</span>
       </SelectTrigger>
       <SelectContent>
@@ -83,7 +65,7 @@ export function ProgressIndicator({ status = 'not_started', onSelect, onSignInPr
           return (
             <SelectItem key={s} value={s}>
               <span className="flex items-center gap-2">
-                <SIcon size={13} />
+                <SIcon size={16} />
                 {sLabel}
               </span>
             </SelectItem>

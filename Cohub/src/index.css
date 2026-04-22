@@ -4,25 +4,26 @@
 
 @layer base {
   :root {
-    --background: 36 28% 96%;          /* #f7f3ec */
-    --foreground: 20 5% 10%;           /* #1a1714 */
-    --card: 36 28% 96%;
-    --card-foreground: 20 5% 10%;
-    --primary: 20 5% 10%;              /* #1a1714 — sharp black */
-    --primary-foreground: 36 28% 96%;  /* #f7f3ec */
-    --muted: 36 18% 88%;               /* #e8e2d6 */
-    --muted-foreground: 20 5% 42%;     /* rgba(26,23,20,0.42) approx */
-    --border: 20 5% 10% / 0.09;        /* rgba(26,23,20,0.09) */
-    --destructive: 4 65% 46%;          /* #c0392b */
-    --destructive-foreground: 0 0% 100%;
+    --background: #f7f3ec;
+    --foreground: #1a1714;
+    --card: #f7f3ec;
+    --card-foreground: #1a1714;
+    --primary: #1a1714;
+    --primary-foreground: #f7f3ec;
+    --muted: #e8e2d6;
+    --muted-foreground: rgba(26,23,20,0.42);
+    --border: rgba(26,23,20,0.09);
+    --destructive: #c0392b;
+    --destructive-foreground: #ffffff;
     --radius: 0px;
+    --tertiary: #77716b;
     font-size: 18px;
   }
 
   body {
     @apply font-body text-foreground text-xl;
     direction: rtl;
-    /* background-color: #f7f3ec; */
+    background-color: var(--background);
   }
 
   h1 {
@@ -64,25 +65,41 @@
     border-bottom: 1px solid rgba(26,23,20,0.09);
   }
 
+  .list-row-stacked:last-child {
+    border-bottom: none;
+    margin-bottom: 16px;
+  }
+
   /* Section tier (label + hairline) */
   .tier-row {
-    @apply flex items-center gap-2.5 px-4 py-2;
+    /* @apply py-2; */
   }
 
   .tier-line {
     flex: 1;
     height: 1px;
-    background: rgba(26,23,20,0.12);
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  .tier-label-regular {
+    @apply font-display text-xs font-bold;
+    background-color: color-mix(in srgb, var(--tertiary) 20%, transparent);
+    color: var(--tertiary);
+    padding-inline: 4px;
   }
 
   .tier-label {
-    @apply font-display text-[10px] font-bold tracking-[0.14em] uppercase whitespace-nowrap;
-    color: rgba(26,23,20,0.32);
+    @apply font-display text-xs font-bold;
+    background-color: color-mix(in srgb, var(--tertiary) 20%, transparent);
+    color: var(--tertiary);
+    padding-inline: 4px;
   }
 
   .tier-label-hot {
-    @apply font-display text-[10px] font-bold tracking-[0.14em] uppercase whitespace-nowrap;
-    color: #b83220;
+    @apply font-display text-xs font-bold;
+    color: var(--destructive);
+    padding-inline: 4px;
+    background-color: color-mix(in srgb, var(--destructive) 20%, transparent)
   }
 
   /* Urgency pills */
@@ -121,7 +138,7 @@
 
   .field-input {
     @apply w-full border border-border px-3 py-2 text-base text-right bg-card
-           focus:outline-none focus:ring-2 focus:ring-primary/40;
+           focus:outline-none focus:ring-2 focus:ring-primary;
     border-radius: 0;
   }
 

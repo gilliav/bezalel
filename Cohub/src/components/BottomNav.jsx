@@ -15,13 +15,12 @@ export function BottomNav() {
           to={to}
           end={to === '/'}
           className={({ isActive }) =>
-            `flex-1 py-3 text-center text-base font-medium transition-colors ${
+            `flex-1 py-3 text-center bg-card text-base font-medium transition-colors ${
               isActive ? 'text-primary' : 'text-muted-foreground'
             }`
           }
         >
           {label}
-
 
           
         </NavLink>

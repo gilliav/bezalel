@@ -11,6 +11,7 @@ import { DashboardItem } from '../components/DashboardItem'
 import { SectionTier } from '../components/SectionTier'
 import { PageHeader } from '../components/PageHeader'
 import { EmptyState } from '../components/EmptyState'
+import { PersonStandingIcon, PlusIcon, SquarePlusIcon, User, UserRoundIcon } from 'lucide-react'
 
 export default function Dashboard({ onError }) {
   const { user, signIn, signOut } = useAuth()
@@ -54,15 +55,13 @@ export default function Dashboard({ onError }) {
   const hasContent = hot.length > 0 || later.length > 0 || past.length > 0
 
   const authSlot = user === undefined ? null : user ? (
-    <button onClick={signOut} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
-      {user.photoURL && (
-        <img src={user.photoURL} alt={user.displayName} className="w-6 h-6 rounded-full" referrerPolicy="no-referrer" />
-      )}
-      <span className="text-xs">{user.displayName?.split(' ')[0]}</span>
+    <button onClick={signOut} className="flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors">
+      <span className="text-sm">{user.displayName?.split(' ')[0]}</span>
+      <UserRoundIcon size={14} />
     </button>
   ) : (
     <button onClick={signIn} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-      התחבר
+      התחבר.י למעקב אחר ההגשות שלך
     </button>
   )
 
@@ -70,7 +69,7 @@ export default function Dashboard({ onError }) {
     <div className="text-right">
       <PageHeader
         title="הגשות"
-        action={<Link to="/projects/new" className="action-link text-sm">+ פרויקט חדש</Link>}
+        action={<Link to="/projects/new" className="inline-flex items-baseline gap-1 action-link text-sm"><PlusIcon size={14} className='self-center' /> פרויקט חדש</Link>}
         authSlot={authSlot}
       />
 
@@ -78,7 +77,6 @@ export default function Dashboard({ onError }) {
 
       {hot.length > 0 && (
         <section className="flex flex-col">
-          <SectionTier label="השבוע" variant="hot" />
           {hot.map(item => {
             const isMilestone = Boolean(item.projectTitle)
             const status = user ? (progressMap[item.id] ?? 'not_started') : 'not_started'

@@ -4,13 +4,13 @@ import { doc, deleteDoc, addDoc, collection, Timestamp } from 'firebase/firestor
 import { db } from '../firebase'
 import { useProject } from '../hooks/useProject'
 import { useCourses } from '../hooks/useCourses'
-import { FileUpload } from '../components/FileUpload'
-import { formatDateHe, isOverdue, nextDatesForDay, dayIndexToHe } from '../utils/dates'
-import { Pencil, Trash2, ChevronRight, Maximize2, X, Calendar } from 'lucide-react'
+import {formatDateHe, formatRelativeDateHe, isOverdue, nextDatesForDay, dayIndexToHe, formatDateShort} from '../utils/dates';
+import { Pencil, Trash2, ChevronRight, Maximize2, X } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { PageHeader } from '../components/PageHeader'
 import { Tag } from '../components/ui/tag'
+import { DateTag } from '../components/DateTag'
 
 export default function ProjectDetail({ onError }) {
   const { projectId } = useParams()
@@ -68,6 +68,7 @@ export default function ProjectDetail({ onError }) {
   return (
     <div className="text-right">
       <PageHeader
+        hasBackButton
         title={project.title}
         action={
           <div className="flex gap-3 items-center">
@@ -82,19 +83,18 @@ export default function ProjectDetail({ onError }) {
       />
 
       <div className="page-body">
-        {/* Breadcrumb + meta */}
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="text-muted-foreground flex items-center gap-0.5 text-sm">
-            <ChevronRight size={16} />
-            {course?.name}
-          </button>
+
+       
+
+        <div className="flex flex-wrap gap-2">
+          {course && (
+            <Link to={`/courses/${course.id}`}>
+            <Tag value={course.name} color={course.color} />
+            </Link>
+          )}
+          {project.dueDate && <DateTag dueDate={project.dueDate} includeRelative />}
         </div>
-
-        {course && (
-          <Tag value={course.name} color={course.color} />
-        )}
-
-        {project.description && (
+         {project.description && (
           <p className="text-base text-foreground">{project.description}</p>
         )}
 
@@ -169,25 +169,21 @@ export default function ProjectDetail({ onError }) {
                 key={m.id}
                 className={`list-row-stacked ${overdue ? 'opacity-60' : ''}`}
               >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-base font-medium text-foreground">{m.title}</span>
-                  {course && <Tag value={course.name} color={course.color} />}
-                </div>
-                <div className={`flex gap-1 items-center text-sm ${overdue ? 'text-destructive' : 'text-muted-foreground'}`}>
-                  <Calendar className="size-3" />
-                  {formatDateHe(m.dueDate)}
-                </div>
+                <span className="text-base font-medium text-foreground">{m.title}</span>
+                <Tag
+                  value={`${formatRelativeDateHe(m.dueDate)} · ${formatDateHe(m.dueDate)}`}
+                  className={overdue ? 'text-destructive bg-destructive/10' : ''}
+                />
               </div>
             )
           })}
 
+{/* TODO: consider adding milestones in edit mode only */}
           {!addingMilestone && (
-            <button
-              onClick={() => setAddingMilestone(true)}
-              className="action-link text-sm mt-3 self-start"
-            >
-              + הוספת שלב
-            </button>
+            <div className="text-base text-muted-foreground mt-3">
+             פרויקט מתגלגל? <button onClick={() => setAddingMilestone(true)} className="action-link">לחצו להוספת דדליין</button>
+            </div>
+          
           )}
 
           {addingMilestone && (
@@ -237,7 +233,6 @@ export default function ProjectDetail({ onError }) {
           )}
         </section>
 
-        <FileUpload projectId={projectId} onError={onError} />
       </div>
     </div>
   )

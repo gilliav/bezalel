@@ -6,21 +6,16 @@ export function Tag({ value, color, to, className }) {
     ? { backgroundColor: color + '22', color }
     : undefined
 
-  const base = cn(
-    'rounded-lg px-2.5 py-0.25',
-    className
-  )
-
   if (to) {
     return (
-      <Link to={to} className={base} style={style}>
+      <Link to={to} className={cn('px-1', className)} style={style}>
         {value}
       </Link>
     )
   }
 
   return (
-    <div className={base} style={style}>
+    <div className={cn('px-1', className)} style={style}>
       {value}
     </div>
   )

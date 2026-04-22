@@ -10,6 +10,7 @@ dist/
 
 # Firebase
 serviceAccountKey.json
+.firebase/
 
 # Git worktrees
 .worktrees/

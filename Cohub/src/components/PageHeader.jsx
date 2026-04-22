@@ -12,9 +12,9 @@ export function PageHeader({ title, action, hasBackButton, authSlot }) {
         </button>
       )}
       <h1>{title}</h1>
-      <div className="flex items-center gap-2">
+      <div className="flex items-baseline gap-2">
         {action && <div>{action}</div>}
-        {authSlot && <div>{authSlot}</div>}
+        {authSlot && <>| <div> {authSlot}</div></>}
       </div>
     </header>
   )
