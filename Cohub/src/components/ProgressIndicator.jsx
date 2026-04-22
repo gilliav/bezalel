@@ -1,4 +1,4 @@
-import { Circle, Clock, CheckCircle, LogIn, Square, SquareCheck, SquareCheckBig, SquareDot } from 'lucide-react'
+import { Square, SquareCheckBig, SquareDot } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -52,7 +52,7 @@ export function ProgressIndicator({ status = 'not_started', onSelect, onSignInPr
       dir="rtl"
     >
       <SelectTrigger
-        className={`${pillClass} border-0 h-auto min-h-0 py-0.5 px-2 focus:ring-0 focus:ring-offset-0 w-auto gap-1 [&>span:last-child]:hidden`}
+        className={`${pillClass} border-0 h-auto min-h-0 py-0.5 px-2 w-auto gap-1 [&>span:last-child]:hidden hover:opacity-70 transition-all`}
         style={style}
         onClick={(e) => e.preventDefault()}
       >

@@ -11,6 +11,12 @@ dist/
 # Firebase
 serviceAccountKey.json
 .firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# AI / planning artifacts
+docs/superpowers/
 
 # Git worktrees
 .worktrees/

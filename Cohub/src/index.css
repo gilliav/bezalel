@@ -10,6 +10,8 @@
     --card-foreground: #1a1714;
     --primary: #1a1714;
     --primary-foreground: #f7f3ec;
+    --secondary: #5c574e;
+    --secondary-foreground: #1c1b1a;
     --muted: #e8e2d6;
     --muted-foreground: rgba(26,23,20,0.42);
     --border: rgba(26,23,20,0.09);
