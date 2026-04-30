@@ -11,7 +11,8 @@ import { DashboardItem } from '../components/DashboardItem'
 import { SectionTier } from '../components/SectionTier'
 import { PageHeader } from '../components/PageHeader'
 import { EmptyState } from '../components/EmptyState'
-import { PersonStandingIcon, PlusIcon, SquarePlusIcon, User, UserRoundIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
+import { AuthSlot } from '../components/AuthSlot'
 
 export default function Dashboard({ onError }) {
   const { user, signIn, signOut } = useAuth()
@@ -54,16 +55,7 @@ export default function Dashboard({ onError }) {
 
   const hasContent = hot.length > 0 || later.length > 0 || past.length > 0
 
-  const authSlot = user === undefined ? null : user ? (
-    <button onClick={signOut} className="flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors">
-      <span className="text-sm">{user.displayName?.split(' ')[0]}</span>
-      <UserRoundIcon size={14} />
-    </button>
-  ) : (
-    <button onClick={signIn} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-      התחבר.י למעקב אחר ההגשות שלך
-    </button>
-  )
+  const authSlot = <AuthSlot user={user} signIn={signIn} signOut={signOut} />
 
   return (
     <div className="text-right">
