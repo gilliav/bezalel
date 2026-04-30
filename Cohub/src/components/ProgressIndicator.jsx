@@ -54,18 +54,19 @@ export function ProgressIndicator({ status = 'not_started', onSelect, onSignInPr
       <SelectTrigger
         className={`${pillClass} border-0 h-auto min-h-0 py-0.5 px-2 w-auto gap-1 [&>span:last-child]:hidden hover:opacity-70 transition-all`}
         style={style}
-        onClick={(e) => e.preventDefault()}
+        onPointerDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         <Icon size={16} className="shrink-0" />
         <span>{label}</span>
       </SelectTrigger>
       <SelectContent>
         {STATUSES.map((s) => {
-          const { icon: SIcon, label: sLabel } = CONFIG[s]
+          const { icon: SIcon, label: sLabel, style: sStyle } = CONFIG[s]
           return (
             <SelectItem key={s} value={s}>
               <span className="flex items-center gap-2">
-                <SIcon size={16} />
+                <SIcon size={16} style={sStyle} />
                 {sLabel}
               </span>
             </SelectItem>

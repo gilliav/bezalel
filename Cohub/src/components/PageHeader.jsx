@@ -7,7 +7,7 @@ export function PageHeader({ title, action, hasBackButton, authSlot }) {
   return (
     <header className="page-header">
       {hasBackButton && (
-        <button onClick={() => navigate(-1)} className="back-button">
+        <button onClick={() => navigate(-1)} className="back-button ml-2">
           <ChevronRight size={16} />
         </button>
       )}

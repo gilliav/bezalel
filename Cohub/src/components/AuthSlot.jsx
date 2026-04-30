@@ -49,7 +49,7 @@ export function AuthSlot({ user, signIn, signOut }) {
             className="fixed inset-0 z-10"
             onClick={() => setMenuOpen(false)}
           />
-          <div role="menu" className="absolute right-0 top-full z-20 mt-1 min-w-[7rem] bg-[var(--background)] border border-[var(--border)]">
+          <div role="menu" className="absolute left-0 top-full z-20 mt-1 min-w-[7rem] bg-[var(--background)] border border-[var(--border)]">
             <button
               role="menuitem"
               onClick={() => { signOut(); setMenuOpen(false) }}

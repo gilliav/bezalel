@@ -4,6 +4,8 @@ import { doc, deleteDoc, addDoc, collection, Timestamp } from 'firebase/firestor
 import { db } from '../firebase'
 import { useProject } from '../hooks/useProject'
 import { useCourses } from '../hooks/useCourses'
+import { useAuth } from '../hooks/useAuth'
+import { useProgress } from '../hooks/useProgress'
 import {formatDateHe, formatRelativeDateHe, isOverdue, nextDatesForDay, dayIndexToHe, formatDateShort} from '../utils/dates';
 import { Pencil, Trash2, ChevronRight, Maximize2, X } from 'lucide-react'
 import { Button } from '../components/ui/button'
@@ -11,12 +13,15 @@ import { Input } from '../components/ui/input'
 import { PageHeader } from '../components/PageHeader'
 import { Tag } from '../components/ui/tag'
 import { DateTag } from '../components/DateTag'
+import { ProgressIndicator } from '../components/ProgressIndicator'
 
 export default function ProjectDetail({ onError }) {
   const { projectId } = useParams()
   const navigate = useNavigate()
   const { project, milestones, attachments, loading, error } = useProject(projectId)
   const { courses } = useCourses()
+  const { user } = useAuth()
+  const { progressMap, setProgress } = useProgress(user?.uid ?? null)
   const [addingMilestone, setAddingMilestone] = useState(false)
   const [milestoneTitle, setMilestoneTitle] = useState('')
   const [milestoneDue, setMilestoneDue] = useState('')
@@ -162,17 +167,33 @@ export default function ProjectDetail({ onError }) {
 
         {/* Milestones */}
         <section className="flex flex-col">
+          {sortedMilestones.length === 0 && project.dueDate && (
+            <div className="flex flex-row justify-between items-center list-row-stacked">
+              <DateTag dueDate={project.dueDate} includeRelative />
+              <ProgressIndicator
+                status={user ? (progressMap[`project-${projectId}`] ?? 'not_started') : 'not_started'}
+                onSelect={user ? (s) => setProgress(`project-${projectId}`, 'project', s) : undefined}
+              />
+            </div>
+          )}
           {sortedMilestones.map((m) => {
             const overdue = isOverdue(m.dueDate)
+            const milestoneStatus = user ? (progressMap[m.id] ?? 'not_started') : 'not_started'
             return (
               <div
                 key={m.id}
-                className={`list-row-stacked ${overdue ? 'opacity-60' : ''}`}
+                className={`flex flex-row justify-between items-center list-row-stacked ${overdue ? 'opacity-60' : ''}`}
               >
-                <span className="text-base font-medium text-foreground">{m.title}</span>
-                <Tag
-                  value={`${formatRelativeDateHe(m.dueDate)} · ${formatDateHe(m.dueDate)}`}
-                  className={overdue ? 'text-destructive bg-destructive/10' : ''}
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-base font-medium text-foreground">{m.title}</span>
+                  <Tag
+                    value={`${formatRelativeDateHe(m.dueDate)} · ${formatDateHe(m.dueDate)}`}
+                    className={overdue ? 'text-destructive bg-destructive/10' : ''}
+                  />
+                </div>
+                <ProgressIndicator
+                  status={milestoneStatus}
+                  onSelect={user ? (s) => setProgress(m.id, 'milestone', s) : undefined}
                 />
               </div>
             )

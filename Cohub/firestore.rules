@@ -3,17 +3,58 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // This rule allows anyone with your Firestore database reference to view, edit,
-    // and delete all data in your Firestore database. It is useful for getting
-    // started, but it is configured to expire after 30 days because it
-    // leaves your app open to attackers. At that time, all client
-    // requests to your Firestore database will be denied.
-    //
-    // Make sure to write security rules for your app before that time, or else
-    // all client requests to your Firestore database will be denied until you Update
-    // your rules
-    match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2026, 5, 2);
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return request.auth.uid == uid;
+    }
+
+    // users: each user can read/write only their own document
+    match /users/{uid} {
+      allow read, write: if isAuthenticated() && isOwner(uid);
+    }
+
+    // courses: any authenticated user can read; no client writes
+    match /courses/{courseId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // cohorts: any authenticated user can read; no client writes
+    match /cohorts/{cohortId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // projects: anyone can read/create; updates/deletes require auth
+    match /projects/{projectId} {
+      allow read, create: if true;
+      allow update, delete: if isAuthenticated();
+
+      // milestones subcollection
+      match /milestones/{milestoneId} {
+        allow read: if true;
+        allow create, update, delete: if isAuthenticated();
+      }
+
+      // attachments subcollection
+      match /attachments/{attachmentId} {
+        allow read, create: if isAuthenticated();
+        allow update, delete: if isAuthenticated();
+      }
+    }
+
+    // milestones collectionGroup query (used by useMilestones hook)
+    match /{path=**}/milestones/{milestoneId} {
+      allow read: if true;
+    }
+
+    // progress: users can only read/write their own progress records
+    match /progress/{progressId} {
+      allow read, write: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.uid == request.auth.uid;
     }
   }
 }
