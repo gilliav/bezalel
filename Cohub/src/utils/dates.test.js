@@ -1,11 +1,11 @@
 import { Timestamp } from 'firebase/firestore'
 import { isOverdue, formatDateHe, sortByDueDate, formatRelativeDateHe } from './dates'
 
-// Helper: Firestore Timestamp N days from today (UTC midnight-aligned)
+// Helper: Firestore Timestamp N days from today (local-date-aligned, matches formatRelativeDateHe)
 function tsOffsetDays(n) {
   const d = new Date()
-  d.setUTCHours(0, 0, 0, 0)
-  d.setUTCDate(d.getUTCDate() + n)
+  d.setHours(0, 0, 0, 0)
+  d.setDate(d.getDate() + n)
   return Timestamp.fromDate(d)
 }
 
@@ -59,35 +59,35 @@ describe('formatRelativeDateHe', () => {
   it('returns לפני N ימים for -5 days', () => {
     expect(formatRelativeDateHe(tsOffsetDays(-5))).toBe('לפני 5 ימים')
   })
-  it('returns בעוד N ימים for +5 days', () => {
-    expect(formatRelativeDateHe(tsOffsetDays(5))).toBe('בעוד 5 ימים')
+  it('returns N ימים for +5 days', () => {
+    expect(formatRelativeDateHe(tsOffsetDays(5))).toBe('5 ימים')
   })
   it('returns לפני N ימים for -10 days', () => {
     expect(formatRelativeDateHe(tsOffsetDays(-10))).toBe('לפני 10 ימים')
   })
-  it('returns בעוד N ימים for +10 days', () => {
-    expect(formatRelativeDateHe(tsOffsetDays(10))).toBe('בעוד 10 ימים')
+  it('returns N ימים for +10 days', () => {
+    expect(formatRelativeDateHe(tsOffsetDays(10))).toBe('10 ימים')
   })
   it('returns לפני שבוע for -7 days', () => {
     expect(formatRelativeDateHe(tsOffsetDays(-7))).toBe('לפני שבוע')
   })
-  it('returns בעוד שבוע for +7 days', () => {
-    expect(formatRelativeDateHe(tsOffsetDays(7))).toBe('בעוד שבוע')
+  it('returns שבוע for +7 days', () => {
+    expect(formatRelativeDateHe(tsOffsetDays(7))).toBe('שבוע')
   })
   it('returns לפני שבועיים for -14 days', () => {
     expect(formatRelativeDateHe(tsOffsetDays(-14))).toBe('לפני שבועיים')
   })
-  it('returns בעוד שבועיים for +14 days', () => {
-    expect(formatRelativeDateHe(tsOffsetDays(14))).toBe('בעוד שבועיים')
+  it('returns שבועיים for +14 days', () => {
+    expect(formatRelativeDateHe(tsOffsetDays(14))).toBe('שבועיים')
   })
   it('returns לפני N שבועות for -21 days', () => {
     expect(formatRelativeDateHe(tsOffsetDays(-21))).toBe('לפני 3 שבועות')
   })
-  it('returns בעוד N שבועות for +28 days', () => {
-    expect(formatRelativeDateHe(tsOffsetDays(28))).toBe('בעוד 4 שבועות')
+  it('returns N שבועות for +28 days', () => {
+    expect(formatRelativeDateHe(tsOffsetDays(28))).toBe('4 שבועות')
   })
-  it('returns בעוד N שבועות for +83 days (last relative value)', () => {
-    expect(formatRelativeDateHe(tsOffsetDays(83))).toBe('בעוד 12 שבועות')
+  it('returns N שבועות for +83 days (last relative value)', () => {
+    expect(formatRelativeDateHe(tsOffsetDays(83))).toBe('12 שבועות')
   })
   it('falls back to absolute date for +84 days (first absolute value)', () => {
     const ts = tsOffsetDays(84)

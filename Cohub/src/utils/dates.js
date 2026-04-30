@@ -72,13 +72,13 @@ export function formatRelativeDateHe(firestoreTimestamp) {
   const absDiff = Math.abs(diff)
 
   if (absDiff <= 13) {
-    return diff < 0 ? `לפני ${absDiff} ימים` : ` ${absDiff} ימים`
+    return diff < 0 ? `לפני ${absDiff} ימים` : `${absDiff} ימים`
   }
 
   if (absDiff <= 83) {
     const weeks = Math.round(absDiff / 7)
-    if (weeks === 2) return diff < 0 ? 'לפני שבועיים' : 'בעוד שבועיים'
-    return diff < 0 ? `לפני ${weeks} שבועות` : `בעוד ${weeks} שבועות`
+    if (weeks === 2) return diff < 0 ? 'לפני שבועיים' : 'שבועיים'
+    return diff < 0 ? `לפני ${weeks} שבועות` : `${weeks} שבועות`
   }
 
   return formatDateHe(firestoreTimestamp)
