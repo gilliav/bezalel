@@ -50,3 +50,17 @@ it('closes menu when overlay is clicked', () => {
   fireEvent.click(screen.getByTestId('auth-menu-overlay'))
   expect(screen.queryByRole('button', { name: 'התנתק.י' })).not.toBeInTheDocument()
 })
+
+it('renders fallback label when displayName is null', () => {
+  const user = { displayName: null, email: 'test@example.com', uid: '2' }
+  render(<AuthSlot user={user} signIn={() => {}} signOut={() => {}} />)
+  expect(screen.getByRole('button', { name: /test/i })).toBeInTheDocument()
+})
+
+it('closes menu on Escape key', () => {
+  const user = { displayName: 'גילי אברך', uid: '1' }
+  const { container } = render(<AuthSlot user={user} signIn={() => {}} signOut={() => {}} />)
+  fireEvent.click(screen.getByRole('button', { name: /גילי/i }))
+  fireEvent.keyDown(container.firstChild, { key: 'Escape' })
+  expect(screen.queryByRole('button', { name: 'התנתק.י' })).not.toBeInTheDocument()
+})

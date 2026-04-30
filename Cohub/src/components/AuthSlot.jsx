@@ -17,12 +17,17 @@ export function AuthSlot({ user, signIn, signOut }) {
     )
   }
 
-  const firstName = user.displayName?.split(' ')[0] ?? ''
+  const firstName = user.displayName?.split(' ')[0] || user.email?.split('@')[0] || 'משתמש.ת'
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onKeyDown={e => { if (e.key === 'Escape') setMenuOpen(false) }}
+    >
       <button
         onClick={() => setMenuOpen(o => !o)}
+        aria-haspopup="true"
+        aria-expanded={menuOpen}
         className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         <span>{firstName}</span>
