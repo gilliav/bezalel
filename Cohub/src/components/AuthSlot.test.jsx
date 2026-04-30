@@ -59,8 +59,18 @@ it('renders fallback label when displayName is null', () => {
 
 it('closes menu on Escape key', () => {
   const user = { displayName: 'גילי אברך', uid: '1' }
-  const { container } = render(<AuthSlot user={user} signIn={() => {}} signOut={() => {}} />)
+  render(<AuthSlot user={user} signIn={() => {}} signOut={() => {}} />)
   fireEvent.click(screen.getByRole('button', { name: /גילי/i }))
-  fireEvent.keyDown(container.firstChild, { key: 'Escape' })
+  expect(screen.getByRole('button', { name: 'התנתק.י' })).toBeInTheDocument()
+  fireEvent.keyDown(screen.getByTestId('auth-menu-wrapper'), { key: 'Escape' })
   expect(screen.queryByRole('button', { name: 'התנתק.י' })).not.toBeInTheDocument()
+})
+
+it('returns focus to trigger after Escape', () => {
+  const user = { displayName: 'גילי אברך', uid: '1' }
+  render(<AuthSlot user={user} signIn={() => {}} signOut={() => {}} />)
+  const trigger = screen.getByRole('button', { name: /גילי/i })
+  fireEvent.click(trigger)
+  fireEvent.keyDown(screen.getByTestId('auth-menu-wrapper'), { key: 'Escape' })
+  expect(document.activeElement).toBe(trigger)
 })

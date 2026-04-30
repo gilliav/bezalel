@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { UserRoundIcon } from 'lucide-react'
 
 export function AuthSlot({ user, signIn, signOut }) {
   const [menuOpen, setMenuOpen] = useState(false)
+  const triggerRef = useRef(null)
 
   if (user === undefined) return null
 
@@ -21,12 +22,18 @@ export function AuthSlot({ user, signIn, signOut }) {
 
   return (
     <div
+      data-testid="auth-menu-wrapper"
       className="relative"
-      onKeyDown={e => { if (e.key === 'Escape') setMenuOpen(false) }}
+      onKeyDown={e => {
+        if (e.key === 'Escape') {
+          setMenuOpen(false)
+          triggerRef.current?.focus()
+        }
+      }}
     >
       <button
+        ref={triggerRef}
         onClick={() => setMenuOpen(o => !o)}
-        aria-haspopup="true"
         aria-expanded={menuOpen}
         className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
