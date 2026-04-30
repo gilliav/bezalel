@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { dayIndexToHe } from '../utils/dates'
+import { Input } from './ui/input'
+import { Button } from './ui/button'
 
 export function CourseCard({ course, onSave }) {
   const [editing, setEditing] = useState(false)
@@ -12,28 +15,25 @@ export function CourseCard({ course, onSave }) {
   }
 
   return (
-    <div className="border-b border-gray-100 px-4 py-3">
+    <div className="list-row-stacked">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div
-            className="w-3 h-3 rounded-full shrink-0"
-            style={{ backgroundColor: course.color }}
-          />
-          <Link to={`/courses/${course.id}`} className="font-semibold text-gray-900">
+          <div className="color-dot" style={{ backgroundColor: course.color }} />
+          <Link to={`/courses/${course.id}`} className="font-semibold text-foreground">
             {course.name}
           </Link>
         </div>
         <button
           aria-label="עריכה"
           onClick={() => setEditing(e => !e)}
-          className="text-xs text-gray-400"
+          className="text-sm text-muted-foreground"
         >
           עריכה
         </button>
       </div>
 
-      <div className="text-sm text-gray-500 mt-1">
-        {course.day} · {course.hours} · {course.lecturer} · {course.location}
+      <div className="text-base text-muted-foreground">
+        {dayIndexToHe(course.day)} · {course.hours} · {course.lecturer} · {course.location}
       </div>
 
       {course.courseUrl && !editing && (
@@ -41,7 +41,7 @@ export function CourseCard({ course, onSave }) {
           href={course.courseUrl}
           target="_blank"
           rel="noreferrer"
-          className="text-xs text-blue-500 mt-1 inline-block"
+          className="action-link text-sm"
           aria-label="קישור לקורס"
         >
           קישור
@@ -49,33 +49,27 @@ export function CourseCard({ course, onSave }) {
       )}
 
       {notes && !editing && (
-        <div className="text-xs text-gray-400 mt-1">{notes}</div>
+        <div className="text-sm text-muted-foreground">{notes}</div>
       )}
 
       {editing && (
-        <div className="mt-2 space-y-2">
-          <input
+        <div className="flex flex-col gap-2 mt-1">
+          <Input
             type="url"
             value={url}
             onChange={e => setUrl(e.target.value)}
             placeholder="קישור לדרייב / מירו"
-            className="w-full border border-gray-200 rounded px-2 py-1 text-sm text-right"
             dir="ltr"
           />
-          <input
+          <Input
             type="text"
             value={notes}
             onChange={e => setNotes(e.target.value)}
             placeholder="הערות (אופציונלי)"
-            className="w-full border border-gray-200 rounded px-2 py-1 text-sm text-right"
           />
-          <button
-            aria-label="שמור"
-            onClick={handleSave}
-            className="text-sm bg-blue-600 text-white px-3 py-1 rounded"
-          >
+          <Button size="sm" onClick={handleSave} aria-label="שמור">
             שמור
-          </button>
+          </Button>
         </div>
       )}
     </div>

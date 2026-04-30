@@ -4,23 +4,39 @@ import { doc, deleteDoc, addDoc, collection, Timestamp } from 'firebase/firestor
 import { db } from '../firebase'
 import { useProject } from '../hooks/useProject'
 import { useCourses } from '../hooks/useCourses'
-import { FileUpload } from '../components/FileUpload'
-import { formatDateHe, isOverdue } from '../utils/dates'
+import { useAuth } from '../hooks/useAuth'
+import { useProgress } from '../hooks/useProgress'
+import {formatDateHe, formatRelativeDateHe, isOverdue, nextDatesForDay, dayIndexToHe, formatDateShort} from '../utils/dates';
+import { Pencil, Trash2, ChevronRight, Maximize2, X } from 'lucide-react'
+import { Button } from '../components/ui/button'
+import { Input } from '../components/ui/input'
+import { PageHeader } from '../components/PageHeader'
+import { Tag } from '../components/ui/tag'
+import { DateTag } from '../components/DateTag'
+import { ProgressIndicator } from '../components/ProgressIndicator'
 
 export default function ProjectDetail({ onError }) {
   const { projectId } = useParams()
   const navigate = useNavigate()
-  const { project, milestones, briefs, loading, error } = useProject(projectId)
+  const { project, milestones, attachments, loading, error } = useProject(projectId)
   const { courses } = useCourses()
+  const { user } = useAuth()
+  const { progressMap, setProgress } = useProgress(user?.uid ?? null)
   const [addingMilestone, setAddingMilestone] = useState(false)
   const [milestoneTitle, setMilestoneTitle] = useState('')
   const [milestoneDue, setMilestoneDue] = useState('')
+  const [lightbox, setLightbox] = useState(null)
 
   useEffect(() => {
     if (error) onError?.('שגיאה בטעינת הפרויקט')
   }, [error, onError])
 
   const course = courses.find(c => c.id === project?.courseId)
+  const quickDates = course ? nextDatesForDay(course.day) : []
+
+  const sortedMilestones = [...milestones].sort(
+    (a, b) => a.dueDate.toDate() - b.dueDate.toDate()
+  )
 
   async function handleDelete() {
     if (!confirm('למחוק את הפרויקט?')) return
@@ -47,102 +63,197 @@ export default function ProjectDetail({ onError }) {
       setMilestoneDue('')
       setAddingMilestone(false)
     } catch {
-      onError?.('שגיאה בהוספת אבן דרך')
+      onError?.('שגיאה בהוספת הגשה')
     }
   }
 
-  if (loading) return <div className="p-4 text-right text-gray-400">טוען...</div>
-  if (!project) return <div className="p-4 text-right text-gray-400">פרויקט לא נמצא</div>
+  if (loading) return <div className="state-loading">טוען...</div>
+  if (!project) return <div className="state-loading">פרויקט לא נמצא</div>
 
   return (
     <div className="text-right">
-      <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-        <div className="flex gap-3">
-          <Link to={`/projects/${projectId}/edit`} className="text-sm text-blue-600">ערוך</Link>
-          <button onClick={handleDelete} className="text-sm text-red-500">מחק</button>
-        </div>
-        <div>
-          <h1 className="text-lg font-bold">{project.title}</h1>
-          {course && (
-            <div
-              className="text-xs text-white px-2 py-0.5 rounded-full inline-block mt-0.5"
-              style={{ backgroundColor: course.color }}
-            >
-              {course.name}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {project.description && (
-        <div className="px-4 py-3 text-sm text-gray-700 border-b border-gray-100">
-          {project.description}
-        </div>
-      )}
-
-      <div className="px-4 py-3 border-b border-gray-100">
-        <div className="flex items-center justify-between mb-2">
-          <button
-            onClick={() => setAddingMilestone(a => !a)}
-            className="text-xs text-blue-600"
-          >
-            + אבן דרך
-          </button>
-          <h2 className="text-sm font-semibold text-gray-700">אבני דרך</h2>
-        </div>
-
-        {addingMilestone && (
-          <form onSubmit={handleAddMilestone} className="mb-3 space-y-2">
-            <input
-              type="text"
-              value={milestoneTitle}
-              onChange={e => setMilestoneTitle(e.target.value)}
-              placeholder="שם האבן דרך"
-              required
-              className="w-full border border-gray-200 rounded px-2 py-1 text-sm text-right"
-            />
-            <input
-              type="date"
-              value={milestoneDue}
-              onChange={e => setMilestoneDue(e.target.value)}
-              required
-              className="w-full border border-gray-200 rounded px-2 py-1 text-sm"
-              dir="ltr"
-            />
-            <button
-              type="submit"
-              className="text-sm bg-blue-600 text-white px-3 py-1 rounded"
-            >
-              הוסף
+      <PageHeader
+        hasBackButton
+        title={project.title}
+        action={
+          <div className="flex gap-3 items-center">
+            <Link to={`/projects/${projectId}/edit`} className="text-muted-foreground">
+              <Pencil size={18} />
+            </Link>
+            <button onClick={handleDelete} className="text-destructive">
+              <Trash2 size={18} />
             </button>
-          </form>
+          </div>
+        }
+      />
+
+      <div className="page-body">
+
+       
+
+        <div className="flex flex-wrap gap-2">
+          {course && (
+            <Link to={`/courses/${course.id}`}>
+            <Tag value={course.name} color={course.color} />
+            </Link>
+          )}
+          {project.dueDate && <DateTag dueDate={project.dueDate} includeRelative />}
+        </div>
+         {project.description && (
+          <p className="text-base text-foreground">{project.description}</p>
         )}
 
-        {milestones.length === 0 && !addingMilestone && (
-          <div className="text-sm text-gray-400">אין אבני דרך</div>
-        )}
-        {milestones.map(m => (
-          <div key={m.id} className={`py-2 border-b border-gray-50 ${isOverdue(m.dueDate) ? 'text-red-500' : 'text-gray-700'}`}>
-            <div className="text-sm font-medium">{m.title}</div>
-            <div className="text-xs text-gray-400">{formatDateHe(m.dueDate)}</div>
+        {/* Attachments */}
+        {attachments?.map(b => (
+          <div key={b.id}>
+            {['png', 'jpg', 'jpeg'].includes(b.fileType) ? (
+              <img
+                src={b.fileUrl}
+                alt={b.fileName}
+                className="max-w-full border border-border cursor-zoom-in"
+                onClick={() => setLightbox({ url: b.fileUrl, type: 'image' })}
+              />
+            ) : b.fileType === 'pdf' ? (
+              <div className="relative">
+                <iframe
+                  src={b.fileUrl}
+                  title={b.fileName}
+                  className="w-full border border-border"
+                  style={{ height: '500px' }}
+                />
+                <button
+                  onClick={() => setLightbox({ url: b.fileUrl, type: 'pdf' })}
+                  className="absolute top-2 left-2 bg-background/80 p-1 text-muted-foreground"
+                >
+                  <Maximize2 size={16} />
+                </button>
+              </div>
+            ) : (
+              <a href={b.fileUrl} target="_blank" rel="noreferrer" className="action-link block py-1">
+                {b.fileName}
+              </a>
+            )}
           </div>
         ))}
-      </div>
 
-      <div className="px-4 py-3">
-        <h2 className="text-sm font-semibold text-gray-700 mb-2">בריפים וקבצים</h2>
-        <FileUpload projectId={projectId} onError={onError} />
-        {briefs.map(b => (
-          <a
-            key={b.id}
-            href={b.fileUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="block text-sm text-blue-600 py-1"
+        {lightbox && (
+          <div
+            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+            onClick={() => setLightbox(null)}
           >
-            {b.fileName}
-          </a>
-        ))}
+            <button
+              onClick={() => setLightbox(null)}
+              className="absolute top-4 left-4 text-white bg-black/40 p-1.5 z-10"
+            >
+              <X size={20} />
+            </button>
+            {lightbox.type === 'image' ? (
+              <img
+                src={lightbox.url}
+                alt=""
+                className="max-w-full max-h-full object-contain"
+                style={{ touchAction: 'pinch-zoom' }}
+                onClick={e => e.stopPropagation()}
+              />
+            ) : (
+              <iframe
+                src={lightbox.url}
+                className="w-full h-full"
+                onClick={e => e.stopPropagation()}
+              />
+            )}
+          </div>
+        )}
+
+        {/* Milestones */}
+        <section className="flex flex-col">
+          {sortedMilestones.length === 0 && project.dueDate && (
+            <div className="flex flex-row justify-between items-center list-row-stacked">
+              <DateTag dueDate={project.dueDate} includeRelative />
+              <ProgressIndicator
+                status={user ? (progressMap[`project-${projectId}`] ?? 'not_started') : 'not_started'}
+                onSelect={user ? (s) => setProgress(`project-${projectId}`, 'project', s) : undefined}
+              />
+            </div>
+          )}
+          {sortedMilestones.map((m) => {
+            const overdue = isOverdue(m.dueDate)
+            const milestoneStatus = user ? (progressMap[m.id] ?? 'not_started') : 'not_started'
+            return (
+              <div
+                key={m.id}
+                className={`flex flex-row justify-between items-center list-row-stacked ${overdue ? 'opacity-60' : ''}`}
+              >
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-base font-medium text-foreground">{m.title}</span>
+                  <Tag
+                    value={`${formatRelativeDateHe(m.dueDate)} · ${formatDateHe(m.dueDate)}`}
+                    className={overdue ? 'text-destructive bg-destructive/10' : ''}
+                  />
+                </div>
+                <ProgressIndicator
+                  status={milestoneStatus}
+                  onSelect={user ? (s) => setProgress(m.id, 'milestone', s) : undefined}
+                />
+              </div>
+            )
+          })}
+
+{/* TODO: consider adding milestones in edit mode only */}
+          {!addingMilestone && (
+            <div className="text-base text-muted-foreground mt-3">
+             פרויקט מתגלגל? <button onClick={() => setAddingMilestone(true)} className="action-link">לחצו להוספת דדליין</button>
+            </div>
+          
+          )}
+
+          {addingMilestone && (
+            <form onSubmit={handleAddMilestone} className="flex flex-col gap-2 mt-3">
+              <Input
+                type="text"
+                value={milestoneTitle}
+                onChange={e => setMilestoneTitle(e.target.value)}
+                placeholder="שם השלב"
+                required
+              />
+              {quickDates.length > 0 ? (
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-sm text-muted-foreground">
+                    בחר תאריך ({dayIndexToHe(course.day)})
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {quickDates.map(d => (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => setMilestoneDue(d)}
+                        className={`text-sm px-2.5 py-1 border transition-colors ${
+                          milestoneDue === d
+                            ? 'bg-primary text-primary-foreground border-primary'
+                            : 'border-border text-muted-foreground'
+                        }`}
+                      >
+                        {new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'numeric' }).format(new Date(d + 'T00:00:00'))}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <input
+                  type="date"
+                  value={milestoneDue}
+                  onChange={e => setMilestoneDue(e.target.value)}
+                  required
+                  className="field-input"
+                  dir="ltr"
+                />
+              )}
+              <Button type="submit" size="sm">הוסף</Button>
+              <Button type="button" size="sm" variant="outline" onClick={() => setAddingMilestone(false)}>ביטול</Button>
+            </form>
+          )}
+        </section>
+
       </div>
     </div>
   )

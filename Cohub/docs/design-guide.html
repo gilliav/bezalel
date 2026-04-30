@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cohub — Design Guide</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+    :root {
+      /* ─── Core Palette ─── */
+      --color-bg:            #f5eee2;
+      --color-bg-card:       #e8e5d3;
+      --color-banner:        rgba(114, 107, 107, 0.78);
+      --color-banner-solid:  #726b6b;
+      --color-text-primary:  #000000;
+      --color-text-onbanner: #ffffff;
+      --color-border:        rgba(114, 107, 107, 0.25);
+
+      /* ─── Card Accent Colors ─── */
+      --color-card-pink:     rgba(233, 172, 216, 0.85);
+      --color-card-pink-bright: #ffcaf0;
+      --color-card-lavender: #c4bfe8;
+      --color-card-peach:    #f5c9a3;
+      --color-card-green:    #b8ddb0;
+      --color-card-yellow:   #f5e6a0;
+      --color-card-coral:    #f5a8a0;
+      --color-card-blue:     #a8c8e8;
+
+      /* ─── Timer Badge ─── */
+      --color-timer-bg:      #1a1a1a;
+      --color-timer-text:    #ffffff;
+
+      /* ─── Spacing ─── */
+      --grid:     24px;
+      --gutter:   26px;
+      --radius-card: 8px;
+      --radius-badge: 20px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1c1a17;
+      color: #f5eee2;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* ─── Layout ─── */
+    .guide {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 64px 40px;
+    }
+
+    /* ─── Cover ─── */
+    .cover {
+      border-bottom: 1px solid rgba(245,238,226,0.15);
+      padding-bottom: 64px;
+      margin-bottom: 64px;
+    }
+    .cover-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(245,238,226,0.4);
+      margin-bottom: 16px;
+    }
+    .cover-title {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 56px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: #f5eee2;
+      margin-bottom: 8px;
+    }
+    .cover-subtitle {
+      font-size: 13px;
+      color: rgba(245,238,226,0.5);
+    }
+    .cover-meta {
+      margin-top: 32px;
+      display: flex;
+      gap: 32px;
+      font-size: 11px;
+      color: rgba(245,238,226,0.35);
+    }
+    .cover-meta span { display: flex; gap: 8px; align-items: center; }
+    .cover-meta b { color: rgba(245,238,226,0.6); }
+
+    /* ─── Section ─── */
+    .section {
+      margin-bottom: 80px;
+    }
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(245,238,226,0.3);
+      margin-bottom: 32px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(245,238,226,0.08);
+    }
+    .section-label span {
+      color: rgba(245,238,226,0.15);
+      margin-right: 12px;
+    }
+
+    /* ─── Grid layout ─── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+    /* ─── Token card ─── */
+    .token-card {
+      background: rgba(245,238,226,0.04);
+      border: 1px solid rgba(245,238,226,0.08);
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .token-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(245,238,226,0.3);
+      margin-bottom: 8px;
+    }
+    .token-value {
+      font-size: 12px;
+      color: rgba(245,238,226,0.7);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    /* ─── COLOR SWATCHES ─── */
+    .swatch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+    .swatch {
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(245,238,226,0.08);
+    }
+    .swatch-color {
+      height: 80px;
+      width: 100%;
+    }
+    .swatch-info {
+      background: rgba(245,238,226,0.04);
+      padding: 12px 14px;
+    }
+    .swatch-name {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(245,238,226,0.8);
+      margin-bottom: 2px;
+    }
+    .swatch-hex {
+      font-size: 10px;
+      color: rgba(245,238,226,0.35);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    /* ─── TYPOGRAPHY SPECIMENS ─── */
+    .type-specimen {
+      background: #f5eee2;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .type-specimen-inner {
+      padding: 28px 32px;
+      direction: rtl;
+    }
+    .type-meta {
+      background: rgba(28,26,23,0.06);
+      padding: 12px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(28,26,23,0.08);
+    }
+    .type-meta-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: rgba(28,26,23,0.45);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .type-meta-value {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: rgba(28,26,23,0.35);
+      direction: ltr;
+    }
+
+    /* ─── COMPONENT PREVIEW ─── */
+    .component-preview {
+      background: #f5eee2;
+      border-radius: 12px;
+      padding: 32px;
+    }
+    .component-preview.dark {
+      background: #2a2520;
+    }
+
+    /* ─── PHONE FRAME ─── */
+    .phones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+    .phone-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .phone-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(245,238,226,0.3);
+    }
+    .phone-frame {
+      background: #1a1510;
+      border: 8px solid #2d2820;
+      border-radius: 40px;
+      overflow: hidden;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+      width: 100%;
+      aspect-ratio: 375 / 1080;
+      position: relative;
+    }
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      background: #f5eee2;
+      overflow: hidden;
+      position: relative;
+      font-family: 'IBM Plex Mono', monospace;
+      direction: rtl;
+    }
+
+    /* ─── Inline app components (live preview) ─── */
+    .app-header {
+      background: #f5eee2;
+      height: 8.5%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4.5%;
+      border-bottom: 1px solid rgba(114,107,107,0.1);
+    }
+    .app-banner {
+      background: rgba(114,107,107,0.78);
+      color: white;
+      padding: 1.5% 6%;
+      font-size: 3%;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+    .app-assignment-card {
+      margin: 2% 6%;
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+    .app-assignment-card-inner {
+      padding: 3% 5%;
+      display: flex;
+      flex-direction: column;
+      gap: 1%;
+    }
+    .app-card-title {
+      font-size: 4.5%;
+      font-weight: 700;
+      color: #000;
+      text-align: right;
+    }
+    .app-card-subtitle {
+      font-size: 3%;
+      color: #000;
+      text-align: right;
+    }
+    .app-timer-badge {
+      position: absolute;
+      left: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #1a1a1a;
+      color: white;
+      border-radius: 20px;
+      padding: 1% 2.5%;
+      font-size: 2.8%;
+      display: flex;
+      align-items: center;
+      gap: 2%;
+    }
+    .app-corner-marker {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 2%;
+      height: 100%;
+      border-radius: 3px 0 0 3px;
+    }
+    .app-course-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+      margin: 2% 5%;
+    }
+    .app-course-card {
+      border-radius: 3px;
+      padding: 4% 5%;
+      position: relative;
+      overflow: hidden;
+    }
+    .app-course-title {
+      font-size: 4%;
+      font-weight: 700;
+      color: #000;
+      text-align: right;
+    }
+    .app-course-teacher {
+      font-size: 2.8%;
+      color: #000;
+      text-align: right;
+      margin-top: 1%;
+    }
+    .app-course-corner {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 15%;
+      height: 15%;
+      border-radius: 0 3px 0 0;
+    }
+
+    /* ─── spacing scale ─── */
+    .spacing-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 12px;
+    }
+    .spacing-bar {
+      background: rgba(245,238,226,0.15);
+      height: 24px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .spacing-label {
+      font-size: 11px;
+      color: rgba(245,238,226,0.4);
+      white-space: nowrap;
+    }
+    .spacing-value {
+      font-size: 11px;
+      color: rgba(245,238,226,0.6);
+      font-family: 'IBM Plex Mono', monospace;
+      margin-left: auto;
+    }
+
+    /* ─── component grid ─── */
+    .comp-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+    .comp-item {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .comp-item-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(245,238,226,0.25);
+    }
+
+    /* ─── Live components ─── */
+
+    /* Timer Badge */
+    .demo-timer {
+      background: #1a1a1a;
+      color: #fff;
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      direction: ltr;
+    }
+    .demo-timer svg { flex-shrink: 0; }
+
+    /* Section Banner */
+    .demo-banner {
+      background: rgba(114,107,107,0.78);
+      color: white;
+      padding: 8px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 4px;
+      direction: rtl;
+      text-align: right;
+    }
+
+    /* Assignment Card */
+    .demo-assignment {
+      background: rgba(233,172,216,0.85);
+      border-radius: 8px;
+      padding: 16px 20px;
+      direction: rtl;
+      position: relative;
+      min-width: 280px;
+    }
+    .demo-assignment-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #000;
+      text-align: right;
+    }
+    .demo-assignment-sub {
+      font-size: 14px;
+      color: #000;
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    /* Course Card */
+    .demo-course {
+      border-radius: 8px;
+      padding: 16px 16px 12px;
+      direction: rtl;
+      position: relative;
+      min-width: 160px;
+      overflow: hidden;
+    }
+    .demo-course-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #000;
+      text-align: right;
+    }
+    .demo-course-teacher {
+      font-size: 13px;
+      color: #000;
+      text-align: right;
+      margin-top: 6px;
+      opacity: 0.7;
+    }
+    .demo-course-dot {
+      position: absolute;
+      top: 0; right: 0;
+      width: 14px; height: 14px;
+    }
+
+    /* Accordion */
+    .demo-accordion {
+      background: #f5eee2;
+      border-radius: 8px;
+      overflow: hidden;
+      min-width: 300px;
+      direction: rtl;
+    }
+    .demo-accordion-row {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(114,107,107,0.15);
+      font-size: 14px;
+      color: #000;
+    }
+    .demo-accordion-row.expanded {
+      background: #ffcaf0;
+    }
+    .demo-accordion-row:last-child { border-bottom: none; }
+    .demo-chevron {
+      width: 24px; height: 24px;
+      background: rgba(114,107,107,0.12);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 10px;
+      color: rgba(0,0,0,0.5);
+    }
+
+    /* Nav bar */
+    .demo-topbar {
+      background: #f5eee2;
+      border-bottom: 1px solid rgba(114,107,107,0.15);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 300px;
+      direction: rtl;
+    }
+    .demo-topbar-title {
+      font-size: 22px;
+      font-weight: 900;
+      color: #000;
+      flex: 1;
+      text-align: right;
+    }
+    .demo-topbar-back {
+      font-size: 18px;
+      color: #000;
+      margin-left: 8px;
+    }
+
+    /* ─── Principles ─── */
+    .principles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(245,238,226,0.06);
+      border: 1px solid rgba(245,238,226,0.06);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .principle {
+      background: #1c1a17;
+      padding: 32px 28px;
+    }
+    .principle-number {
+      font-size: 10px;
+      color: rgba(245,238,226,0.2);
+      letter-spacing: 0.2em;
+      margin-bottom: 16px;
+    }
+    .principle-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: rgba(245,238,226,0.85);
+      margin-bottom: 10px;
+    }
+    .principle-desc {
+      font-size: 11px;
+      color: rgba(245,238,226,0.35);
+      line-height: 1.7;
+    }
+
+    /* ─── Tokens table ─── */
+    .token-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+    .token-table th {
+      text-align: left;
+      padding: 8px 16px;
+      color: rgba(245,238,226,0.25);
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-size: 10px;
+      border-bottom: 1px solid rgba(245,238,226,0.06);
+    }
+    .token-table td {
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(245,238,226,0.04);
+      color: rgba(245,238,226,0.6);
+      vertical-align: middle;
+    }
+    .token-table tr:last-child td { border-bottom: none; }
+    .token-table code {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      background: rgba(245,238,226,0.06);
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: rgba(245,238,226,0.5);
+    }
+    .token-dot {
+      width: 20px; height: 20px;
+      border-radius: 4px;
+      display: inline-block;
+      vertical-align: middle;
+      border: 1px solid rgba(245,238,226,0.1);
+    }
+
+    /* ─── Divider ─── */
+    .divider {
+      border: none;
+      border-top: 1px solid rgba(245,238,226,0.06);
+      margin: 64px 0;
+    }
+
+    /* responsive */
+    @media (max-width: 720px) {
+      .guide { padding: 40px 20px; }
+      .grid-2, .grid-3, .grid-4, .phones { grid-template-columns: 1fr; }
+      .principles-grid { grid-template-columns: 1fr; }
+      .cover-title { font-size: 36px; }
+    }
+  </style>
+</head>
+<body>
+<div class="guide">
+
+  <!-- Cover -->
+  <div class="cover">
+    <body class="cover-eyebrow">Design System</p>
+    <h1 class="cover-title">Cohub</h1>
+    <body class="cover-subtitle">Visual language guide · Bezalel Academy student portal</p>
+    <div class="cover-meta">
+      <span><b>Version</b> 1.0</span>
+      <span><b>Platform</b> iOS mobile · 375px</span>
+      <span><b>Direction</b> RTL · Hebrew</span>
+      <span><b>Source</b> Figma — Bezalel-co</span>
+    </div>
+  </div>
+
+  <!-- Principles -->
+  <div class="section">
+    <body class="section-label"><span>01</span> Design Principles</p>
+    <div class="principles-grid">
+      <div class="principle">
+        <body class="principle-number">01</p>
+        <body class="principle-title">Warm & Tactile</p>
+        <body class="principle-desc">The parchment background and grid texture evoke physical sketchbooks and studio notebooks. Every screen should feel like a working surface, not a dashboard.</p>
+      </div>
+      <div class="principle">
+        <body class="principle-number">02</p>
+        <body class="principle-title">Color as Identity</p>
+        <body class="principle-desc">Each course and assignment gets a distinct pastel hue. Color is the primary recognition system — not labels or icons. Keep palette muted and unpredictable.</p>
+      </div>
+      <div class="principle">
+        <body class="principle-number">03</p>
+        <body class="principle-title">Urgency at a Glance</p>
+        <body class="principle-desc">Timer badges (2d, 1w) communicate deadline pressure in a single token. The design never buries urgency — always visible, never alarming.</p>
+      </div>
+      <div class="principle">
+        <body class="principle-number">04</p>
+        <body class="principle-title">Typography as Character</p>
+        <body class="principle-desc">Almoni is used exclusively — a rounded, confident Hebrew typeface. Bold weight for titles, Medium for supporting info. Never default to system fonts.</p>
+      </div>
+      <div class="principle">
+        <body class="principle-number">05</p>
+        <body class="principle-title">RTL Native</p>
+        <body class="principle-desc">All layouts are designed right-to-left. Text anchors right, back navigation sits top-left, and visual hierarchy flows in the natural Hebrew reading direction.</p>
+      </div>
+      <div class="principle">
+        <body class="principle-number">06</p>
+        <body class="principle-title">Structured Simplicity</p>
+        <body class="principle-desc">The 24px grid and section banner system create strong visual rhythm. Information is layered in clear zones — no decorative complexity, just purposeful structure.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Colors -->
+  <div class="section">
+    <body class="section-label"><span>02</span> Color</p>
+
+    <body style="font-size:11px;color:rgba(245,238,226,0.35);margin-bottom:28px;">Core surface and structural colors extracted directly from Figma.</p>
+
+    <!-- Core -->
+    <body style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(245,238,226,0.25);margin-bottom:14px;">Core</p>
+    <div class="swatch-grid" style="margin-bottom:32px;">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#f5eee2;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Background</div>
+          <div class="swatch-hex">#f5eee2 · Parchment</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#e8e5d3;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Card Surface</div>
+          <div class="swatch-hex">#e8e5d3 · Linen</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:rgba(114,107,107,0.78);"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Banner / Section Header</div>
+          <div class="swatch-hex">rgba(114,107,107,0.78)</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#000000;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Text Primary</div>
+          <div class="swatch-hex">#000000</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#ffffff;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Text on Banner</div>
+          <div class="swatch-hex">#ffffff</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#1a1a1a;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Timer Badge</div>
+          <div class="swatch-hex">#1a1a1a · Near Black</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accent — cards -->
+    <body style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(245,238,226,0.25);margin-bottom:14px;">Card Accents · Assignment &amp; Course palette</p>
+    <div class="swatch-grid">
+      <div class="swatch">
+        <div class="swatch-color" style="background:rgba(233,172,216,0.85);"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Task Expanded</div>
+          <div class="swatch-hex">rgba(233,172,216,0.85) · Rose</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#ffcaf0;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Active Stage</div>
+          <div class="swatch-hex">#ffcaf0 · Bloom</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#c4bfe8;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Course · Lavender</div>
+          <div class="swatch-hex">#c4bfe8</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#f5c9a3;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Course · Peach</div>
+          <div class="swatch-hex">#f5c9a3</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#b8ddb0;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Course · Sage</div>
+          <div class="swatch-hex">#b8ddb0</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#f5e6a0;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Course · Butter</div>
+          <div class="swatch-hex">#f5e6a0</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#f5a8a0;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Course · Coral</div>
+          <div class="swatch-hex">#f5a8a0</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#a8c8e8;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Course · Sky</div>
+          <div class="swatch-hex">#a8c8e8</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Typography -->
+  <div class="section">
+    <body class="section-label"><span>03</span> Typography</p>
+
+    <div class="token-card" style="margin-bottom:28px;">
+      <body class="token-label">Font Families</p>
+      <body class="token-value" style="font-size:13px;line-height:2;">
+        <strong style="color:rgba(245,238,226,0.7);">Almoni Tzar ML v5 AAA</strong> — Primary typeface (body, titles, labels)<br>
+        <strong style="color:rgba(245,238,226,0.7);">Almoni ML v5 AAA</strong> — Display typeface (section headers, page titles)<br>
+        <span style="color:rgba(245,238,226,0.3);">Both are Hebrew variable fonts with Latin numerals. Must be loaded via font-face or design tool. No web fallback — use system Hebrew only as last resort.</span>
+      </p>
+    </div>
+
+    <!-- Type specimens -->
+    <div class="type-specimen">
+      <div class="type-specimen-inner">
+        <body style="font-size:36px;font-weight:900;color:#000;font-family:'IBM Plex Mono',monospace;direction:rtl;">אות וצורה</p>
+      </div>
+      <div class="type-meta">
+        <span class="type-meta-label">Page Title · Display</span>
+        <span class="type-meta-value">Almoni ML v5 AAA · UltraBlack · 36px · RTL</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-specimen-inner">
+        <body style="font-size:32px;font-weight:700;color:#000;font-family:'IBM Plex Mono',monospace;direction:rtl;">חתול בולד</p>
+      </div>
+      <div class="type-meta">
+        <span class="type-meta-label">Card / Assignment Title</span>
+        <span class="type-meta-value">Almoni Tzar ML v5 AAA · Bold · 32px · RTL</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-specimen-inner" style="background:rgba(114,107,107,0.78);">
+        <body style="font-size:20px;font-weight:800;color:#fff;font-family:'IBM Plex Mono',monospace;direction:rtl;">הקורסים שלי</p>
+      </div>
+      <div class="type-meta">
+        <span class="type-meta-label">Section Banner Label</span>
+        <span class="type-meta-value">Almoni ML v5 AAA · UltraBold · 20px · White on Banner</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-specimen-inner">
+        <body style="font-size:20px;font-weight:500;color:#000;font-family:'IBM Plex Mono',monospace;direction:rtl;">המחשה · דניאל גרומר</p>
+      </div>
+      <div class="type-meta">
+        <span class="type-meta-label">Card Subtitle / Labels</span>
+        <span class="type-meta-value">Almoni Tzar ML v5 AAA · Medium · 20px</span>
+      </div>
+    </div>
+
+    <div class="type-specimen">
+      <div class="type-specimen-inner">
+        <body style="font-size:15px;font-weight:500;color:#000;font-family:'IBM Plex Mono',monospace;direction:ltr;">22/03 · 10/04 · 2d · 1w</p>
+      </div>
+      <div class="type-meta">
+        <span class="type-meta-label">Dates &amp; Timer Labels</span>
+        <span class="type-meta-value">Almoni Tzar ML v5 AAA · Medium · 15px · LTR numbers</span>
+      </div>
+    </div>
+
+    <!-- Type scale table -->
+    <table class="token-table" style="margin-top:28px;">
+      <thead>
+        <tr>
+          <th>Role</th>
+          <th>Family</th>
+          <th>Weight</th>
+          <th>Size</th>
+          <th>Used for</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Display</td><td><code>Almoni ML</code></td><td>UltraBlack / 900</td><td>36px</td><td>Page title (e.g. course name in nav)</td></tr>
+        <tr><td>Title</td><td><code>Almoni Tzar ML</code></td><td>Bold / 700</td><td>32px</td><td>Assignment &amp; course card titles</td></tr>
+        <tr><td>Section</td><td><code>Almoni ML</code></td><td>UltraBold / 800</td><td>20px</td><td>Section banner labels</td></tr>
+        <tr><td>Label</td><td><code>Almoni Tzar ML</code></td><td>Medium / 500</td><td>20px</td><td>Department, teacher, stage labels</td></tr>
+        <tr><td>Body</td><td><code>Almoni Tzar ML</code></td><td>Medium / 500</td><td>20px · lh 20px</td><td>Accordion body text / descriptions</td></tr>
+        <tr><td>Caption</td><td><code>Almoni Tzar ML</code></td><td>Medium / 500</td><td>15px</td><td>Dates, submission times</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Spacing & Grid -->
+  <div class="section">
+    <body class="section-label"><span>04</span> Spacing &amp; Grid</p>
+
+    <div class="grid-2" style="margin-bottom:32px;">
+      <div class="token-card">
+        <body class="token-label">Base Grid Unit</p>
+        <body class="token-value" style="font-size:28px;color:rgba(245,238,226,0.8);">24px</p>
+        <body style="font-size:10px;color:rgba(245,238,226,0.3);margin-top:6px;">All spacing values are multiples or fractions of 24px. Grid lines are visible as a subtle background texture.</p>
+      </div>
+      <div class="token-card">
+        <body class="token-label">Screen width &amp; Gutter</p>
+        <body class="token-value" style="font-size:28px;color:rgba(245,238,226,0.8);">375px</p>
+        <body style="font-size:10px;color:rgba(245,238,226,0.3);margin-top:6px;">Standard iOS mobile viewport. Horizontal gutter is 26px (≈ 24px grid + 2px). Column content is ~323px wide.</p>
+      </div>
+    </div>
+
+    <div style="background:rgba(245,238,226,0.03);border:1px solid rgba(245,238,226,0.06);border-radius:8px;padding:24px 28px;">
+      <div class="spacing-row">
+        <div class="spacing-bar" style="width:4px;"></div>
+        <span class="spacing-label">2px · 1/12 unit</span>
+        <span class="spacing-value">Grid baseline inset</span>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-bar" style="width:24px;"></div>
+        <span class="spacing-label">24px · 1 unit</span>
+        <span class="spacing-value">Base grid, icon size (nav)</span>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-bar" style="width:26px;"></div>
+        <span class="spacing-label">26px · Gutter</span>
+        <span class="spacing-value">Horizontal page margin</span>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-bar" style="width:37px;"></div>
+        <span class="spacing-label">37px · Banner height</span>
+        <span class="spacing-value">Section header bars</span>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-bar" style="width:57px;"></div>
+        <span class="spacing-label">57px · Nav bar height</span>
+        <span class="spacing-value">Top navigation / header area</span>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-bar" style="width:69px;"></div>
+        <span class="spacing-label">69px · Course header</span>
+        <span class="spacing-value">Top header on course page (title bar)</span>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-bar" style="width:103px;"></div>
+        <span class="spacing-label">103px · Course card height</span>
+        <span class="spacing-value">My Courses grid cards</span>
+      </div>
+      <div class="spacing-row">
+        <div class="spacing-bar" style="width:122px;"></div>
+        <span class="spacing-label">122px · Assignment card height</span>
+        <span class="spacing-value">Upcoming submissions cards</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Components -->
+  <div class="section">
+    <body class="section-label"><span>05</span> Components</p>
+
+    <!-- Timer Badge -->
+    <div style="margin-bottom:40px;">
+      <body style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(245,238,226,0.25);margin-bottom:16px;">Timer Badge</p>
+      <div class="comp-row">
+        <div class="comp-item">
+          <div class="demo-timer">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><bodyath d="M12 7v5l3 3"/><bodyath d="M12 3h0"/></svg>
+            2d
+          </div>
+          <span class="comp-item-label">2 days</span>
+        </div>
+        <div class="comp-item">
+          <div class="demo-timer">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><bodyath d="M12 7v5l3 3"/></svg>
+            3d
+          </div>
+          <span class="comp-item-label">3 days</span>
+        </div>
+        <div class="comp-item">
+          <div class="demo-timer">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><bodyath d="M12 7v5l3 3"/></svg>
+            1w
+          </div>
+          <span class="comp-item-label">1 week</span>
+        </div>
+      </div>
+      <div class="token-card" style="margin-top:4px;">
+        <body class="token-value">bg: #1a1a1a · color: #fff · border-radius: 20px · padding: 6px 12px<br>font: Almoni Tzar ML · Medium · 15–20px · LTR direction<br>icon: timer/clock SVG · always left of text</p>
+      </div>
+    </div>
+
+    <!-- Section Banner -->
+    <div style="margin-bottom:40px;">
+      <body style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(245,238,226,0.25);margin-bottom:16px;">Section Banner</p>
+      <div class="comp-row">
+        <div class="comp-item">
+          <div class="demo-banner">הגשות קרובות</div>
+          <span class="comp-item-label">Upcoming</span>
+        </div>
+        <div class="comp-item">
+          <div class="demo-banner">הקורסים שלי</div>
+          <span class="comp-item-label">My courses</span>
+        </div>
+        <div class="comp-item">
+          <div class="demo-banner">תרגיל נוכחי</div>
+          <span class="comp-item-label">Current exercise</span>
+        </div>
+        <div class="comp-item">
+          <div class="demo-banner">מידע כללי</div>
+          <span class="comp-item-label">General info</span>
+        </div>
+      </div>
+      <div class="token-card" style="margin-top:4px;">
+        <body class="token-value">bg: rgba(114,107,107,0.78) · color: #fff · height: 37px · full-bleed width<br>font: Almoni ML · UltraBold · 20px · fontFeatureSettings: 'ss05','ordn','hlig'</p>
+      </div>
+    </div>
+
+    <!-- Assignment Card -->
+    <div style="margin-bottom:40px;">
+      <body style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(245,238,226,0.25);margin-bottom:16px;">Assignment Card (Upcoming Submissions)</p>
+      <div class="comp-row">
+        <div class="comp-item">
+          <div class="demo-assignment" style="background:rgba(233,172,216,0.85);">
+            <body class="demo-assignment-title">חתול בולד</p>
+            <body class="demo-assignment-sub">אות וצורה</p>
+            <div class="demo-timer" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:12px;padding:4px 10px;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><bodyath d="M12 7v5l3 3"/></svg>
+              2d
+            </div>
+          </div>
+          <span class="comp-item-label">Pink / Rose</span>
+        </div>
+        <div class="comp-item">
+          <div class="demo-assignment" style="background:#c4bfe8;">
+            <body class="demo-assignment-title">זום אין - זום אאוט</p>
+            <body class="demo-assignment-sub">המחשה</p>
+            <div class="demo-timer" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:12px;padding:4px 10px;">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><bodyath d="M12 7v5l3 3"/></svg>
+              3d
+            </div>
+          </div>
+          <span class="comp-item-label">Lavender</span>
+        </div>
+      </div>
+      <div class="token-card" style="margin-top:4px;">
+        <body class="token-value">height: 122px · width: ~323px (full gutter) · border-radius: 6–8px<br>title: Almoni Tzar · Bold · 32px · text-align: right<br>subtitle: Almoni Tzar · Medium · 20px · text-align: right<br>timer badge: absolute, left: gutter, vertically centered<br>corner accent: 18×18px colored square, top-right corner</p>
+      </div>
+    </div>
+
+    <!-- Course Grid Card -->
+    <div style="margin-bottom:40px;">
+      <body style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(245,238,226,0.25);margin-bottom:16px;">Course Card (My Courses Grid)</p>
+      <div class="comp-row">
+        <div class="comp-item">
+          <div class="demo-course" style="background:#f5c9a3;width:150px;height:103px;">
+            <div class="demo-course-dot" style="background:#d4956a;"></div>
+            <body class="demo-course-title">רישום</p>
+            <body class="demo-course-teacher">מתן כהן</p>
+          </div>
+          <span class="comp-item-label">Peach</span>
+        </div>
+        <div class="comp-item">
+          <div class="demo-course" style="background:#c4bfe8;width:150px;height:103px;">
+            <div class="demo-course-dot" style="background:#8880c8;"></div>
+            <body class="demo-course-title">אות וצורה</p>
+            <body class="demo-course-teacher">דניאל גרומר</p>
+          </div>
+          <span class="comp-item-label">Lavender</span>
+        </div>
+        <div class="comp-item">
+          <div class="demo-course" style="background:#b8ddb0;width:150px;height:103px;">
+            <div class="demo-course-dot" style="background:#72b068;"></div>
+            <body class="demo-course-title">צילום</p>
+            <body class="demo-course-teacher">גסטון גסטונארד</p>
+          </div>
+          <span class="comp-item-label">Sage</span>
+        </div>
+        <div class="comp-item">
+          <div class="demo-course" style="background:#f5a8a0;width:150px;height:103px;">
+            <div class="demo-course-dot" style="background:#d45848;"></div>
+            <body class="demo-course-title">סטודיו</p>
+            <body class="demo-course-teacher">קובי לוי</p>
+          </div>
+          <span class="comp-item-label">Coral</span>
+        </div>
+      </div>
+      <div class="token-card" style="margin-top:4px;">
+        <body class="token-value">size: 132×103px · grid: 2 columns · gap: ~8px<br>title: Almoni Tzar · Bold · 32px · RTL<br>teacher: Almoni Tzar · Medium · 20px · line-height: 20px<br>corner dot: 17×17.5px colored square, absolute top-right · matches card hue (darker shade)<br>layout: 2-column grid filling page minus gutters</p>
+      </div>
+    </div>
+
+    <!-- Accordion / Steps -->
+    <div style="margin-bottom:40px;">
+      <body style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(245,238,226,0.25);margin-bottom:16px;">Accordion Steps (Course Page)</p>
+      <div class="comp-row">
+        <div class="comp-item">
+          <div class="demo-accordion">
+            <div class="demo-accordion-row">
+              <div class="demo-chevron">›</div>
+              <span>שלב 1</span>
+            </div>
+            <div class="demo-accordion-row expanded">
+              <div style="flex:1;padding-left:8px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                  <div class="demo-timer" style="font-size:11px;padding:3px 8px;">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="9"/><bodyath d="M12 7v5l3 3"/></svg>
+                    2d
+                  </div>
+                  <span style="font-size:14px;font-weight:700;direction:rtl;">שלב 2</span>
+                </div>
+                <body style="font-size:11px;color:rgba(0,0,0,0.6);text-align:right;direction:rtl;">פה יהיה תיאור של שלב 2 של המשימה...</p>
+              </div>
+              <div class="demo-chevron" style="margin-right:8px;">∧</div>
+            </div>
+            <div class="demo-accordion-row">
+              <div class="demo-chevron">›</div>
+              <span>שלב 3</span>
+            </div>
+          </div>
+          <span class="comp-item-label">Step 2 expanded</span>
+        </div>
+      </div>
+      <div class="token-card" style="margin-top:4px;">
+        <body class="token-value">container: full width · bg: #f5eee2 (matches page)<br>collapsed row: height ~32px · label: Almoni Tzar · Medium · 20px<br>expanded row: bg: #ffcaf0 (Bloom) · shows description text + timer<br>chevron button: 32px circle · bg: rgba(114,107,107,0.12) · icon rotates on expand<br>stage label: Almoni Tzar · Medium · 20px · RTL · text-align: right</p>
+      </div>
+    </div>
+
+    <!-- Top Navigation -->
+    <div style="margin-bottom:40px;">
+      <body style="font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(245,238,226,0.25);margin-bottom:16px;">Navigation Bars</p>
+      <div class="comp-row">
+        <div class="comp-item">
+          <div class="demo-topbar" style="background:#f5eee2;">
+            <span style="font-size:18px;">⌂</span>
+          </div>
+          <span class="comp-item-label">Home (icon only)</span>
+        </div>
+        <div class="comp-item">
+          <div class="demo-topbar" style="background:#e8e5d3;min-width:320px;">
+            <span class="demo-topbar-back">←</span>
+            <span class="demo-topbar-title">אות וצורה</span>
+          </div>
+          <span class="comp-item-label">Course header (title + back)</span>
+        </div>
+      </div>
+      <div class="token-card" style="margin-top:4px;">
+        <body class="token-value">home bar: bg: #f5eee2 · height: 57px · center-aligned house icon 24×24px<br>course bar: bg: #e8e5d3 · height: 69px · title right-aligned · back arrow left<br>title: Almoni ML · UltraBlack · 36px · RTL<br>back arrow: material icon "arrow_back" · 24px · left: 31px</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Design Tokens Table -->
+  <div class="section">
+    <body class="section-label"><span>06</span> Design Tokens Reference</p>
+
+    <table class="token-table">
+      <thead>
+        <tr>
+          <th>Token</th>
+          <th>Swatch</th>
+          <th>Value</th>
+          <th>Use</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>color-bg</code></td>
+          <td><span class="token-dot" style="background:#f5eee2;"></span></td>
+          <td><code>#f5eee2</code></td>
+          <td>Page background, nav bar</td>
+        </tr>
+        <tr>
+          <td><code>color-bg-card</code></td>
+          <td><span class="token-dot" style="background:#e8e5d3;"></span></td>
+          <td><code>#e8e5d3</code></td>
+          <td>Course page header area</td>
+        </tr>
+        <tr>
+          <td><code>color-banner</code></td>
+          <td><span class="token-dot" style="background:rgba(114,107,107,0.78);border:1px solid rgba(255,255,255,0.1);"></span></td>
+          <td><code>rgba(114,107,107,0.78)</code></td>
+          <td>Section header strips</td>
+        </tr>
+        <tr>
+          <td><code>color-task-rose</code></td>
+          <td><span class="token-dot" style="background:rgba(233,172,216,0.85);"></span></td>
+          <td><code>rgba(233,172,216,0.85)</code></td>
+          <td>Assignment card, expanded content</td>
+        </tr>
+        <tr>
+          <td><code>color-task-bloom</code></td>
+          <td><span class="token-dot" style="background:#ffcaf0;"></span></td>
+          <td><code>#ffcaf0</code></td>
+          <td>Active/expanded accordion stage</td>
+        </tr>
+        <tr>
+          <td><code>color-timer-bg</code></td>
+          <td><span class="token-dot" style="background:#1a1a1a;"></span></td>
+          <td><code>#1a1a1a</code></td>
+          <td>Timer badge background</td>
+        </tr>
+        <tr>
+          <td><code>font-display</code></td>
+          <td>—</td>
+          <td><code>Almoni ML v5 AAA</code></td>
+          <td>Page titles, section banners</td>
+        </tr>
+        <tr>
+          <td><code>font-body</code></td>
+          <td>—</td>
+          <td><code>Almoni Tzar ML v5 AAA</code></td>
+          <td>Card titles, labels, body</td>
+        </tr>
+        <tr>
+          <td><code>size-title</code></td>
+          <td>—</td>
+          <td><code>32px</code></td>
+          <td>Assignment &amp; course card titles</td>
+        </tr>
+        <tr>
+          <td><code>size-label</code></td>
+          <td>—</td>
+          <td><code>20px</code></td>
+          <td>Section headers, labels, body</td>
+        </tr>
+        <tr>
+          <td><code>size-caption</code></td>
+          <td>—</td>
+          <td><code>15px</code></td>
+          <td>Dates, small metadata</td>
+        </tr>
+        <tr>
+          <td><code>size-display</code></td>
+          <td>—</td>
+          <td><code>36px</code></td>
+          <td>Course name (page-level title)</td>
+        </tr>
+        <tr>
+          <td><code>grid-unit</code></td>
+          <td>—</td>
+          <td><code>24px</code></td>
+          <td>Base spacing unit</td>
+        </tr>
+        <tr>
+          <td><code>gutter</code></td>
+          <td>—</td>
+          <td><code>26px</code></td>
+          <td>Horizontal page margin</td>
+        </tr>
+        <tr>
+          <td><code>banner-height</code></td>
+          <td>—</td>
+          <td><code>37px</code></td>
+          <td>Section header strip height</td>
+        </tr>
+        <tr>
+          <td><code>card-assignment-h</code></td>
+          <td>—</td>
+          <td><code>122px</code></td>
+          <td>Upcoming submission card height</td>
+        </tr>
+        <tr>
+          <td><code>card-course-w</code></td>
+          <td>—</td>
+          <td><code>132px</code></td>
+          <td>My Courses grid card width</td>
+        </tr>
+        <tr>
+          <td><code>card-course-h</code></td>
+          <td>—</td>
+          <td><code>103px</code></td>
+          <td>My Courses grid card height</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Screen Reference -->
+  <div class="section">
+    <body class="section-label"><span>07</span> Screen Reference</p>
+    <body style="font-size:11px;color:rgba(245,238,226,0.35);margin-bottom:32px;">Two primary screens with annotated zones.</p>
+
+    <div class="phones">
+      <div class="phone-wrap">
+        <body class="phone-label">Home / Dashboard</p>
+        <div style="background:rgba(245,238,226,0.03);border:1px solid rgba(245,238,226,0.08);border-radius:12px;padding:20px;">
+          <img src="https://www.figma.com/api/mcp/asset/431134c6-8ffc-4f28-9d45-b24a9a5ecf0c" alt="Home dashboard screenshot" style="width:100%;border-radius:6px;" onerror="this.style.display='none'" />
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;font-size:10px;color:rgba(245,238,226,0.35);">
+            <span>① Nav bar · 57px · #f5eee2 · home icon centered</span>
+            <span>② Banner strip · "הגשות קרובות" · rgba(114,107,107,0.78)</span>
+            <span>③ Assignment cards · 122px · pastel colors · timer badge left</span>
+            <span>④ Banner strip · "הקורסים שלי"</span>
+            <span>⑤ Course grid · 2 columns · 132×103px cards</span>
+          </div>
+        </div>
+      </div>
+      <div class="phone-wrap">
+        <body class="phone-label">Course Page</p>
+        <div style="background:rgba(245,238,226,0.03);border:1px solid rgba(245,238,226,0.08);border-radius:12px;padding:20px;">
+          <img src="https://www.figma.com/api/mcp/asset/968865c4-fe92-45db-8fc8-915d98e7ccb0" alt="Course page screenshot" style="width:100%;border-radius:6px;" onerror="this.style.display='none'" />
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;font-size:10px;color:rgba(245,238,226,0.35);">
+            <span>① Course name · 36px · UltraBlack · RTL</span>
+            <span>② Banner · "תרגיל נוכחי"</span>
+            <span>③ Task card · rgba(233,172,216,0.85) · expandable</span>
+            <span>④ Accordion steps · שלב 1/2/3 · bloom bg when open</span>
+            <span>⑤ Banner · "מידע כללי" · teacher / link / schedule</span>
+            <span>⑥ Banner · "הגשות קודמות" · past submission cards</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Footer -->
+  <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;color:rgba(245,238,226,0.2);">
+    <span>Cohub Design System · v1.0 · 2026</span>
+    <span>Bezalel Academy of Art &amp; Design · Mobile Portal</span>
+  </div>
+
+</div>
+</body>
+</html>

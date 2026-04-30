@@ -10,6 +10,13 @@ dist/
 
 # Firebase
 serviceAccountKey.json
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# AI / planning artifacts
+docs/superpowers/
 
 # Git worktrees
 .worktrees/
@@ -17,3 +24,14 @@ serviceAccountKey.json
 # OS
 .DS_Store
 serviceAccountKey.json
+
+# Tooling
+.agents/
+.claude/
+.kiro/
+.vscode/
+skills-lock.json
+
+# Personal files
+braindstorm.md
+*.csv

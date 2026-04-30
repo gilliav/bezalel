@@ -1,63 +1,136 @@
-import { useEffect } from 'react'
+// src/screens/Dashboard.jsx
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
+import { useProgress } from '../hooks/useProgress'
 import { useMilestones } from '../hooks/useMilestones'
 import { useCourses } from '../hooks/useCourses'
-import { MilestoneItem } from '../components/MilestoneItem'
-import { isOverdue } from '../utils/dates'
-import { Link } from 'react-router-dom'
+import { useAllProjects } from '../hooks/useProjects'
+import { splitIntoTiers } from '../utils/tiers'
+import { DashboardItem } from '../components/DashboardItem'
+import { SectionTier } from '../components/SectionTier'
+import { PageHeader } from '../components/PageHeader'
+import { EmptyState } from '../components/EmptyState'
+import { PlusIcon } from 'lucide-react'
+import { AuthSlot } from '../components/AuthSlot'
 
 export default function Dashboard({ onError }) {
+  const { user, signIn, signOut } = useAuth()
+  const { progressMap, setProgress } = useProgress(user?.uid ?? null)
   const { milestones, loading: mlLoading, error: mlError } = useMilestones()
   const { courses, loading: cLoading, error: cError } = useCourses()
+  const { projects, loading: pLoading, error: pError } = useAllProjects()
+  const [pastExpanded, setPastExpanded] = useState(false)
 
   useEffect(() => {
-    if (mlError || cError) onError?.('שגיאה בטעינת הנתונים')
-  }, [mlError, cError, onError])
+    if (mlError || cError || pError) onError?.('שגיאה בטעינת הנתונים')
+  }, [mlError, cError, pError, onError])
 
   const courseMap = Object.fromEntries(courses.map(c => [c.id, c]))
-  const overdue = milestones.filter(m => isOverdue(m.dueDate))
-  const upcoming = milestones.filter(m => !isOverdue(m.dueDate))
 
-  if (mlLoading || cLoading) {
-    return <div className="p-4 text-right text-gray-400">טוען...</div>
+  // Projects that have milestones are represented via their milestone rows.
+  // Only include a project as a standalone item if it has a top-level dueDate
+  // AND no milestones attached to it.
+  // See: docs/superpowers/plans/2026-04-07-dashboard-refactor.md — Domain Knowledge
+  const projectsWithMilestones = new Set(milestones.map(m => m.projectId))
+  const projectItems = projects
+    .filter(p => p.dueDate && !projectsWithMilestones.has(p.id))
+    .map(p => ({
+      id: `project-${p.id}`,
+      projectId: p.id,
+      title: p.title,
+      projectTitle: '',
+      dueDate: p.dueDate,
+      courseId: p.courseId,
+    }))
+
+  // Only include items that have a valid dueDate (guard against corrupt data)
+  const allItems = [...milestones, ...projectItems].filter(i => i.dueDate?.toDate)
+
+  const { hot, later, past } = splitIntoTiers(allItems)
+
+  if (mlLoading || cLoading || pLoading) {
+    return <div className="state-loading">טוען...</div>
   }
+
+  const hasContent = hot.length > 0 || later.length > 0 || past.length > 0
+
+  const authSlot = <AuthSlot user={user} signIn={signIn} signOut={signOut} />
 
   return (
     <div className="text-right">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
-        <Link to="/projects/new" className="text-sm text-blue-600 font-medium">
-          + פרויקט חדש
-        </Link>
-        <h1 className="text-lg font-bold">פרויקטים</h1>
-      </div>
+      <PageHeader
+        title="הגשות"
+        action={<Link to="/projects/new" className="inline-flex items-baseline gap-1 action-link text-sm"><PlusIcon size={14} className='self-center' /> פרויקט חדש</Link>}
+        authSlot={authSlot}
+      />
 
-      {overdue.length > 0 && (
-        <section>
-          <h2 className="px-4 py-2 text-xs font-semibold text-red-500 uppercase tracking-wide">
-            עבר הזמן
-          </h2>
-          {overdue.map(m => (
-            <MilestoneItem key={m.id} milestone={m} course={courseMap[m.courseId]} />
-          ))}
+      {!hasContent && <EmptyState message="אין פרויקטים פעילים" />}
+
+      {hot.length > 0 && (
+        <section className="flex flex-col">
+          {hot.map(item => {
+            const isMilestone = Boolean(item.projectTitle)
+            const status = user ? (progressMap[item.id] ?? 'not_started') : 'not_started'
+            return (
+              <DashboardItem
+                key={item.id}
+                item={item}
+                course={courseMap[item.courseId]}
+                progressStatus={status}
+                onProgressSelect={user ? (newStatus) => setProgress(item.id, isMilestone ? 'milestone' : 'project', newStatus) : undefined}
+                onSignInPrompt={user === null ? signIn : undefined}
+              />
+            )
+          })}
         </section>
       )}
 
-      {upcoming.length > 0 && (
-        <section>
-          {overdue.length > 0 && (
-            <h2 className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide">
-              קרוב
-            </h2>
-          )}
-          {upcoming.map(m => (
-            <MilestoneItem key={m.id} milestone={m} course={courseMap[m.courseId]} />
-          ))}
+      {later.length > 0 && (
+        <section className="flex flex-col">
+          <SectionTier label="בהמשך" variant="normal" />
+          {later.map(item => {
+            const isMilestone = Boolean(item.projectTitle)
+            const status = user ? (progressMap[item.id] ?? 'not_started') : 'not_started'
+            return (
+              <DashboardItem
+                key={item.id}
+                item={item}
+                course={courseMap[item.courseId]}
+                progressStatus={status}
+                onProgressSelect={user ? (newStatus) => setProgress(item.id, isMilestone ? 'milestone' : 'project', newStatus) : undefined}
+                onSignInPrompt={user === null ? signIn : undefined}
+              />
+            )
+          })}
         </section>
       )}
 
-      {milestones.length === 0 && (
-        <div className="p-8 text-center text-gray-400 text-sm">
-          אין פרויקטים פעילים
-        </div>
+      {past.length > 0 && (
+        <section>
+          <button
+            onClick={() => setPastExpanded(e => !e)}
+            className="tier-row w-full text-right"
+          >
+            <span className="tier-label">
+              הגשות קודמות ({past.length}) {pastExpanded ?  '▲'  : '▼'}
+            </span>
+          </button>
+          {pastExpanded && past.map(item => {
+            const isMilestone = Boolean(item.projectTitle)
+            const status = user ? (progressMap[item.id] ?? 'not_started') : 'not_started'
+            return (
+              <DashboardItem
+                key={item.id}
+                item={item}
+                course={courseMap[item.courseId]}
+                progressStatus={status}
+                onProgressSelect={user ? (newStatus) => setProgress(item.id, isMilestone ? 'milestone' : 'project', newStatus) : undefined}
+                onSignInPrompt={user === null ? signIn : undefined}
+              />
+            )
+          })}
+        </section>
       )}
     </div>
   )

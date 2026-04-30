@@ -13,7 +13,7 @@ const COURSES = [
   {
     moodleId: '25029-1',
     name: 'טיפוגרפיה א׳',
-    day: 'שני',
+    day: 1,
     hours: '10:00-13:00',
     lecturer: 'חופשי יהודה',
     location: 'סטודיו 135',
@@ -23,7 +23,7 @@ const COURSES = [
   {
     moodleId: '50107-10',
     name: 'תנועה',
-    day: 'שני',
+    day: 1,
     hours: '14:00-17:00',
     lecturer: 'גביש ארז',
     location: 'סטודיו 135',
@@ -33,7 +33,7 @@ const COURSES = [
   {
     moodleId: '50137-1',
     name: 'איור א׳1',
-    day: 'שלישי',
+    day: 2,
     hours: '10:00-13:00',
     lecturer: 'איתן אלוא',
     location: 'סטודיו 112',
@@ -43,7 +43,7 @@ const COURSES = [
   {
     moodleId: '50139-1',
     name: 'ממשק א׳1',
-    day: 'שלישי',
+    day: 2,
     hours: '14:00-17:00',
     lecturer: 'הר-גב מיכל',
     location: 'סטודיו 112',
@@ -53,7 +53,7 @@ const COURSES = [
   {
     moodleId: '50136-1',
     name: 'מיומנויות דיגיטליות',
-    day: 'רביעי',
+    day: 3,
     hours: '10:00-13:00',
     lecturer: 'רובינוביץ יסמין',
     location: 'סטודיו 112',
@@ -63,17 +63,19 @@ const COURSES = [
   {
     moodleId: '50134-1',
     name: 'רישום 03 - צבע',
-    day: 'רביעי',
+    day: 3,
     hours: '10:00-13:00',
-    lecturer: 'טוביס אלכסנדר',
+    lecturer: 'טוביס 
+    
+    אלכסנדר',
     location: 'כיתת רישום 212',
     courseUrl: '',
     notes: '7 שבועות אחרונים',
   },
   {
     moodleId: '50138-1',
-    name: 'סטודיו זמן 02',
-    day: 'חמישי',
+    name: 'סטודיו 02',
+    day: 4,
     hours: '10:00-17:00',
     lecturer: 'צוות מרצים / גרי ענבל',
     location: 'סלון 138.1 / כיתה 2043',

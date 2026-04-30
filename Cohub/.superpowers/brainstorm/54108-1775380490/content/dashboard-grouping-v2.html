@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Grouping v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #1c1a17;
+    color: #f5eee2;
+    padding: 32px 20px;
+    direction: rtl;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  h2 {
+    font-size: 16px;
+    font-weight: 500;
+    color: #f5eee2;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    font-size: 11px;
+    color: rgba(245,238,226,0.4);
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 24px; }
+
+  /* Wrapper card for each option */
+  .option {
+    background: rgba(245,238,226,0.04);
+    border: 1.5px solid rgba(245,238,226,0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .option:hover { border-color: rgba(245,238,226,0.3); }
+  .option.selected { border-color: rgba(245,238,226,0.7); }
+
+  .option-label {
+    padding: 10px 16px;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(245,238,226,0.35);
+    border-bottom: 1px solid rgba(245,238,226,0.07);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .option-label .letter {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid rgba(245,238,226,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: rgba(245,238,226,0.6);
+  }
+  .option.selected .option-label .letter {
+    background: rgba(245,238,226,0.15);
+    border-color: rgba(245,238,226,0.5);
+    color: #f5eee2;
+  }
+
+  /* ── The phone simulation ── */
+  .phone {
+    background: #f5eee2;
+    margin: 16px;
+    border-radius: 8px;
+    overflow: hidden;
+    direction: rtl;
+    font-family: 'IBM Plex Mono', monospace;
+    color: #000;
+  }
+
+  .ph-header {
+    background: #f5eee2;
+    padding: 12px 14px 8px;
+    border-bottom: 1px solid rgba(114,107,107,0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .ph-header-title { font-size: 15px; font-weight: 700; }
+  .ph-add { font-size: 11px; color: #726b6b; }
+
+  .ph-section-label {
+    padding: 6px 14px 4px;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(114,107,107,0.55);
+    background: rgba(114,107,107,0.06);
+    border-bottom: 1px solid rgba(114,107,107,0.08);
+  }
+  .ph-section-label.urgent { color: #c0392b; background: rgba(192,57,43,0.05); }
+
+  /* Course tag pill */
+  .course-tag {
+    display: inline-block;
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  /* Urgency badge (dark pill) */
+  .timer-badge {
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .timer-badge.overdue {
+    background: #c0392b;
+  }
+
+  /* ── OPTION A: flat rows, project = bold header row ── */
+  .opt-a .project-row {
+    padding: 9px 14px 5px;
+    border-bottom: 1px solid rgba(114,107,107,0.12);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .opt-a .project-name { font-size: 13px; font-weight: 700; color: #000; }
+  .opt-a .milestone-row {
+    padding: 6px 14px 6px 14px;
+    border-bottom: 1px solid rgba(114,107,107,0.07);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-right: 16px;
+    border-right: 2px solid rgba(114,107,107,0.18);
+  }
+  .opt-a .milestone-row:last-child { margin-bottom: 4px; }
+  .opt-a .milestone-name { font-size: 11px; color: #2a2520; }
+
+  /* ── OPTION B: card per project, milestones inside ── */
+  .opt-b .project-card {
+    margin: 8px 10px;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    background: #ede8dc;
+  }
+  .opt-b .corner { position: absolute; top: 0; right: 0; width: 5px; height: 100%; }
+  .opt-b .card-inner { padding: 8px 12px 8px 8px; }
+  .opt-b .project-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 6px;
+  }
+  .opt-b .project-name { font-size: 13px; font-weight: 700; color: #000; }
+  .opt-b .milestone-list { display: flex; flex-direction: column; gap: 3px; }
+  .opt-b .milestone-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0;
+    border-top: 1px solid rgba(114,107,107,0.12);
+  }
+  .opt-b .milestone-name { font-size: 10px; color: #4a4540; }
+
+  /* ── OPTION C: project name small above, milestones prominent ── */
+  .opt-c .project-group { border-bottom: 1px solid rgba(114,107,107,0.12); }
+  .opt-c .project-label {
+    padding: 7px 14px 0;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .opt-c .milestone-row {
+    padding: 7px 14px 7px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .opt-c .milestone-name { font-size: 12px; font-weight: 500; color: #000; }
+  .opt-c .milestone-sub { font-size: 9px; color: rgba(0,0,0,0.4); margin-top: 1px; }
+
+</style>
+</head>
+<body>
+
+<h2>איך פרויקט + שלבים מוצגים ביחד?</h2>
+<p class="subtitle">שלוש גישות — כולן על הרקע והפונטים של Cohub. בחר מה מרגיש נכון.</p>
+
+<div class="options">
+
+  <!-- ── OPTION A ── -->
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="option-label">
+      <div class="letter">A</div>
+      פרויקט כשורת כותרת, שלבים מוזחים עם קו
+    </div>
+    <div class="phone">
+      <div class="ph-header">
+        <span class="ph-header-title">הגשות</span>
+        <span class="ph-add">+ פרויקט חדש</span>
+      </div>
+      <div class="ph-section-label urgent">דדליין קרוב</div>
+
+      <!-- Project 1 -->
+      <div class="opt-a">
+        <div class="project-row">
+          <div>
+            <div class="project-name">פוסטר טיפוגרפי</div>
+            <span class="course-tag" style="background:rgba(184,221,176,0.5);color:#2d6b25;">עיצוב גרפי א׳</span>
+          </div>
+        </div>
+        <div class="milestone-row">
+          <span class="milestone-name">סקיצות ראשוניות</span>
+          <span class="timer-badge">מחר</span>
+        </div>
+        <div class="milestone-row">
+          <span class="milestone-name">מצגת ביניים</span>
+          <span style="font-size:10px;color:rgba(0,0,0,0.4)">15.4</span>
+        </div>
+      </div>
+
+      <div class="ph-section-label">בהמשך</div>
+      <div class="opt-a">
+        <div class="project-row">
+          <div>
+            <div class="project-name">אנימציה 2D</div>
+            <span class="course-tag" style="background:rgba(196,191,232,0.5);color:#4040a0;">אנימציה</span>
+          </div>
+          <span style="font-size:10px;color:rgba(0,0,0,0.4)">בעוד שבועיים</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── OPTION B ── -->
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="option-label">
+      <div class="letter">B</div>
+      כרטיסייה לפרויקט עם שלבים בתוכה
+    </div>
+    <div class="phone">
+      <div class="ph-header">
+        <span class="ph-header-title">הגשות</span>
+        <span class="ph-add">+ פרויקט חדש</span>
+      </div>
+      <div class="ph-section-label urgent">דדליין קרוב</div>
+
+      <div class="opt-b">
+        <div class="project-card">
+          <div class="corner" style="background:#b8ddb0;"></div>
+          <div class="card-inner">
+            <div class="project-top">
+              <div>
+                <div class="project-name">פוסטר טיפוגרפי</div>
+                <span class="course-tag" style="background:rgba(184,221,176,0.4);color:#2d6b25;margin-top:3px;display:inline-block">עיצוב גרפי א׳</span>
+              </div>
+            </div>
+            <div class="milestone-list">
+              <div class="milestone-row">
+                <span class="milestone-name">סקיצות ראשוניות</span>
+                <span class="timer-badge">מחר</span>
+              </div>
+              <div class="milestone-row">
+                <span class="milestone-name">מצגת ביניים</span>
+                <span style="font-size:9px;color:rgba(0,0,0,0.4)">15.4</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ph-section-label">בהמשך</div>
+      <div class="opt-b">
+        <div class="project-card">
+          <div class="corner" style="background:#c4bfe8;"></div>
+          <div class="card-inner">
+            <div class="project-top">
+              <div>
+                <div class="project-name">אנימציה 2D</div>
+                <span class="course-tag" style="background:rgba(196,191,232,0.4);color:#4040a0;margin-top:3px;display:inline-block">אנימציה</span>
+              </div>
+              <span class="timer-badge" style="background:rgba(114,107,107,0.15);color:#2a2520;">בעוד שבועיים</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── OPTION C ── -->
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="option-label">
+      <div class="letter">C</div>
+      שם הפרויקט קטן מעל, השלב עצמו בולט
+    </div>
+    <div class="phone">
+      <div class="ph-header">
+        <span class="ph-header-title">הגשות</span>
+        <span class="ph-add">+ פרויקט חדש</span>
+      </div>
+      <div class="ph-section-label urgent">דדליין קרוב</div>
+
+      <div class="opt-c">
+        <div class="project-group">
+          <div class="project-label">
+            <span class="course-tag" style="background:rgba(184,221,176,0.4);color:#2d6b25;">עיצוב גרפי א׳</span>
+            פוסטר טיפוגרפי
+          </div>
+          <div class="milestone-row">
+            <div>
+              <div class="milestone-name">סקיצות ראשוניות</div>
+            </div>
+            <span class="timer-badge">מחר</span>
+          </div>
+          <div class="milestone-row" style="border-top: 1px solid rgba(114,107,107,0.08);">
+            <div>
+              <div class="milestone-name">מצגת ביניים</div>
+            </div>
+            <span style="font-size:10px;color:rgba(0,0,0,0.4)">15.4</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ph-section-label">בהמשך</div>
+      <div class="opt-c">
+        <div class="project-group">
+          <div class="project-label">
+            <span class="course-tag" style="background:rgba(196,191,232,0.4);color:#4040a0;">אנימציה</span>
+            אנימציה 2D
+          </div>
+          <div class="milestone-row">
+            <div>
+              <div class="milestone-name">הגשה סופית</div>
+            </div>
+            <span style="font-size:10px;color:rgba(0,0,0,0.4)">בעוד שבועיים</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleSelect(el) {
+  document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  if (window.recordChoice) window.recordChoice(el.dataset.choice, el.querySelector('.option-label').textContent.trim());
+}
+</script>
+</body>
+</html>

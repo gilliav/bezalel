@@ -110,7 +110,7 @@ Accessible from Dashboard or Course View. Shows: title, parent course, descripti
 ### New / Edit Project
 Form fields: course (dropdown), title, description (optional). Milestones and briefs are added from the detail screen after creation, or inline here if the student wants.
 
-### Schedule (tab 3: לוח זמנים)
+### Schedule (tab 3: מערכת שעות)
 Read-only weekly view (Sun–Thu) of class times and rooms, derived from the courses collection. Secondary feature.
 
 ---
@@ -120,7 +120,7 @@ Read-only weekly view (Sun–Thu) of class times and rooms, derived from the cou
 Bottom tab bar (mobile-first), three tabs:
 - **פרויקטים** — Dashboard
 - **קורסים** — Courses list
-- **לוח זמנים** — Schedule
+- **מערכת** — Schedule
 
 ---
 

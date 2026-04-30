@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3 Design Directions</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Almoni Tzar ML v5 AAA", "Almoni ML v5 AAA", Arial, sans-serif;
+  background: #e0d9cc;
+  color: #1a1714;
+  padding: 28px 16px 56px;
+  direction: rtl;
+}
+
+h2 {
+  font-family: "Almoni ML v5 AAA", Arial, sans-serif;
+  font-size: 18px; font-weight: 700; margin-bottom: 6px;
+}
+.subtitle {
+  font-size: 13px; color: rgba(26,23,20,0.45);
+  margin-bottom: 28px; line-height: 1.6;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.card {
+  cursor: pointer;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.card:hover { border-color: rgba(26,23,20,0.2); }
+.card.selected { border-color: #1a1714; box-shadow: 0 6px 24px rgba(0,0,0,0.15); }
+
+.card-label {
+  padding: 11px 16px;
+  background: #d4cdc0;
+  border-bottom: 1px solid rgba(26,23,20,0.09);
+  display: flex; align-items: center; gap: 10px;
+}
+.letter {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 1.5px solid rgba(26,23,20,0.22);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: rgba(26,23,20,0.5);
+  font-family: "Almoni ML v5 AAA", Arial, sans-serif;
+  font-weight: 700; flex-shrink: 0;
+}
+.card.selected .letter { background: #1a1714; border-color: #1a1714; color: #f5eee2; }
+.card-label-text {
+  font-family: "Almoni ML v5 AAA", Arial, sans-serif;
+  font-size: 13px; font-weight: 700; color: rgba(26,23,20,0.6);
+}
+.card-label-sub {
+  font-size: 11px; color: rgba(26,23,20,0.38); margin-right: auto;
+}
+
+/* ════════════════════════════════════════
+   DESIGN 1 — Cards on cream, strong hierarchy
+   ════════════════════════════════════════ */
+.d1 { background: #f5eee2; }
+
+.d1 .header {
+  padding: 16px 16px 12px;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  border-bottom: 1px solid rgba(26,23,20,0.08);
+}
+.d1 .header-title {
+  font-family: "Almoni ML v5 AAA", Arial, sans-serif;
+  font-size: 26px; font-weight: 900; color: #1a1714; line-height: 1;
+}
+.d1 .header-action {
+  font-size: 12px; color: rgba(26,23,20,0.4);
+  border: 1px solid rgba(26,23,20,0.18); border-radius: 20px;
+  padding: 4px 12px; font-weight: 600;
+}
+
+.d1 .tier-label {
+  padding: 10px 16px 4px;
+  font-family: "Almoni ML v5 AAA", Arial, sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(26,23,20,0.3);
+}
+.d1 .tier-label.hot { color: #b83220; }
+
+.d1 .cards { padding: 0 12px 8px; display: flex; flex-direction: column; gap: 6px; }
+
+.d1 .proj {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
+}
+.d1 .accent { position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.d1 .proj-head { padding: 9px 14px 7px 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.d1 .proj-name { font-family: "Almoni ML v5 AAA", Arial, sans-serif; font-size: 15px; font-weight: 700; color: #1a1714; }
+.d1 .tag { font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 20px; margin-top: 3px; display: inline-block; }
+.d1 .ms-list { border-top: 1px solid rgba(0,0,0,0.05); }
+.d1 .ms { padding: 6px 14px 6px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.04); }
+.d1 .ms:last-child { border-bottom: none; }
+.d1 .ms-name { font-size: 13px; color: rgba(26,23,20,0.6); }
+.d1 .pill { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+.d1 .pill-dark { background: #1a1714; color: #f5eee2; }
+.d1 .pill-muted { background: rgba(26,23,20,0.08); color: rgba(26,23,20,0.45); }
+
+.d1 .nav {
+  border-top: 1px solid rgba(26,23,20,0.08);
+  display: flex; background: #f5eee2; margin-top: 4px;
+}
+.d1 .nav-item {
+  flex: 1; padding: 10px 4px; text-align: center;
+  font-family: "Almoni ML v5 AAA", Arial, sans-serif;
+  font-size: 12px; font-weight: 600; color: rgba(26,23,20,0.3);
+}
+.d1 .nav-item.active { color: #1a1714; border-top: 2px solid #1a1714; }
+
+
+/* ════════════════════════════════════════
+   DESIGN 2 — Warmer tint, pastel section banners
+   ════════════════════════════════════════ */
+.d2 { background: #f0e8d8; }
+
+.d2 .header {
+  padding: 16px 16px 12px;
+  display: flex; justify-content: space-between; align-items: center;
+  background: #f0e8d8;
+}
+.d2 .header-title {
+  font-family: "Almoni ML v5 AAA", Arial, sans-serif;
+  font-size: 24px; font-weight: 900; color: #1a1714;
+}
+.d2 .header-action {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: #1a1714; color: #f5eee2;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; line-height: 1; font-weight: 300;
+}
+
+.d2 .banner {
+  margin: 0 12px 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-family: "Almoni ML v5 AAA", Arial, sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.d2 .banner.hot { background: rgba(192,57,43,0.1); color: #b83220; margin-top: 10px; }
+.d2 .banner.next { background: rgba(26,23,20,0.06); color: rgba(26,23,20,0.4); margin-top: 10px; }
+
+.d2 .cards { padding: 0 12px 4px; display: flex; flex-direction: column; gap: 6px; }
+
+.d2 .proj {
+  background: #faf4e8;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(26,23,20,0.07);
+}
+.d2 .accent { position: absolute; top: 0; right: 0; width: 4px; height: 100%; border-radius: 0 10px 10px 0; }
+.d2 .proj-head { padding: 10px 14px 8px 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.d2 .proj-name { font-family: "Almoni ML v5 AAA", Arial, sans-serif; font-size: 15px; font-weight: 700; color: #1a1714; }
+.d2 .tag { font-size: 11px; font-weight: 600; padding: 2px 9px; border-radius: 20px; margin-top: 3px; display: inline-block; }
+.d2 .ms-list { border-top: 1px solid rgba(26,23,20,0.06); }
+.d2 .ms { padding: 7px 14px 7px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(26,23,20,0.04); }
+.d2 .ms:last-child { border-bottom: none; }
+.d2 .ms-name { font-size: 13px; color: rgba(26,23,20,0.6); }
+.d2 .pill { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
+.d2 .pill-dark { background: #1a1714; color: #f0e8d8; }
+.d2 .pill-muted { background: rgba(26,23,20,0.08); color: rgba(26,23,20,0.4); }
+
+.d2 .nav {
+  border-top: 1px solid rgba(26,23,20,0.08);
+  display: flex; background: #f0e8d8; margin-top: 6px;
+}
+.d2 .nav-item { flex: 1; padding: 10px 4px; text-align: center; font-family: "Almoni ML v5 AAA", Arial, sans-serif; font-size: 12px; font-weight: 600; color: rgba(26,23,20,0.3); }
+.d2 .nav-item.active { color: #1a1714; }
+.d2 .nav-dot { width: 5px; height: 5px; border-radius: 50%; background: #1a1714; margin: 2px auto 0; }
+
+
+/* ════════════════════════════════════════
+   DESIGN 3 — Paper white, tight grid, editorial
+   ════════════════════════════════════════ */
+.d3 { background: #ffffff; }
+
+.d3 .header {
+  padding: 14px 16px 10px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 2px solid #1a1714;
+}
+.d3 .header-title {
+  font-family: "Almoni ML v5 AAA", Arial, sans-serif;
+  font-size: 22px; font-weight: 900; color: #1a1714; letter-spacing: -0.01em;
+}
+.d3 .header-action { font-size: 20px; color: #1a1714; font-weight: 300; line-height: 1; }
+
+.d3 .tier-strip {
+  background: #1a1714; color: #f5eee2;
+  padding: 5px 16px;
+  font-family: "Almoni ML v5 AAA", Arial, sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+}
+.d3 .tier-strip.light {
+  background: rgba(26,23,20,0.06); color: rgba(26,23,20,0.45);
+}
+
+.d3 .cards { padding: 8px 12px; display: flex; flex-direction: column; gap: 6px; }
+
+.d3 .proj {
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  border: 1.5px solid rgba(26,23,20,0.1);
+  background: #fafafa;
+}
+.d3 .accent { position: absolute; top: 0; right: 0; width: 4px; height: 100%; }
+.d3 .proj-head { padding: 9px 14px 7px 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.d3 .proj-name { font-family: "Almoni ML v5 AAA", Arial, sans-serif; font-size: 15px; font-weight: 700; color: #1a1714; }
+.d3 .tag { font-size: 11px; font-weight: 600; padding: 1px 8px; border-radius: 4px; margin-top: 4px; display: inline-block; border: 1px solid; }
+.d3 .ms-list { border-top: 1.5px solid rgba(26,23,20,0.07); }
+.d3 .ms { padding: 6px 14px 6px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(26,23,20,0.05); }
+.d3 .ms:last-child { border-bottom: none; }
+.d3 .ms-name { font-size: 13px; color: rgba(26,23,20,0.58); }
+.d3 .pill { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 4px; white-space: nowrap; }
+.d3 .pill-dark { background: #1a1714; color: #fff; }
+.d3 .pill-muted { background: rgba(26,23,20,0.07); color: rgba(26,23,20,0.4); }
+
+.d3 .nav {
+  border-top: 1.5px solid rgba(26,23,20,0.1);
+  display: flex; background: #fff; margin-top: 4px;
+}
+.d3 .nav-item { flex: 1; padding: 10px 4px; text-align: center; font-family: "Almoni ML v5 AAA", Arial, sans-serif; font-size: 12px; font-weight: 600; color: rgba(26,23,20,0.28); }
+.d3 .nav-item.active { color: #1a1714; background: rgba(26,23,20,0.04); }
+</style>
+</head>
+<body>
+
+<h2>3 כיוונים עיצוביים</h2>
+<p class="subtitle">כולם עם Almoni, כרטיסיות לפרויקטים, מיילסטונים בפנים. שוני בטון ובאופי.</p>
+
+<div class="grid">
+
+  <!-- ══ DESIGN 1 ══ -->
+  <div class="card" data-choice="1" onclick="pick(this)">
+    <div class="card-label">
+      <div class="letter">1</div>
+      <span class="card-label-text">קרם נקי · כרטיסים לבנים · היררכיה ברורה</span>
+      <span class="card-label-sub">מינימליסטי חם</span>
+    </div>
+    <div class="d1">
+      <div class="header">
+        <span class="header-title">הגשות</span>
+        <span class="header-action">+ פרויקט חדש</span>
+      </div>
+
+      <div class="tier-label hot">השבוע</div>
+      <div class="cards">
+        <div class="proj">
+          <div class="accent" style="background:#b8ddb0;"></div>
+          <div class="proj-head">
+            <div>
+              <div class="proj-name">פוסטר טיפוגרפי</div>
+              <span class="tag" style="background:rgba(184,221,176,0.3);color:#2d6a25;">עיצוב גרפי א׳</span>
+            </div>
+          </div>
+          <div class="ms-list">
+            <div class="ms"><span class="ms-name">סקיצות ראשוניות</span><span class="pill pill-dark">מחר</span></div>
+            <div class="ms"><span class="ms-name">מצגת ביניים</span><span style="font-size:12px;color:rgba(26,23,20,0.35)">15.4</span></div>
+          </div>
+        </div>
+        <div class="proj">
+          <div class="accent" style="background:#f5c9a3;"></div>
+          <div class="proj-head">
+            <div>
+              <div class="proj-name">פרויקט צילום</div>
+              <span class="tag" style="background:rgba(245,201,163,0.3);color:#8a4a10;">צילום</span>
+            </div>
+            <span class="pill pill-dark">בעוד 5 ימים</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tier-label">בהמשך</div>
+      <div class="cards">
+        <div class="proj">
+          <div class="accent" style="background:#c4bfe8;"></div>
+          <div class="proj-head">
+            <div>
+              <div class="proj-name">אנימציה 2D</div>
+              <span class="tag" style="background:rgba(196,191,232,0.3);color:#3535a0;">אנימציה</span>
+            </div>
+            <span class="pill pill-muted">בעוד שבועיים</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav">
+        <div class="nav-item active">הגשות</div>
+        <div class="nav-item">קורסים</div>
+        <div class="nav-item">מערכת</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ DESIGN 2 ══ -->
+  <div class="card" data-choice="2" onclick="pick(this)">
+    <div class="card-label">
+      <div class="letter">2</div>
+      <span class="card-label-text">קרם עמוק · באנרים לסקציות · כפתור + עגול</span>
+      <span class="card-label-sub">חם ומוחשי</span>
+    </div>
+    <div class="d2">
+      <div class="header">
+        <span class="header-title">הגשות</span>
+        <div class="header-action">+</div>
+      </div>
+
+      <div class="banner hot">השבוע</div>
+      <div class="cards">
+        <div class="proj">
+          <div class="accent" style="background:#b8ddb0;"></div>
+          <div class="proj-head">
+            <div>
+              <div class="proj-name">פוסטר טיפוגרפי</div>
+              <span class="tag" style="background:rgba(184,221,176,0.35);color:#2d6a25;">עיצוב גרפי א׳</span>
+            </div>
+          </div>
+          <div class="ms-list">
+            <div class="ms"><span class="ms-name">סקיצות ראשוניות</span><span class="pill pill-dark">מחר</span></div>
+            <div class="ms"><span class="ms-name">מצגת ביניים</span><span style="font-size:12px;color:rgba(26,23,20,0.35)">15.4</span></div>
+          </div>
+        </div>
+        <div class="proj">
+          <div class="accent" style="background:#f5c9a3;"></div>
+          <div class="proj-head">
+            <div>
+              <div class="proj-name">פרויקט צילום</div>
+              <span class="tag" style="background:rgba(245,201,163,0.35);color:#8a4a10;">צילום</span>
+            </div>
+            <span class="pill pill-dark">בעוד 5 ימים</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="banner next">בהמשך</div>
+      <div class="cards">
+        <div class="proj">
+          <div class="accent" style="background:#c4bfe8;"></div>
+          <div class="proj-head">
+            <div>
+              <div class="proj-name">אנימציה 2D</div>
+              <span class="tag" style="background:rgba(196,191,232,0.35);color:#3535a0;">אנימציה</span>
+            </div>
+            <span class="pill pill-muted">בעוד שבועיים</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav">
+        <div class="nav-item">הגשות<div class="nav-dot" style="opacity:0"></div></div>
+        <div class="nav-item active">הגשות<div class="nav-dot"></div></div>
+        <div class="nav-item">קורסים<div class="nav-dot" style="opacity:0"></div></div>
+        <div class="nav-item">מערכת<div class="nav-dot" style="opacity:0"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ DESIGN 3 ══ -->
+  <div class="card" data-choice="3" onclick="pick(this)">
+    <div class="card-label">
+      <div class="letter">3</div>
+      <span class="card-label-text">לבן נייר · גבול כהה חזק · ריבועי</span>
+      <span class="card-label-sub">אדיטוריאל נקי</span>
+    </div>
+    <div class="d3">
+      <div class="header">
+        <span class="header-title">הגשות</span>
+        <span class="header-action">+</span>
+      </div>
+
+      <div class="tier-strip">השבוע</div>
+      <div class="cards">
+        <div class="proj">
+          <div class="accent" style="background:#b8ddb0;"></div>
+          <div class="proj-head">
+            <div>
+              <div class="proj-name">פוסטר טיפוגרפי</div>
+              <span class="tag" style="background:rgba(184,221,176,0.2);color:#2d6a25;border-color:rgba(184,221,176,0.6);">עיצוב גרפי א׳</span>
+            </div>
+          </div>
+          <div class="ms-list">
+            <div class="ms"><span class="ms-name">סקיצות ראשוניות</span><span class="pill pill-dark">מחר</span></div>
+            <div class="ms"><span class="ms-name">מצגת ביניים</span><span style="font-size:12px;color:rgba(26,23,20,0.35)">15.4</span></div>
+          </div>
+        </div>
+        <div class="proj">
+          <div class="accent" style="background:#f5c9a3;"></div>
+          <div class="proj-head">
+            <div>
+              <div class="proj-name">פרויקט צילום</div>
+              <span class="tag" style="background:rgba(245,201,163,0.2);color:#8a4a10;border-color:rgba(245,201,163,0.6);">צילום</span>
+            </div>
+            <span class="pill pill-dark">בעוד 5 ימים</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tier-strip light">בהמשך</div>
+      <div class="cards">
+        <div class="proj">
+          <div class="accent" style="background:#c4bfe8;"></div>
+          <div class="proj-head">
+            <div>
+              <div class="proj-name">אנימציה 2D</div>
+              <span class="tag" style="background:rgba(196,191,232,0.2);color:#3535a0;border-color:rgba(196,191,232,0.6);">אנימציה</span>
+            </div>
+            <span class="pill pill-muted">בעוד שבועיים</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav">
+        <div class="nav-item active">הגשות</div>
+        <div class="nav-item">קורסים</div>
+        <div class="nav-item">מערכת</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function pick(el) {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  if (window.recordChoice) window.recordChoice(el.dataset.choice, el.querySelector('.card-label-text').textContent.trim());
+}
+</script>
+</body>
+</html>

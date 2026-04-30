@@ -18,7 +18,7 @@ export function FileUpload({ projectId, onError }) {
       return
     }
 
-    const storageRef = ref(storage, `briefs/${projectId}/${Date.now()}_${file.name}`)
+    const storageRef = ref(storage, `attachments/${projectId}/${Date.now()}_${file.name}`)
     const uploadTask = uploadBytesResumable(storageRef, file)
 
     setUploading(true)
@@ -35,7 +35,7 @@ export function FileUpload({ projectId, onError }) {
       async () => {
         try {
           const url = await getDownloadURL(uploadTask.snapshot.ref)
-          await addDoc(collection(db, 'projects', projectId, 'briefs'), {
+          await addDoc(collection(db, 'projects', projectId, 'attachments'), {
             fileName: file.name,
             fileUrl: url,
             fileType: ext,
@@ -53,8 +53,8 @@ export function FileUpload({ projectId, onError }) {
   }
 
   return (
-    <div className="mb-3">
-      <label className="block text-xs text-gray-500 mb-1 cursor-pointer">
+    <div className="flex flex-col gap-1">
+      <label className="text-sm text-muted-foreground cursor-pointer">
         <span>העלאת קובץ (PDF / תמונה)</span>
         <input
           ref={inputRef}
@@ -67,7 +67,7 @@ export function FileUpload({ projectId, onError }) {
         />
       </label>
       {uploading && (
-        <div className="text-xs text-blue-500">מעלה... {progress}%</div>
+        <div className="text-sm text-primary">מעלה... {progress}%</div>
       )}
     </div>
   )

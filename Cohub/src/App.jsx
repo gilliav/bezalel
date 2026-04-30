@@ -18,7 +18,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <ConnectionBanner isOnline={isOnline} />
-      <Toast message={toastMessage} />
+      <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />
       <div className="min-h-screen pb-16 max-w-lg mx-auto">
         <Routes>
           <Route path="/" element={<Dashboard onError={setToastMessage} />} />

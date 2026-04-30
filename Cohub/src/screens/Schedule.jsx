@@ -1,42 +1,41 @@
 import { useCourses } from '../hooks/useCourses'
+import { PageHeader } from '../components/PageHeader'
+import { SectionTier } from '../components/SectionTier'
+import { EmptyState } from '../components/EmptyState'
 
 const DAY_ORDER = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי']
 
 export default function Schedule() {
   const { courses, loading } = useCourses()
 
-  if (loading) return <div className="p-4 text-right text-gray-400">טוען...</div>
+  if (loading) return <div className="state-loading">טוען...</div>
 
   const byDay = DAY_ORDER.reduce((acc, day) => {
     acc[day] = courses.filter(c => c.day === day)
     return acc
   }, {})
 
+  const hasAny = DAY_ORDER.some(day => byDay[day].length > 0)
+
   return (
     <div className="text-right">
-      <div className="px-4 py-3 border-b border-gray-200">
-        <h1 className="text-lg font-bold">לוח זמנים</h1>
-      </div>
+      <PageHeader title="מערכת שעות" />
+      {!hasAny && <EmptyState message="אין קורסים" />}
       {DAY_ORDER.map(day => {
         const dayCourses = byDay[day]
         if (!dayCourses.length) return null
         return (
-          <div key={day} className="border-b border-gray-100">
-            <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wide bg-gray-50">
-              {day}
-            </div>
+          <div key={day}>
+            <SectionTier label={day} variant="normal" />
             {dayCourses.map(course => (
-              <div key={course.id} className="px-4 py-3 flex items-start gap-3">
-                <div
-                  className="w-3 h-3 rounded-full mt-0.5 shrink-0"
-                  style={{ backgroundColor: course.color }}
-                />
-                <div>
-                  <div className="text-sm font-medium text-gray-900">{course.name}</div>
-                  <div className="text-xs text-gray-500">{course.hours} · {course.location}</div>
-                  <div className="text-xs text-gray-400">{course.lecturer}</div>
+              <div key={course.id} className="list-row items-start">
+                <div className="color-dot mt-0.5" style={{ backgroundColor: course.color }} />
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-base font-medium text-foreground">{course.name}</span>
+                  <span className="text-sm text-muted-foreground">{course.hours} · {course.location}</span>
+                  <span className="text-sm text-muted-foreground">{course.lecturer}</span>
                   {course.notes && (
-                    <div className="text-xs text-gray-400 mt-0.5">{course.notes}</div>
+                    <span className="text-sm text-muted-foreground">{course.notes}</span>
                   )}
                 </div>
               </div>

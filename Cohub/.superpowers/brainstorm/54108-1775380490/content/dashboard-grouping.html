@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Grouping</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #1a1a2e;
+    color: #e8e0d0;
+    padding: 24px 16px;
+    direction: rtl;
+  }
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #f0ebe0;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: 13px;
+    color: #9e9080;
+    margin-bottom: 28px;
+    line-height: 1.5;
+  }
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .card {
+    background: #252538;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { border-color: #8b6534; }
+  .card.selected { border-color: #c4873a; box-shadow: 0 0 0 3px rgba(196,135,58,0.2); }
+  .card-label {
+    background: #1e1e30;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #c4873a;
+    border-bottom: 1px solid #333350;
+  }
+  .card-body { padding: 14px; }
+
+  /* ── OPTION A: Indented milestones ── */
+  .opt-a .project-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0 6px;
+    border-bottom: 1px solid #333350;
+  }
+  .opt-a .project-name { font-size: 15px; font-weight: 600; color: #f0ebe0; }
+  .opt-a .project-date { font-size: 12px; color: #9e9080; }
+  .opt-a .milestone-list { padding-right: 16px; border-right: 2px solid #4a4060; margin-top: 6px; }
+  .opt-a .milestone-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 8px;
+  }
+  .opt-a .milestone-name { font-size: 13px; color: #c8bfb0; }
+  .opt-a .milestone-date { font-size: 12px; color: #9e9080; }
+  .opt-a .milestone-row.urgent .milestone-name { color: #e08060; }
+  .opt-a .milestone-row.urgent .milestone-date { color: #e08060; }
+  .opt-a .course-tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-top: 4px;
+  }
+
+  /* ── OPTION B: Card with milestone chips ── */
+  .opt-b .project-card {
+    background: #1e1e30;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .opt-b .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+  .opt-b .project-name { font-size: 15px; font-weight: 600; color: #f0ebe0; }
+  .opt-b .project-course {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+  .opt-b .milestone-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .opt-b .chip {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: #2e2e48;
+    color: #b8b0a0;
+    border: 1px solid #3a3a58;
+  }
+  .opt-b .chip.urgent {
+    background: #3d1f1f;
+    color: #e08060;
+    border-color: #6a2e20;
+  }
+  .opt-b .chip.due { font-weight: 500; }
+
+  /* ── OPTION C: Timeline-style left bar ── */
+  .opt-c .project-block {
+    position: relative;
+    padding-right: 0;
+    margin-bottom: 4px;
+  }
+  .opt-c .project-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0 4px;
+  }
+  .opt-c .project-name { font-size: 15px; font-weight: 600; color: #f0ebe0; }
+  .opt-c .project-badge {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+  }
+  .opt-c .milestone-track {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-right: 2px solid #4a4060;
+    margin-right: 6px;
+    padding-right: 12px;
+  }
+  .opt-c .milestone-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    position: relative;
+  }
+  .opt-c .milestone-row::before {
+    content: '';
+    position: absolute;
+    right: -17px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #6a6080;
+    border: 1px solid #9090c0;
+  }
+  .opt-c .milestone-row.urgent::before { background: #e08060; border-color: #e08060; }
+  .opt-c .milestone-name { font-size: 13px; color: #c8bfb0; }
+  .opt-c .milestone-name.urgent { color: #e08060; }
+  .opt-c .milestone-date { font-size: 12px; color: #9e9080; }
+  .opt-c .milestone-date.urgent { color: #e08060; }
+</style>
+</head>
+<body>
+
+<h2>איך להציג מיילסטונים מתחת לפרויקט?</h2>
+<p class="subtitle">שלושה גישות לאיך הדשבורד מציג פרויקטים + שלבים ביחד. הפרויקט = הורה, המיילסטונים = ילדים תחתיו.</p>
+
+<div class="cards">
+
+  <!-- OPTION A -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-label">A — כניסה עם קו אנכי</div>
+    <div class="card-body opt-a">
+      <div class="project-row">
+        <div>
+          <div class="project-name">פוסטר טיפוגרפי</div>
+          <span class="course-tag" style="background:#2a3d2a; color:#6aaa6a;">עיצוב גרפי</span>
+        </div>
+        <div class="project-date">אין ת׳ הגשה</div>
+      </div>
+      <div class="milestone-list">
+        <div class="milestone-row urgent">
+          <span class="milestone-name">סקיצות ראשוניות</span>
+          <span class="milestone-date">מחר</span>
+        </div>
+        <div class="milestone-row">
+          <span class="milestone-name">מצגת ביניים</span>
+          <span class="milestone-date">בעוד 10 ימים</span>
+        </div>
+        <div class="milestone-row">
+          <span class="milestone-name">הגשה סופית</span>
+          <span class="milestone-date">בעוד 3 שבועות</span>
+        </div>
+      </div>
+      <div style="margin-top: 14px; padding-top: 10px; border-top: 1px solid #333350;">
+        <div class="project-row" style="border: none; padding-top: 0;">
+          <div>
+            <div class="project-name">אנימציה 2D</div>
+            <span class="course-tag" style="background:#2a2a3d; color:#6a80cc;">אנימציה</span>
+          </div>
+          <div class="project-date">בעוד שבועיים</div>
+        </div>
+        <div style="color: #9e9080; font-size: 12px; padding-right: 16px; margin-top: 4px;">אין שלבים</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION B -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-label">B — צ'יפס מיילסטונים בתוך כרטיס</div>
+    <div class="card-body opt-b">
+      <div class="project-card">
+        <div class="project-header">
+          <div class="project-name">פוסטר טיפוגרפי</div>
+          <span class="project-course" style="background:#2a3d2a; color:#6aaa6a;">עיצוב גרפי</span>
+        </div>
+        <div class="milestone-chips">
+          <div class="chip urgent due">סקיצות ← מחר</div>
+          <div class="chip">מצגת ← 15.4</div>
+          <div class="chip">הגשה ← 3.5</div>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-header">
+          <div class="project-name">אנימציה 2D</div>
+          <span class="project-course" style="background:#2a2a3d; color:#6a80cc;">אנימציה</span>
+        </div>
+        <div style="font-size: 12px; color: #9e9080;">בעוד שבועיים · אין שלבים</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION C -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-label">C — ציר זמן עם נקודות</div>
+    <div class="card-body opt-c">
+      <div class="project-block">
+        <div class="project-row">
+          <div class="project-name">פוסטר טיפוגרפי</div>
+          <span class="project-badge" style="background:#2a3d2a; color:#6aaa6a;">עיצוב גרפי</span>
+        </div>
+        <div class="milestone-track">
+          <div class="milestone-row urgent">
+            <span class="milestone-name urgent">סקיצות ראשוניות</span>
+            <span class="milestone-date urgent">מחר</span>
+          </div>
+          <div class="milestone-row">
+            <span class="milestone-name">מצגת ביניים</span>
+            <span class="milestone-date">15.4</span>
+          </div>
+          <div class="milestone-row">
+            <span class="milestone-name">הגשה סופית</span>
+            <span class="milestone-date">3.5</span>
+          </div>
+        </div>
+      </div>
+      <div style="height: 10px;"></div>
+      <div class="project-block">
+        <div class="project-row">
+          <div class="project-name">אנימציה 2D</div>
+          <span class="project-badge" style="background:#2a2a3d; color:#6a80cc;">אנימציה</span>
+        </div>
+        <div style="font-size: 12px; color: #9e9080; margin-right: 20px;">בעוד שבועיים · אין שלבים</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleSelect(el) {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  if (window.recordChoice) window.recordChoice(el.dataset.choice, el.querySelector('.card-label').textContent.trim());
+}
+</script>
+</body>
+</html>
