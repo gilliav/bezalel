@@ -36,7 +36,7 @@ export function AuthSlot({ user, signIn, signOut }) {
             className="fixed inset-0 z-10"
             onClick={() => setMenuOpen(false)}
           />
-          <div className="absolute left-0 top-full z-20 mt-1 min-w-[7rem] bg-[var(--background)] border border-[var(--border)] border-b-2 border-b-[#1a1714]">
+          <div className="absolute right-0 top-full z-20 mt-1 min-w-[7rem] bg-[var(--background)] border border-[var(--border)]">
             <button
               onClick={() => { signOut(); setMenuOpen(false) }}
               className="w-full text-right px-3 py-2 text-sm text-foreground hover:bg-[var(--muted)] transition-colors"
