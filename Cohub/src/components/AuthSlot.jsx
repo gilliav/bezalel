@@ -34,6 +34,7 @@ export function AuthSlot({ user, signIn, signOut }) {
       <button
         ref={triggerRef}
         onClick={() => setMenuOpen(o => !o)}
+        aria-haspopup="menu"
         aria-expanded={menuOpen}
         className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
@@ -48,8 +49,9 @@ export function AuthSlot({ user, signIn, signOut }) {
             className="fixed inset-0 z-10"
             onClick={() => setMenuOpen(false)}
           />
-          <div className="absolute right-0 top-full z-20 mt-1 min-w-[7rem] bg-[var(--background)] border border-[var(--border)]">
+          <div role="menu" className="absolute right-0 top-full z-20 mt-1 min-w-[7rem] bg-[var(--background)] border border-[var(--border)]">
             <button
+              role="menuitem"
               onClick={() => { signOut(); setMenuOpen(false) }}
               className="w-full text-right px-3 py-2 text-sm text-foreground hover:bg-[var(--muted)] transition-colors"
             >

@@ -27,9 +27,9 @@ it('renders trigger button with first name when user is signed in', () => {
 it('opens menu when trigger is clicked', () => {
   const user = { displayName: 'גילי אברך', uid: '1' }
   render(<AuthSlot user={user} signIn={() => {}} signOut={() => {}} />)
-  expect(screen.queryByRole('button', { name: 'התנתק.י' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('menuitem', { name: 'התנתק.י' })).not.toBeInTheDocument()
   fireEvent.click(screen.getByRole('button', { name: /גילי/i }))
-  expect(screen.getByRole('button', { name: 'התנתק.י' })).toBeInTheDocument()
+  expect(screen.getByRole('menuitem', { name: 'התנתק.י' })).toBeInTheDocument()
 })
 
 it('calls signOut and closes menu when התנתק.י is clicked', () => {
@@ -37,18 +37,18 @@ it('calls signOut and closes menu when התנתק.י is clicked', () => {
   const user = { displayName: 'גילי אברך', uid: '1' }
   render(<AuthSlot user={user} signIn={() => {}} signOut={signOut} />)
   fireEvent.click(screen.getByRole('button', { name: /גילי/i }))
-  fireEvent.click(screen.getByRole('button', { name: 'התנתק.י' }))
+  fireEvent.click(screen.getByRole('menuitem', { name: 'התנתק.י' }))
   expect(signOut).toHaveBeenCalledOnce()
-  expect(screen.queryByRole('button', { name: 'התנתק.י' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('menuitem', { name: 'התנתק.י' })).not.toBeInTheDocument()
 })
 
 it('closes menu when overlay is clicked', () => {
   const user = { displayName: 'גילי אברך', uid: '1' }
   render(<AuthSlot user={user} signIn={() => {}} signOut={() => {}} />)
   fireEvent.click(screen.getByRole('button', { name: /גילי/i }))
-  expect(screen.getByRole('button', { name: 'התנתק.י' })).toBeInTheDocument()
+  expect(screen.getByRole('menuitem', { name: 'התנתק.י' })).toBeInTheDocument()
   fireEvent.click(screen.getByTestId('auth-menu-overlay'))
-  expect(screen.queryByRole('button', { name: 'התנתק.י' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('menuitem', { name: 'התנתק.י' })).not.toBeInTheDocument()
 })
 
 it('renders fallback label when displayName is null', () => {
@@ -61,9 +61,9 @@ it('closes menu on Escape key', () => {
   const user = { displayName: 'גילי אברך', uid: '1' }
   render(<AuthSlot user={user} signIn={() => {}} signOut={() => {}} />)
   fireEvent.click(screen.getByRole('button', { name: /גילי/i }))
-  expect(screen.getByRole('button', { name: 'התנתק.י' })).toBeInTheDocument()
+  expect(screen.getByRole('menuitem', { name: 'התנתק.י' })).toBeInTheDocument()
   fireEvent.keyDown(screen.getByTestId('auth-menu-wrapper'), { key: 'Escape' })
-  expect(screen.queryByRole('button', { name: 'התנתק.י' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('menuitem', { name: 'התנתק.י' })).not.toBeInTheDocument()
 })
 
 it('returns focus to trigger after Escape', () => {
