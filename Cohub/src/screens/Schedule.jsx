@@ -3,9 +3,8 @@ import { PageHeader } from '../components/PageHeader'
 import { SectionTier } from '../components/SectionTier'
 import { CourseTag } from '../components/CourseTag'
 import { EmptyState } from '../components/EmptyState'
-import { dayIndexToHe } from '../utils/dates'
 
-const DAY_ORDER = [0, 1, 2, 3, 4]
+const DAY_ORDER = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי']
 
 export default function Schedule() {
   const { courses, loading } = useCourses()
@@ -31,7 +30,7 @@ export default function Schedule() {
         if (!dayCourses.length) return null
         return (
           <div key={day}>
-            <SectionTier label={dayIndexToHe(day)} variant="normal" />
+            <SectionTier label={day} variant="normal" />
             {dayCourses.map(course => (
               <div key={course.id} className="list-row items-start">
                 <div className="color-dot mt-0.5" style={{ backgroundColor: course.color }} />

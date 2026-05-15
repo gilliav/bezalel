@@ -13,10 +13,11 @@ export function useCourses() {
       (snap) => {
         const all = snap.docs.map(d => ({ id: d.id, ...d.data() }))
         // Sort client-side: online courses (no day) go last, regular courses by day
+        const DAY_ORDER = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי']
         all.sort((a, b) => {
           if (a.isOnline && !b.isOnline) return 1
           if (!a.isOnline && b.isOnline) return -1
-          return (a.day ?? 0) - (b.day ?? 0)
+          return DAY_ORDER.indexOf(a.day) - DAY_ORDER.indexOf(b.day)
         })
         setCourses(all)
         setLoading(false)

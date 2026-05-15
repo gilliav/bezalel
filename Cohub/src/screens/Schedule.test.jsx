@@ -18,7 +18,7 @@ import Schedule from './Schedule'
 const regularCourse = {
   id: 'c1',
   name: 'טיפוגרפיה',
-  day: 1,
+  day: 'שני',
   hours: '10:00-13:00',
   lecturer: 'כהן משה',
   location: 'סטודיו 135',
