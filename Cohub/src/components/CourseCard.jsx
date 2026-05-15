@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { dayIndexToHe } from '../utils/dates'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
+import { CourseTag } from './CourseTag'
 
 export function CourseCard({ course, onSave }) {
   const [editing, setEditing] = useState(false)
@@ -32,9 +33,16 @@ export function CourseCard({ course, onSave }) {
         </button>
       </div>
 
-      <div className="text-base text-muted-foreground">
-        {dayIndexToHe(course.day)} · {course.hours} · {course.lecturer} · {course.location}
-      </div>
+      {course.isOnline ? (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <CourseTag name="קורס מקוון" color={course.color} />
+          <span>{course.lecturer}</span>
+        </div>
+      ) : (
+        <div className="text-base text-muted-foreground">
+          {dayIndexToHe(course.day)} · {course.hours} · {course.lecturer} · {course.location}
+        </div>
+      )}
 
       {course.courseUrl && !editing && (
         <a

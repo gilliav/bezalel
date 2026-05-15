@@ -46,3 +46,42 @@ it('calls onSave with updated fields when edit form is submitted', async () => {
     expect.objectContaining({ courseUrl: 'https://miro.com/board' }),
   )
 })
+
+describe('CourseCard online course', () => {
+  const onlineCourse = {
+    id: 'c2',
+    name: 'עיצוב אונליין',
+    lecturer: 'כהן דנה',
+    color: '#E63946',
+    isOnline: true,
+    courseUrl: '',
+    notes: '',
+  }
+
+  it('shows קורס מקוון tag when isOnline is true', () => {
+    render(
+      <MemoryRouter>
+        <CourseCard course={onlineCourse} onSave={() => {}} />
+      </MemoryRouter>
+    )
+    expect(screen.getByText('קורס מקוון')).toBeInTheDocument()
+  })
+
+  it('does not show day/hours/location line when isOnline is true', () => {
+    render(
+      <MemoryRouter>
+        <CourseCard course={onlineCourse} onSave={() => {}} />
+      </MemoryRouter>
+    )
+    expect(screen.queryByText(/·/)).not.toBeInTheDocument()
+  })
+
+  it('still shows lecturer when isOnline is true', () => {
+    render(
+      <MemoryRouter>
+        <CourseCard course={onlineCourse} onSave={() => {}} />
+      </MemoryRouter>
+    )
+    expect(screen.getByText(/כהן דנה/)).toBeInTheDocument()
+  })
+})
