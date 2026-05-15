@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore'
+import { collection, onSnapshot } from 'firebase/firestore'
 import { db } from '../firebase'
 
 export function useCourses() {
@@ -8,11 +8,17 @@ export function useCourses() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    const q = query(collection(db, 'courses'), orderBy('day'))
     return onSnapshot(
-      q,
+      collection(db, 'courses'),
       (snap) => {
-        setCourses(snap.docs.map(d => ({ id: d.id, ...d.data() })))
+        const all = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        // Sort client-side: online courses (no day) go last, regular courses by day
+        all.sort((a, b) => {
+          if (a.isOnline && !b.isOnline) return 1
+          if (!a.isOnline && b.isOnline) return -1
+          return (a.day ?? 0) - (b.day ?? 0)
+        })
+        setCourses(all)
         setLoading(false)
       },
       (err) => {

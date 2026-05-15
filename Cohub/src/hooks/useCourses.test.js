@@ -11,8 +11,6 @@ const mockOnSnapshot = vi.hoisted(() => vi.fn())
 
 vi.mock('firebase/firestore', () => ({
   collection: vi.fn(),
-  query: vi.fn(),
-  orderBy: vi.fn(),
   onSnapshot: mockOnSnapshot,
 }))
 
