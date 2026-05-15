@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 
-const tagStyle = (color) => ({
-  fontSize: '11px',
+const tagStyle = (color, fontSize = '11px') => ({
+  fontSize,
   fontWeight: 600,
   paddingBottom: '1px',
   borderBottom: `1.5px solid ${color}`,
@@ -10,16 +10,16 @@ const tagStyle = (color) => ({
   lineHeight: 1.4,
 })
 
-export function CourseTag({ name, color, to }) {
+export function CourseTag({ name, color, to, fontSize }) {
   if (to) {
     return (
-      <Link to={to} style={tagStyle(color)}>
+      <Link to={to} style={tagStyle(color, fontSize)}>
         {name}
       </Link>
     )
   }
   return (
-    <span style={tagStyle(color)}>
+    <span style={tagStyle(color, fontSize)}>
       {name}
     </span>
   )

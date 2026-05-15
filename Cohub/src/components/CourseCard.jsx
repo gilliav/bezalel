@@ -35,7 +35,7 @@ export function CourseCard({ course, onSave }) {
 
       {course.isOnline ? (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <CourseTag name="קורס מקוון" color={course.color} />
+          <CourseTag name="קורס מקוון" color={course.color} fontSize="13px" />
           <span>{course.lecturer}</span>
         </div>
       ) : (
