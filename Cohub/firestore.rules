@@ -17,8 +17,13 @@ service cloud.firestore {
     }
 
     // users: each user can read/write only their own document
+    // role field is excluded from client writes (Admin SDK only)
     match /users/{uid} {
-      allow read, write: if isAuthenticated() && isOwner(uid);
+      allow read: if isAuthenticated() && isOwner(uid);
+      allow create: if isAuthenticated() && isOwner(uid)
+        && !request.resource.data.keys().hasAny(['role']);
+      allow update: if isAuthenticated() && isOwner(uid)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']);
     }
 
     // courses: any authenticated user can read; only admins can write
