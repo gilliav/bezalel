@@ -11,15 +11,20 @@ service cloud.firestore {
       return request.auth.uid == uid;
     }
 
+    function isAdmin() {
+      return isAuthenticated() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+
     // users: each user can read/write only their own document
     match /users/{uid} {
       allow read, write: if isAuthenticated() && isOwner(uid);
     }
 
-    // courses: any authenticated user can read; no client writes
+    // courses: any authenticated user can read; only admins can write
     match /courses/{courseId} {
       allow read: if isAuthenticated();
-      allow write: if false;
+      allow write: if isAdmin();
     }
 
     // cohorts: any authenticated user can read; no client writes
