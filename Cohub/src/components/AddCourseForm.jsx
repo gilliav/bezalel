@@ -143,30 +143,22 @@ export function AddCourseForm({ courses, onClose, onError }) {
 
       <div className="field">
         <label className="field-label">צבע</label>
-        <div className="flex gap-2 flex-wrap" role="radiogroup" aria-label="בחירת צבע">
+        <div className="flex gap-2 flex-wrap" role="group" aria-label="בחירת צבע">
           {COURSE_COLORS.map(color => {
             const isUsed = usedColors.includes(color)
-            const isSelected = activeColor === color && !customHex.match(/^#[0-9A-Fa-f]{6}$/)
+            const isSelected = selectedColor === color && !customHex.match(/^#[0-9A-Fa-f]{6}$/)
             return (
               <span key={color} data-used={isUsed ? 'true' : undefined}>
-                <input
-                  type="radio"
-                  name="course-color"
-                  value={color}
-                  aria-label={color}
-                  checked={isSelected}
-                  onChange={() => handlePaletteClick(color)}
-                  className="sr-only"
-                />
                 <button
                   type="button"
+                  aria-label={color}
+                  aria-pressed={isSelected}
                   onClick={() => handlePaletteClick(color)}
                   style={{ backgroundColor: color, opacity: isUsed ? 0.4 : 1 }}
                   className={`w-7 h-7 rounded-full border-2 cursor-pointer transition-all ${
                     isSelected ? 'border-foreground scale-110' : 'border-transparent'
                   }`}
                   title={color}
-                  aria-label={color}
                 />
               </span>
             )

@@ -90,23 +90,23 @@ describe('AddCourseForm', () => {
     // courses already use '#E63946', so first unused is '#457B9D'
     const courses = [{ color: '#E63946' }]
     render(<AddCourseForm courses={courses} onClose={() => {}} onError={() => {}} />)
-    const selected = screen.getByRole('radio', { name: '#457B9D' })
-    expect(selected).toBeChecked()
+    const selected = screen.getByRole('button', { name: '#457B9D' })
+    expect(selected).toHaveAttribute('aria-pressed', 'true')
   })
 
   it('marks used colors with data-used attribute', () => {
     const courses = [{ color: '#E63946' }]
     render(<AddCourseForm courses={courses} onClose={() => {}} onError={() => {}} />)
-    const usedSwatch = screen.getByRole('radio', { name: '#E63946' })
+    const usedSwatch = screen.getByRole('button', { name: '#E63946' })
     expect(usedSwatch.closest('[data-used]')).toBeTruthy()
   })
 
   it('allows selecting a used color', () => {
     const courses = [{ color: '#E63946' }]
     render(<AddCourseForm courses={courses} onClose={() => {}} onError={() => {}} />)
-    const usedSwatch = screen.getByRole('radio', { name: '#E63946' })
+    const usedSwatch = screen.getByRole('button', { name: '#E63946' })
     fireEvent.click(usedSwatch)
-    expect(usedSwatch).toBeChecked()
+    expect(usedSwatch).toHaveAttribute('aria-pressed', 'true')
   })
 
   it('custom hex input overrides palette selection', async () => {
@@ -142,5 +142,12 @@ describe('AddCourseForm', () => {
     render(<AddCourseForm courses={[]} onClose={onClose} onError={() => {}} />)
     fireEvent.click(screen.getByRole('button', { name: /ביטול/i }))
     expect(onClose).toHaveBeenCalledOnce()
+  })
+
+  it('submit button is disabled when name is empty', () => {
+    render(<AddCourseForm courses={[]} onClose={() => {}} onError={() => {}} />)
+    expect(screen.getByRole('button', { name: /הוסף/i })).toBeDisabled()
+    fireEvent.change(screen.getByLabelText('שם הקורס'), { target: { value: 'x' } })
+    expect(screen.getByRole('button', { name: /הוסף/i })).not.toBeDisabled()
   })
 })
