@@ -146,7 +146,7 @@ export function AddCourseForm({ courses, onClose, onError }) {
 
       <div className="flex gap-3 justify-end mt-1">
         <button aria-label="ביטול" onClick={onClose} className="text-sm text-muted-foreground">ביטול</button>
-        <Button aria-label="הוסף קורס" size="sm" onClick={handleSubmit} disabled={saving}>
+        <Button aria-label="הוסף קורס" size="sm" onClick={handleSubmit} disabled={saving || !form.name.trim()}>
           {saving ? 'שומר...' : 'הוסף'}
         </Button>
       </div>
