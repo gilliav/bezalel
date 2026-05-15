@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { collection, addDoc } from 'firebase/firestore'
 import { db } from '../firebase'
-import { getCourseColor, COURSE_COLORS } from '../utils/colors'
+import { COURSE_COLORS } from '../utils/colors'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { dayIndexToHe } from '../utils/dates'
@@ -9,6 +9,7 @@ import { dayIndexToHe } from '../utils/dates'
 const DAY_OPTIONS = [0, 1, 2, 3, 4, 5, 6]
 
 export function AddCourseForm({ courses, onClose, onError }) {
+  const [colorIdx, setColorIdx] = useState(() => courses.length % COURSE_COLORS.length)
   const [form, setForm] = useState({
     name: '',
     day: 0,
@@ -17,7 +18,6 @@ export function AddCourseForm({ courses, onClose, onError }) {
     location: '',
     courseUrl: '',
     notes: '',
-    color: getCourseColor(courses.length),
   })
   const [saving, setSaving] = useState(false)
 
@@ -26,9 +26,7 @@ export function AddCourseForm({ courses, onClose, onError }) {
   }
 
   function cycleColor() {
-    const idx = COURSE_COLORS.indexOf(form.color)
-    const next = COURSE_COLORS[(idx + 1) % COURSE_COLORS.length]
-    setForm(f => ({ ...f, color: next }))
+    setColorIdx(i => (i + 1) % COURSE_COLORS.length)
   }
 
   async function handleSubmit() {
@@ -42,7 +40,7 @@ export function AddCourseForm({ courses, onClose, onError }) {
         location: form.location,
         courseUrl: form.courseUrl,
         notes: form.notes,
-        color: form.color,
+        color: COURSE_COLORS[colorIdx],
       })
       onClose()
     } catch {
@@ -118,7 +116,7 @@ export function AddCourseForm({ courses, onClose, onError }) {
           type="button"
           aria-label="צבע"
           onClick={cycleColor}
-          style={{ backgroundColor: form.color }}
+          style={{ backgroundColor: COURSE_COLORS[colorIdx] }}
           className="w-8 h-8 rounded-full border border-border cursor-pointer"
           title="לחץ לשינוי צבע"
         />
@@ -147,8 +145,8 @@ export function AddCourseForm({ courses, onClose, onError }) {
       </div>
 
       <div className="flex gap-3 justify-end mt-1">
-        <button onClick={onClose} className="text-sm text-muted-foreground">ביטול</button>
-        <Button size="sm" onClick={handleSubmit} disabled={saving}>
+        <button aria-label="ביטול" onClick={onClose} className="text-sm text-muted-foreground">ביטול</button>
+        <Button aria-label="הוסף קורס" size="sm" onClick={handleSubmit} disabled={saving}>
           {saving ? 'שומר...' : 'הוסף'}
         </Button>
       </div>
