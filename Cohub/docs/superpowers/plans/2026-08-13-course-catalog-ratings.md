@@ -24,7 +24,7 @@
 
 ## Data prerequisite (already done)
 
-`Cohub/src/seed/catalogCourseData.js` already exists in the repo with the full transcribed course catalog (63 courses, real course codes/names/lecturers/schedules/descriptions from the shnaton PDF). Task 3 below imports it — no further data entry is needed. Two known data-quality notes are documented as comments at the top of that file (one course omitted due to scrambled source PDF metadata; one course given a synthetic ID because the source printed no course code for it).
+`Cohub/src/seed/catalogCourseData.js` already exists in the repo with the full transcribed course catalog (94 courses, real course codes/names/lecturers/schedules/descriptions from the shnaton PDF). Task 3 below imports it — no further data entry is needed. Two known data-quality notes are documented as comments at the top of that file (one course omitted due to scrambled source PDF metadata; one course given a synthetic ID because the source printed no course code for it).
 
 ---
 
@@ -299,7 +299,7 @@ In `Cohub/package.json`, add a `seed:catalog` entry to `scripts`, next to the ex
 - [ ] **Step 3: Run it against the real project and verify**
 
 Run: `cd Cohub && npm run seed:catalog`
-Expected: console logs one "Seeded: ..." line per course, ending with "Done. Seeded 63 courses." Verify in the Firebase console (Firestore → `catalogCourses`) that the collection now has 63 docs, and that the two colliding raw codes each produced a `-dup2` doc (search for docs named `9400264-dup2`, `9400271-dup2`, `1700813-dup2`).
+Expected: console logs one "Seeded: ..." line per course, ending with "Done. Seeded 94 courses." Verify in the Firebase console (Firestore → `catalogCourses`) that the collection now has 94 docs, and that the four colliding raw codes each produced a `-dup2` doc (search for docs named `9400264-dup2`, `9400271-dup2`, `9400274-dup2`, `1700813-dup2`).
 
 Run it a second time to confirm idempotency: `npm run seed:catalog` again.
 Expected: only "Catalog already seeded. Exiting." — no duplicate writes.
@@ -1887,7 +1887,7 @@ Expected: PASS — every test file in the repo, old and new, passes. This confir
 Run: `cd Cohub && npm run dev`
 
 In a browser:
-1. Navigate to `/catalog` — the course list loads (63 courses, from the seed run in Task 3), search filters as you type, no bottom nav bar is visible.
+1. Navigate to `/catalog` — the course list loads (94 courses, from the seed run in Task 3), search filters as you type, no bottom nav bar is visible.
 2. Click a course — `/catalog/:id` shows its full description, credits, schedule, and "אין דירוגים עדיין".
 3. Click "דרג/י את הקורס" — lands in the swipe deck for that one course. Fill in a rating (recommend required), submit — lands on "סיימת לדרג!".
 4. Navigate back to that course's detail page — the aggregate now shows "100% ממליצים · 1 דירוגים" and any comment you left.
