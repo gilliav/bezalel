@@ -32,6 +32,24 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // catalogCourses: any authenticated user (including anonymous) can read;
+    // no client writes — seeded via Admin SDK only (src/seed/seedCatalog.js)
+    match /catalogCourses/{courseId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // catalogRatings: any authenticated user can read (needed for aggregate
+    // stats); a user may only create/update their own rating doc, whose ID
+    // must be `${uid}_${courseCode}` — this is the dedup mechanism
+    match /catalogRatings/{ratingId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated()
+        && request.resource.data.uid == request.auth.uid
+        && ratingId == request.auth.uid + '_' + request.resource.data.courseCode;
+      allow delete: if false;
+    }
+
     // cohorts: any authenticated user can read; no client writes
     match /cohorts/{cohortId} {
       allow read: if isAuthenticated();
