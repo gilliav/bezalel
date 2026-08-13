@@ -41,4 +41,19 @@ describe('useCatalogAuth', () => {
     expect(result.current.uid).toBe('existing-uid')
     expect(mockSignInAnonymously).not.toHaveBeenCalled()
   })
+
+  it('exposes an error when anonymous sign-in fails', async () => {
+    const failure = new Error('auth/operation-not-allowed')
+    mockSignInAnonymously.mockRejectedValue(failure)
+    mockOnAuthStateChanged.mockImplementation((auth, callback) => {
+      callback(null)
+      return mockUnsubscribe
+    })
+
+    const { result } = renderHook(() => useCatalogAuth())
+
+    await waitFor(() => expect(result.current.error).toBe(failure))
+    expect(result.current.ready).toBe(false)
+    expect(result.current.uid).toBe(null)
+  })
 })

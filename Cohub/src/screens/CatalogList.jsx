@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useCatalogAuth } from '../hooks/useCatalogAuth'
 import { useCatalogCourses } from '../hooks/useCatalogCourses'
 import { useAllCatalogRatings } from '../hooks/useCatalogRatings'
 import { computeAggregate, groupRatingsByCourseCode } from '../utils/catalogAggregate'
@@ -7,10 +8,19 @@ import { EmptyState } from '../components/EmptyState'
 import { Input } from '../components/ui/input'
 import { CourseListItem } from '../components/Catalog/CourseListItem'
 
-export default function CatalogList() {
-  const { courses, loading: coursesLoading } = useCatalogCourses()
-  const { ratings, loading: ratingsLoading } = useAllCatalogRatings()
+export default function CatalogList({ onError }) {
+  const { ready, error: authError } = useCatalogAuth()
+  const { courses, loading: coursesLoading, error: coursesError } = useCatalogCourses()
+  const { ratings, loading: ratingsLoading, error: ratingsError } = useAllCatalogRatings()
   const [search, setSearch] = useState('')
+
+  useEffect(() => {
+    if (authError) onError?.('שגיאה בהתחברות')
+  }, [authError, onError])
+
+  useEffect(() => {
+    if (coursesError || ratingsError) onError?.('שגיאה בטעינת הקטלוג')
+  }, [coursesError, ratingsError, onError])
 
   const ratingsByCourse = useMemo(() => groupRatingsByCourseCode(ratings), [ratings])
 
@@ -20,7 +30,7 @@ export default function CatalogList() {
     return courses.filter(c => c.name.includes(term) || c.lecturer?.includes(term))
   }, [courses, search])
 
-  if (coursesLoading || ratingsLoading) return <div className="state-loading">טוען...</div>
+  if (!ready || coursesLoading || ratingsLoading) return <div className="state-loading">טוען...</div>
 
   return (
     <div className="text-right">

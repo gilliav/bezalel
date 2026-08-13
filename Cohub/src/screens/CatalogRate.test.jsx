@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
@@ -75,5 +75,57 @@ describe('CatalogRate', () => {
     await user.click(screen.getByRole('button', { name: 'שליחה והמשך' }))
 
     expect(screen.getByText(/סיימת לדרג/)).toBeInTheDocument()
+  })
+
+  it('drops only one course when Submit is double-tapped during the pending write', async () => {
+    const user = userEvent.setup()
+    // Every pending write gets its own resolver; we release them all so both
+    // in-flight handlers reach their setQueue call.
+    const resolvers = []
+    mockSubmitRating.mockImplementation(() => new Promise(res => resolvers.push(res)))
+
+    render(<MemoryRouter initialEntries={['/catalog/rate']}><CatalogRate /></MemoryRouter>)
+
+    await user.click(screen.getByRole('checkbox', { name: /תולדות האיור/ }))
+    await user.click(screen.getByRole('checkbox', { name: /זכויות יוצרים/ }))
+    await user.click(screen.getByRole('button', { name: /סיימתי/ }))
+    await user.click(screen.getByRole('button', { name: 'כן, ממליץ/ה' }))
+
+    // Two taps land before the awaited write resolves, so both handlers
+    // capture the same queue[0].
+    const submit = screen.getByRole('button', { name: 'שליחה והמשך' })
+    fireEvent.click(submit)
+    fireEvent.click(submit)
+
+    expect(resolvers).toHaveLength(2)
+    await act(async () => { resolvers.forEach(r => r()) })
+
+    expect(mockSubmitRating).toHaveBeenCalledTimes(2)
+    expect(mockSubmitRating).toHaveBeenCalledWith(expect.objectContaining({ courseCode: 'c1' }))
+    // c2 must survive: the dequeue is idempotent, not a blind slice(1).
+    expect(screen.getByText('זכויות יוצרים')).toBeInTheDocument()
+    expect(screen.queryByText(/סיימת לדרג/)).not.toBeInTheDocument()
+  })
+
+  it('drops only one course when "not taken" is double-tapped', async () => {
+    const user = userEvent.setup()
+    const resolvers = []
+    mockMarkNotTaken.mockImplementation(() => new Promise(res => resolvers.push(res)))
+
+    render(<MemoryRouter initialEntries={['/catalog/rate']}><CatalogRate /></MemoryRouter>)
+
+    await user.click(screen.getByRole('checkbox', { name: /תולדות האיור/ }))
+    await user.click(screen.getByRole('checkbox', { name: /זכויות יוצרים/ }))
+    await user.click(screen.getByRole('button', { name: /סיימתי/ }))
+
+    const notTaken = screen.getByRole('button', { name: 'לא למדתי את הקורס' })
+    fireEvent.click(notTaken)
+    fireEvent.click(notTaken)
+
+    expect(resolvers).toHaveLength(2)
+    await act(async () => { resolvers.forEach(r => r()) })
+
+    expect(screen.getByText('זכויות יוצרים')).toBeInTheDocument()
+    expect(screen.queryByText(/סיימת לדרג/)).not.toBeInTheDocument()
   })
 })

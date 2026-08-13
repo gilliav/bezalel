@@ -28,7 +28,7 @@ export default function CatalogRate({ onError }) {
     const courseId = queue[0]
     try {
       await submitRating({ uid, courseCode: courseId, ...fields })
-      setQueue(q => q.slice(1))
+      setQueue(q => q.filter(id => id !== courseId))
     } catch {
       onError?.('שגיאה בשמירת הדירוג')
     }
@@ -38,7 +38,7 @@ export default function CatalogRate({ onError }) {
     const courseId = queue[0]
     try {
       await markNotTaken({ uid, courseCode: courseId })
-      setQueue(q => q.slice(1))
+      setQueue(q => q.filter(id => id !== courseId))
     } catch {
       onError?.('שגיאה בשמירה')
     }

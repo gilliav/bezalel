@@ -36,7 +36,9 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let mounted = true
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
+      // An anonymous user (created by the catalog's useCatalogAuth) is not a
+      // cohort member — treat it as signed-out for the cohort app's purposes.
+      if (firebaseUser && !firebaseUser.isAnonymous) {
         try {
           const role = await ensureUserDoc(firebaseUser)
           if (mounted) setIsAdmin(role === 'admin')

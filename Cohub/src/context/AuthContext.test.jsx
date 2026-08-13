@@ -30,7 +30,12 @@ import { useAuth } from '../hooks/useAuth'
 
 function Consumer() {
   const { isAdmin, user } = useAuth()
-  return <div data-testid="result">{String(isAdmin)}</div>
+  return (
+    <>
+      <div data-testid="result">{String(isAdmin)}</div>
+      <div data-testid="user">{user === undefined ? 'undefined' : String(user?.uid ?? null)}</div>
+    </>
+  )
 }
 
 describe('AuthContext isAdmin', () => {
@@ -64,5 +69,41 @@ describe('AuthContext isAdmin', () => {
 
     render(<AuthProvider><Consumer /></AuthProvider>)
     await waitFor(() => expect(screen.getByTestId('result').textContent).toBe('false'))
+  })
+})
+
+describe('AuthContext anonymous users', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it('treats an anonymous user as signed out and never seeds a user doc', async () => {
+    mockOnAuthStateChanged.mockImplementation((auth, cb) => {
+      cb({ uid: 'anon1', isAnonymous: true })
+      return () => {}
+    })
+    mockDoc.mockReturnValue('docRef')
+
+    render(<AuthProvider><Consumer /></AuthProvider>)
+
+    await waitFor(() => expect(screen.getByTestId('user').textContent).toBe('null'))
+    expect(screen.getByTestId('result').textContent).toBe('false')
+    expect(mockGetDoc).not.toHaveBeenCalled()
+    expect(mockSetDoc).not.toHaveBeenCalled()
+  })
+
+  it('still signs in a real (non-anonymous) user', async () => {
+    mockOnAuthStateChanged.mockImplementation((auth, cb) => {
+      cb({ uid: 'u3', email: 'c@b.com', displayName: 'Real', isAnonymous: false })
+      return () => {}
+    })
+    mockDoc.mockReturnValue('docRef')
+    mockGetDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ cohortId: 'c1', courseIds: [] }),
+    })
+
+    render(<AuthProvider><Consumer /></AuthProvider>)
+
+    await waitFor(() => expect(screen.getByTestId('user').textContent).toBe('u3'))
+    expect(mockGetDoc).toHaveBeenCalled()
   })
 })

@@ -1,11 +1,13 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 
+const mockUseCatalogAuth = vi.hoisted(() => vi.fn())
 const mockUseCatalogCourses = vi.hoisted(() => vi.fn())
 const mockUseAllCatalogRatings = vi.hoisted(() => vi.fn())
 
+vi.mock('../hooks/useCatalogAuth', () => ({ useCatalogAuth: mockUseCatalogAuth }))
 vi.mock('../hooks/useCatalogCourses', () => ({ useCatalogCourses: mockUseCatalogCourses }))
 vi.mock('../hooks/useCatalogRatings', () => ({ useAllCatalogRatings: mockUseAllCatalogRatings }))
 
@@ -18,6 +20,8 @@ const courses = [
 
 describe('CatalogList', () => {
   beforeEach(() => {
+    vi.clearAllMocks()
+    mockUseCatalogAuth.mockReturnValue({ uid: 'u1', ready: true, error: null })
     mockUseCatalogCourses.mockReturnValue({ courses, loading: false })
     mockUseAllCatalogRatings.mockReturnValue({ ratings: [], loading: false })
   })
@@ -42,5 +46,30 @@ describe('CatalogList', () => {
     mockUseCatalogCourses.mockReturnValue({ courses: [], loading: true })
     render(<MemoryRouter><CatalogList /></MemoryRouter>)
     expect(screen.getByText('טוען...')).toBeInTheDocument()
+  })
+
+  it('waits for anonymous auth before rendering courses', () => {
+    mockUseCatalogAuth.mockReturnValue({ uid: null, ready: false, error: null })
+    render(<MemoryRouter><CatalogList /></MemoryRouter>)
+
+    expect(screen.getByText('טוען...')).toBeInTheDocument()
+    expect(screen.queryByText('תולדות האיור')).not.toBeInTheDocument()
+    expect(screen.queryByText('לא נמצאו קורסים')).not.toBeInTheDocument()
+  })
+
+  it('reports a sign-in failure through onError', async () => {
+    mockUseCatalogAuth.mockReturnValue({ uid: null, ready: false, error: new Error('nope') })
+    const onError = vi.fn()
+    render(<MemoryRouter><CatalogList onError={onError} /></MemoryRouter>)
+
+    await waitFor(() => expect(onError).toHaveBeenCalledWith('שגיאה בהתחברות'))
+  })
+
+  it('reports a catalog load failure through onError', async () => {
+    mockUseCatalogCourses.mockReturnValue({ courses: [], loading: false, error: new Error('denied') })
+    const onError = vi.fn()
+    render(<MemoryRouter><CatalogList onError={onError} /></MemoryRouter>)
+
+    await waitFor(() => expect(onError).toHaveBeenCalledWith('שגיאה בטעינת הקטלוג'))
   })
 })

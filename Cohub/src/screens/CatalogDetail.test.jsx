@@ -1,10 +1,12 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 
+const mockUseCatalogAuth = vi.hoisted(() => vi.fn())
 const mockUseCatalogCourses = vi.hoisted(() => vi.fn())
 const mockUseCourseRatings = vi.hoisted(() => vi.fn())
 
+vi.mock('../hooks/useCatalogAuth', () => ({ useCatalogAuth: mockUseCatalogAuth }))
 vi.mock('../hooks/useCatalogCourses', () => ({ useCatalogCourses: mockUseCatalogCourses }))
 vi.mock('../hooks/useCatalogRatings', () => ({ useCourseRatings: mockUseCourseRatings }))
 
@@ -22,11 +24,11 @@ const course = {
   description: 'איורים הם יצירות האמנות הראשונות שאנו מכירים.',
 }
 
-function renderDetail() {
+function renderDetail(props = {}) {
   return render(
     <MemoryRouter initialEntries={['/catalog/c1']}>
       <Routes>
-        <Route path="/catalog/:courseId" element={<CatalogDetail />} />
+        <Route path="/catalog/:courseId" element={<CatalogDetail {...props} />} />
       </Routes>
     </MemoryRouter>,
   )
@@ -34,6 +36,8 @@ function renderDetail() {
 
 describe('CatalogDetail', () => {
   beforeEach(() => {
+    vi.clearAllMocks()
+    mockUseCatalogAuth.mockReturnValue({ uid: 'u1', ready: true, error: null })
     mockUseCatalogCourses.mockReturnValue({ courses: [course], loading: false })
     mockUseCourseRatings.mockReturnValue({ ratings: [], loading: false })
   })
@@ -60,5 +64,51 @@ describe('CatalogDetail', () => {
     renderDetail()
     expect(screen.getByText(/100% ממליצים/)).toBeInTheDocument()
     expect(screen.getByText('קורס מעולה')).toBeInTheDocument()
+  })
+
+  it('waits for anonymous auth before rendering the course', () => {
+    mockUseCatalogAuth.mockReturnValue({ uid: null, ready: false, error: null })
+    renderDetail()
+
+    expect(screen.getByText('טוען...')).toBeInTheDocument()
+    expect(screen.queryByText('אורנה גרנות')).not.toBeInTheDocument()
+  })
+
+  it('reports a sign-in failure through onError', async () => {
+    mockUseCatalogAuth.mockReturnValue({ uid: null, ready: false, error: new Error('nope') })
+    const onError = vi.fn()
+    renderDetail({ onError })
+
+    await waitFor(() => expect(onError).toHaveBeenCalledWith('שגיאה בהתחברות'))
+  })
+
+  it('reports a course load failure through onError', async () => {
+    mockUseCourseRatings.mockReturnValue({ ratings: [], loading: false, error: new Error('denied') })
+    const onError = vi.fn()
+    renderDetail({ onError })
+
+    await waitFor(() => expect(onError).toHaveBeenCalledWith('שגיאה בטעינת הקורס'))
+  })
+
+  it('omits the semester segment when the course has no semester', () => {
+    mockUseCatalogCourses.mockReturnValue({
+      courses: [{ ...course, semester: undefined }],
+      loading: false,
+    })
+    renderDetail()
+
+    expect(screen.queryByText(/סמסטר undefined/)).not.toBeInTheDocument()
+    expect(screen.getByText(/בחירה עיוני/)).toBeInTheDocument()
+  })
+
+  it('renders without crashing when the course has no credits', () => {
+    mockUseCatalogCourses.mockReturnValue({
+      courses: [{ ...course, credits: undefined }],
+      loading: false,
+    })
+    renderDetail()
+
+    expect(screen.getByText('אורנה גרנות')).toBeInTheDocument()
+    expect(screen.queryByText(/ש"ס/)).not.toBeInTheDocument()
   })
 })

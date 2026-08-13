@@ -1,19 +1,30 @@
+import { useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ChevronRight } from 'lucide-react'
+import { useCatalogAuth } from '../hooks/useCatalogAuth'
 import { useCatalogCourses } from '../hooks/useCatalogCourses'
 import { useCourseRatings } from '../hooks/useCatalogRatings'
 import { computeAggregate } from '../utils/catalogAggregate'
 import { PageHeader } from '../components/PageHeader'
 import { Button } from '../components/ui/button'
 
-export default function CatalogDetail() {
+export default function CatalogDetail({ onError }) {
   const { courseId } = useParams()
-  const { courses, loading: coursesLoading } = useCatalogCourses()
-  const { ratings, loading: ratingsLoading } = useCourseRatings(courseId)
+  const { ready, error: authError } = useCatalogAuth()
+  const { courses, loading: coursesLoading, error: coursesError } = useCatalogCourses()
+  const { ratings, loading: ratingsLoading, error: ratingsError } = useCourseRatings(courseId)
+
+  useEffect(() => {
+    if (authError) onError?.('שגיאה בהתחברות')
+  }, [authError, onError])
+
+  useEffect(() => {
+    if (coursesError || ratingsError) onError?.('שגיאה בטעינת הקורס')
+  }, [coursesError, ratingsError, onError])
 
   const course = courses.find(c => c.id === courseId)
 
-  if (coursesLoading || ratingsLoading || !course) return <div className="state-loading">טוען...</div>
+  if (!ready || coursesLoading || ratingsLoading || !course) return <div className="state-loading">טוען...</div>
 
   const aggregate = computeAggregate(ratings)
   const comments = ratings.filter(r => r.status === 'rated' && r.comment)
@@ -32,10 +43,13 @@ export default function CatalogDetail() {
         <div className="flex flex-col gap-1 text-sm">
           <div>{course.lecturer}</div>
           <div className="text-muted-foreground">
-            {course.category} · {course.semester === 'שנתי' ? 'שנתי' : `סמסטר ${course.semester}`}
+            {course.category}
+            {course.semester && ` · ${course.semester === 'שנתי' ? 'שנתי' : `סמסטר ${course.semester}`}`}
           </div>
           {course.day && <div className="text-muted-foreground">{course.day} · {course.hours}</div>}
-          <div className="text-muted-foreground">{course.credits.weeklyHours} ש"ס · {course.credits.points} נ"ז</div>
+          {course.credits && (
+            <div className="text-muted-foreground">{course.credits?.weeklyHours} ש"ס · {course.credits?.points} נ"ז</div>
+          )}
         </div>
         <p className="text-base">{course.description}</p>
       </div>
