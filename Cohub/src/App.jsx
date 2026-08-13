@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { BottomNav } from './components/BottomNav'
 import { Toast } from './components/Toast'
 import { ConnectionBanner } from './components/ConnectionBanner'
@@ -10,13 +10,16 @@ import CourseDetail from './screens/CourseDetail'
 import ProjectDetail from './screens/ProjectDetail'
 import ProjectForm from './screens/ProjectForm'
 import Schedule from './screens/Schedule'
+import CatalogList from './screens/CatalogList'
+import CatalogDetail from './screens/CatalogDetail'
+import CatalogRate from './screens/CatalogRate'
 
-export default function App() {
-  const [toastMessage, setToastMessage] = useState(null)
-  const isOnline = useOnlineStatus()
+function AppShell({ toastMessage, setToastMessage, isOnline }) {
+  const location = useLocation()
+  const isCatalogRoute = location.pathname.startsWith('/catalog')
 
   return (
-    <BrowserRouter>
+    <>
       <ConnectionBanner isOnline={isOnline} />
       <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />
       <div className="min-h-screen pb-16 max-w-lg mx-auto">
@@ -28,9 +31,23 @@ export default function App() {
           <Route path="/projects/:projectId" element={<ProjectDetail onError={setToastMessage} />} />
           <Route path="/projects/:projectId/edit" element={<ProjectForm onError={setToastMessage} />} />
           <Route path="/schedule" element={<Schedule />} />
+          <Route path="/catalog" element={<CatalogList />} />
+          <Route path="/catalog/rate" element={<CatalogRate onError={setToastMessage} />} />
+          <Route path="/catalog/:courseId" element={<CatalogDetail />} />
         </Routes>
       </div>
-      <BottomNav />
+      {!isCatalogRoute && <BottomNav />}
+    </>
+  )
+}
+
+export default function App() {
+  const [toastMessage, setToastMessage] = useState(null)
+  const isOnline = useOnlineStatus()
+
+  return (
+    <BrowserRouter>
+      <AppShell toastMessage={toastMessage} setToastMessage={setToastMessage} isOnline={isOnline} />
     </BrowserRouter>
   )
 }
