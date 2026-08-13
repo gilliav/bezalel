@@ -10,6 +10,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "seed": "node src/seed/seedCourses.js",
+    "seed:catalog": "node src/seed/seedCatalog.js",
     "migrate:attachments": "node src/seed/migrateBriefsToAttachments.js",
     "seed:cohort": "node src/seed/seedCohort.js"
   },
