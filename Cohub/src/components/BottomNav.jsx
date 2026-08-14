@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 
 const TABS = [
-  { to: '/', label: 'פרויקטים' },
+  { to: '/cohub', label: 'פרויקטים' },
   { to: '/courses', label: 'קורסים' },
   { to: '/schedule', label: 'מערכת שעות' },
 ]
@@ -13,7 +13,7 @@ export function BottomNav() {
         <NavLink
           key={to}
           to={to}
-          end={to === '/'}
+          end={to === '/cohub'}
           className={({ isActive }) =>
             `flex-1 py-3 text-center bg-card text-base font-medium transition-colors ${
               isActive ? 'text-primary' : 'text-muted-foreground'

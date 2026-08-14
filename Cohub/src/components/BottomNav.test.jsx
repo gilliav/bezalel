@@ -6,6 +6,11 @@ function renderWithRouter(ui) {
   return render(<MemoryRouter>{ui}</MemoryRouter>)
 }
 
+it('links the projects tab to /cohub', () => {
+  renderWithRouter(<BottomNav />)
+  expect(screen.getByText('פרויקטים').closest('a')).toHaveAttribute('href', '/cohub')
+})
+
 it('renders three navigation tabs', () => {
   renderWithRouter(<BottomNav />)
   expect(screen.getByText('פרויקטים')).toBeInTheDocument()
