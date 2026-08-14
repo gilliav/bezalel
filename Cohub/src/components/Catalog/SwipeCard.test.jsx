@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi, describe, it, expect } from 'vitest'
 import { SwipeCard } from './SwipeCard'
@@ -9,6 +9,13 @@ const course = {
   lecturer: 'אורנה גרנות',
   category: 'בחירה עיוני',
   description: 'איורים הם יצירות האמנות הראשונות שאנו מכירים.',
+}
+
+// The recommend and attendance fields both render a "חיובי"/"שלילי" thumbs
+// toggle, so queries must be scoped to the recommend field's own container.
+function getRecommendButton(name) {
+  const field = screen.getByText('האם תמליץ/י על הקורס?').closest('.field')
+  return within(field).getByRole('button', { name })
 }
 
 describe('SwipeCard', () => {
@@ -28,7 +35,7 @@ describe('SwipeCard', () => {
     const onSubmit = vi.fn()
     render(<SwipeCard course={course} onSubmit={onSubmit} onSkip={vi.fn()} onNotTaken={vi.fn()} />)
 
-    await user.click(screen.getByRole('button', { name: 'כן, ממליץ/ה' }))
+    await user.click(getRecommendButton('חיובי'))
     await user.click(screen.getByRole('button', { name: 'שליחה והמשך' }))
 
     expect(onSubmit).toHaveBeenCalledWith({

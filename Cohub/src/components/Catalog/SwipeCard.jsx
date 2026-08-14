@@ -1,8 +1,7 @@
 import { useState } from 'react'
+import { ThumbsUp, ThumbsDown, Star } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Textarea } from '../ui/textarea'
-
-const SCALE = [1, 2, 3, 4, 5]
 
 export function SwipeCard({ course, onSubmit, onSkip, onNotTaken }) {
   const [recommend, setRecommend] = useState(null)
@@ -25,51 +24,19 @@ export function SwipeCard({ course, onSubmit, onSkip, onNotTaken }) {
 
       <div className="field">
         <label className="field-label">האם תמליץ/י על הקורס?</label>
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            size="sm"
-            variant={recommend === true ? 'default' : 'outline'}
-            onClick={() => setRecommend(true)}
-          >
-            כן, ממליץ/ה
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant={recommend === false ? 'default' : 'outline'}
-            onClick={() => setRecommend(false)}
-          >
-            לא ממליץ/ה
-          </Button>
-        </div>
+        <ThumbsField value={recommend} onChange={setRecommend} />
       </div>
 
-      <ScaleField label="איכות ההוראה" value={profGood} onChange={setProfGood} />
-      <ScaleField label="רמת הקושי" value={difficulty} onChange={setDifficulty} />
-      <ScaleField label="עד כמה מעניין" value={interesting} onChange={setInteresting} />
-      <ScaleField label="עומס העבודה" value={workload} onChange={setWorkload} />
+      <div className="grid grid-cols-2 gap-2">
+      <StarField label="איכות ההוראה" value={profGood} onChange={setProfGood} />
+      <StarField label="רמת הקושי" value={difficulty} onChange={setDifficulty} />
+      <StarField label="עניין" value={interesting} onChange={setInteresting} />
+      <StarField label="עומס העבודה" value={workload} onChange={setWorkload} />
+      </div>
 
       <div className="field">
         <label className="field-label">האם נבדקת נוכחות?</label>
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            size="sm"
-            variant={attendanceTaken === true ? 'default' : 'outline'}
-            onClick={() => setAttendanceTaken(true)}
-          >
-            כן
-          </Button>
-          <Button
-            type="button"
-            size="sm"
-            variant={attendanceTaken === false ? 'default' : 'outline'}
-            onClick={() => setAttendanceTaken(false)}
-          >
-            לא
-          </Button>
-        </div>
+        <ThumbsField value={attendanceTaken} onChange={setAttendanceTaken} />
       </div>
 
       <div className="field">
@@ -81,7 +48,7 @@ export function SwipeCard({ course, onSubmit, onSkip, onNotTaken }) {
         <Button onClick={handleSubmit} disabled={recommend === null}>
           שליחה והמשך
         </Button>
-        <div className="flex gap-2">
+        <div className="flex gap-1">
           <Button type="button" variant="outline" size="sm" onClick={onSkip} className="flex-1">
             דלג/י
           </Button>
@@ -94,22 +61,61 @@ export function SwipeCard({ course, onSubmit, onSkip, onNotTaken }) {
   )
 }
 
-function ScaleField({ label, value, onChange }) {
+function ToggleButton({ onClick, children, ...props }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex items-center justify-center p-1 hover:bg-transparent focus:outline-none"
+      {...props}
+    >
+      {children}
+    </button>
+  )
+}
+
+function ThumbsField({ value, onChange }) {
+  return (
+    <div className="flex gap-1">
+      <ToggleButton onClick={() => onChange(value === true ? null : true)} aria-label="חיובי">
+        <ThumbsUp
+          className="w-6 h-6"
+          fill={value === true ? 'currentColor' : 'none'}
+          stroke="black"
+          style={{ color: value === true ? '#56a77f' : 'currentColor' }}
+        />
+      </ToggleButton>
+      <ToggleButton onClick={() => onChange(value === false ? null : false)} aria-label="שלילי">
+        <ThumbsDown
+          className="w-6 h-6"
+          fill={value === false ? 'currentColor' : 'none'}
+          stroke="black"
+          style={{ color: value === false ? '#c86565' : 'currentColor' }}
+        />
+      </ToggleButton>
+    </div>
+  )
+}
+
+function StarField({ label, value, onChange }) {
   return (
     <div className="field">
       <label className="field-label">{label}</label>
       <div className="flex gap-1">
-        {SCALE.map(n => (
-          <Button
+        {[1, 2, 3, 4, 5].map(n => (
+          <button
             key={n}
             type="button"
-            size="sm"
-            variant={value === n ? 'default' : 'outline'}
-            onClick={() => onChange(n)}
+            onClick={() => onChange(value === n ? null : n)}
             aria-label={`${label}: ${n}`}
+            className="focus:outline-none"
           >
-            {n}
-          </Button>
+            <Star
+              className="w-6 h-6"
+              fill={value >= n ? '#8a85dd' : 'none'}
+              stroke="currentColor"
+            />
+          </button>
         ))}
       </div>
     </div>

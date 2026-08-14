@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
@@ -23,6 +23,13 @@ const courses = [
   { id: 'c1', name: 'תולדות האיור', lecturer: 'אורנה גרנות', category: 'בחירה עיוני', description: 'תיאור' },
   { id: 'c2', name: 'זכויות יוצרים', lecturer: 'איל פרייס', category: 'בחירה עיוני', description: 'תיאור' },
 ]
+
+// The recommend and attendance fields both render a "חיובי"/"שלילי" thumbs
+// toggle, so queries must be scoped to the recommend field's own container.
+function getRecommendButton(name) {
+  const field = screen.getByText('האם תמליץ/י על הקורס?').closest('.field')
+  return within(field).getByRole('button', { name })
+}
 
 describe('CatalogRate', () => {
   beforeEach(() => {
@@ -60,7 +67,7 @@ describe('CatalogRate', () => {
     await user.click(screen.getByRole('checkbox', { name: /זכויות יוצרים/ }))
     await user.click(screen.getByRole('button', { name: /סיימתי/ }))
 
-    await user.click(screen.getByRole('button', { name: 'כן, ממליץ/ה' }))
+    await user.click(getRecommendButton('חיובי'))
     await user.click(screen.getByRole('button', { name: 'שליחה והמשך' }))
 
     expect(mockSubmitRating).toHaveBeenCalledWith(expect.objectContaining({ uid: 'u1', courseCode: 'c1', recommend: true }))
@@ -71,7 +78,7 @@ describe('CatalogRate', () => {
     const user = userEvent.setup()
     render(<MemoryRouter initialEntries={['/catalog/rate?start=c1']}><CatalogRate /></MemoryRouter>)
 
-    await user.click(screen.getByRole('button', { name: 'כן, ממליץ/ה' }))
+    await user.click(getRecommendButton('חיובי'))
     await user.click(screen.getByRole('button', { name: 'שליחה והמשך' }))
 
     expect(screen.getByText(/סיימת לדרג/)).toBeInTheDocument()
@@ -89,7 +96,7 @@ describe('CatalogRate', () => {
     await user.click(screen.getByRole('checkbox', { name: /תולדות האיור/ }))
     await user.click(screen.getByRole('checkbox', { name: /זכויות יוצרים/ }))
     await user.click(screen.getByRole('button', { name: /סיימתי/ }))
-    await user.click(screen.getByRole('button', { name: 'כן, ממליץ/ה' }))
+    await user.click(getRecommendButton('חיובי'))
 
     // Two taps land before the awaited write resolves, so both handlers
     // capture the same queue[0].
