@@ -26,13 +26,11 @@ export function ProjectRow({ project, course, nextMilestone }) {
       className="block relative border-b"
       style={{ borderColor: 'rgba(26,23,20,0.09)' }}
     >
-      {/* Color accent stripe */}
       <div
         className="absolute top-0 right-0 w-1 h-full"
         style={{ background: course?.color }}
       />
 
-      {/* Main row */}
       <div className="flex items-baseline justify-between gap-2 px-4 pt-2.5 pb-1 pr-5">
         <div className="flex items-baseline gap-0 overflow-hidden min-w-0">
           <span className="font-display font-bold text-base text-foreground whitespace-nowrap shrink-0">
@@ -50,7 +48,6 @@ export function ProjectRow({ project, course, nextMilestone }) {
         <UrgencyPill label={label} variant={variant} />
       </div>
 
-      {/* Course tag line */}
       <div className="px-4 pb-2.5 pr-5">
         <CourseTag
           name={course?.name}

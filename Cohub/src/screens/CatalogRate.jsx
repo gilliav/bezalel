@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
+import { useMemo, useState, useEffect } from 'react'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useCatalogAuth } from '../hooks/useCatalogAuth'
 import { useCatalogCourses } from '../hooks/useCatalogCourses'
 import { useUserRatingStatus, submitRating, markNotTaken } from '../hooks/useCatalogRatings'
@@ -10,6 +10,7 @@ import { SwipeCard } from '../components/Catalog/SwipeCard'
 export default function CatalogRate({ onError }) {
   const [searchParams] = useSearchParams()
   const startCourseId = searchParams.get('start')
+  const navigate = useNavigate()
   const { uid, ready } = useCatalogAuth()
   const { courses, loading: coursesLoading } = useCatalogCourses()
   const { ratedCodes, notTakenCodes, loading: statusLoading } = useUserRatingStatus(uid)
@@ -18,6 +19,10 @@ export default function CatalogRate({ onError }) {
   const [queue, setQueue] = useState(startCourseId ? [startCourseId] : [])
 
   const excludeIds = useMemo(() => new Set([...ratedCodes, ...notTakenCodes]), [ratedCodes, notTakenCodes])
+
+  useEffect(() => {
+    if (phase === 'deck' && queue.length === 0) navigate('/catalog')
+  }, [phase, queue.length, navigate])
 
   function handleChecklistDone(selectedIds) {
     setQueue(selectedIds)
@@ -60,17 +65,7 @@ export default function CatalogRate({ onError }) {
   }
 
   const currentCourse = courses.find(c => c.id === queue[0])
-
-  if (!currentCourse) {
-    return (
-      <div className="text-right">
-        <PageHeader title="דירוג קורסים" />
-        <div className="state-empty">
-          סיימת לדרג! <Link to="/catalog" className="action-link">חזרה לקטלוג</Link>
-        </div>
-      </div>
-    )
-  }
+  if (!currentCourse) return null
 
   return (
     <div className="text-right">

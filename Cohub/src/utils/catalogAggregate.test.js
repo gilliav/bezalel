@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { computeAggregate, groupRatingsByCourseCode } from './catalogAggregate'
+import { computeAggregate, groupRatingsByCourseCode, getAttendanceLabel } from './catalogAggregate'
 
 describe('computeAggregate', () => {
   it('returns all-null aggregate when there are no ratings', () => {
@@ -47,6 +47,26 @@ describe('computeAggregate', () => {
       { status: 'rated', recommend: true, attendanceTaken: null },
     ]
     expect(computeAggregate(ratings).attendanceTakenPercent).toBe(50)
+  })
+})
+
+describe('getAttendanceLabel', () => {
+  it('returns null when there is no data', () => {
+    expect(getAttendanceLabel(null)).toBe(null)
+  })
+
+  it('returns כן for percentages over 80', () => {
+    expect(getAttendanceLabel(85)).toBe('כן')
+  })
+
+  it('returns לא for percentages under 20', () => {
+    expect(getAttendanceLabel(12)).toBe('לא')
+  })
+
+  it('returns לא ברור for percentages in between, inclusive of the 20 and 80 boundaries', () => {
+    expect(getAttendanceLabel(74)).toBe('לא ברור')
+    expect(getAttendanceLabel(80)).toBe('לא ברור')
+    expect(getAttendanceLabel(20)).toBe('לא ברור')
   })
 })
 

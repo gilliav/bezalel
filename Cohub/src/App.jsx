@@ -14,18 +14,20 @@ import Schedule from './screens/Schedule'
 import CatalogList from './screens/CatalogList'
 import CatalogDetail from './screens/CatalogDetail'
 import CatalogRate from './screens/CatalogRate'
+import LecturerDetail from './screens/LecturerDetail'
 
 function AppShell({ toastMessage, setToastMessage, isOnline }) {
   const location = useLocation()
   const isCatalogRoute = location.pathname.startsWith('/catalog')
   const isChooserRoute = location.pathname === '/'
   const hideBottomNav = isCatalogRoute || isChooserRoute
+  const isWideRoute = location.pathname === '/catalog'
 
   return (
     <>
       <ConnectionBanner isOnline={isOnline} />
       <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />
-      <div className="min-h-screen pb-16 max-w-lg mx-auto">
+      <div className={`min-h-screen pb-16 ${isWideRoute ? '' : 'max-w-lg mx-auto'}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/cohub" element={<Dashboard onError={setToastMessage} />} />
@@ -38,6 +40,7 @@ function AppShell({ toastMessage, setToastMessage, isOnline }) {
           <Route path="/catalog" element={<CatalogList onError={setToastMessage} />} />
           <Route path="/catalog/rate" element={<CatalogRate onError={setToastMessage} />} />
           <Route path="/catalog/:courseId" element={<CatalogDetail onError={setToastMessage} />} />
+          <Route path="/lecturer/:lecturerName" element={<LecturerDetail onError={setToastMessage} />} />
         </Routes>
       </div>
       {!hideBottomNav && <BottomNav />}

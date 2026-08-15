@@ -41,12 +41,10 @@ export default function CatalogDetail({ onError }) {
 
       <div className="page-body border-b border-border pb-4">
         <div className="flex flex-col gap-1 text-sm">
-          <div>{course.lecturer}</div>
-          <div className="text-muted-foreground">
-            {course.category}
-            {course.semester && ` · ${course.semester === 'שנתי' ? 'שנתי' : `סמסטר ${course.semester}`}`}
-          </div>
-          {course.day && <div className="text-muted-foreground">{course.day} · {course.hours}</div>}
+          <Link to={`/lecturer/${encodeURIComponent(course.lecturer)}`} className="hover:underline">
+            {course.lecturer}
+          </Link>
+          <div className="text-muted-foreground">{course.category}</div>
           {course.credits && (
             <div className="text-muted-foreground">{course.credits?.weeklyHours} ש"ס · {course.credits?.points} נ"ז</div>
           )}

@@ -19,6 +19,11 @@
     --destructive-foreground: #ffffff;
     --radius: 0px;
     --tertiary: #77716b;
+    /* Rating accent palette — shared by the catalog swipe/browse/detail icons */
+    --rating-positive: #56a77f;
+    --rating-negative: #c86565;
+    --rating-star: #8a85dd;
+    --rating-neutral: #c9a227;
     font-size: 18px;
   }
 

@@ -1,61 +1,53 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useParams, Link } from 'react-router-dom'
+import { ChevronRight } from 'lucide-react'
 import { useCatalogAuth } from '../hooks/useCatalogAuth'
 import { useCatalogCourses } from '../hooks/useCatalogCourses'
 import { useAllCatalogRatings } from '../hooks/useCatalogRatings'
 import { computeAggregate, groupRatingsByCourseCode } from '../utils/catalogAggregate'
 import { PageHeader } from '../components/PageHeader'
-import { EmptyState } from '../components/EmptyState'
-import { Input } from '../components/ui/input'
 import { CourseListItem } from '../components/Catalog/CourseListItem'
+import { EmptyState } from '../components/EmptyState'
 
-export default function CatalogList({ onError }) {
+export default function LecturerDetail({ onError }) {
+  const { lecturerName } = useParams()
+  const name = decodeURIComponent(lecturerName)
   const { ready, error: authError } = useCatalogAuth()
   const { courses, loading: coursesLoading, error: coursesError } = useCatalogCourses()
   const { ratings, loading: ratingsLoading, error: ratingsError } = useAllCatalogRatings()
-  const [search, setSearch] = useState('')
 
   useEffect(() => {
     if (authError) onError?.('שגיאה בהתחברות')
   }, [authError, onError])
 
   useEffect(() => {
-    if (coursesError || ratingsError) onError?.('שגיאה בטעינת הקטלוג')
+    if (coursesError || ratingsError) onError?.('שגיאה בטעינת הנתונים')
   }, [coursesError, ratingsError, onError])
 
   const ratingsByCourse = useMemo(() => groupRatingsByCourseCode(ratings), [ratings])
-
-  const filteredCourses = useMemo(() => {
-    const term = search.trim()
-    if (!term) return courses
-    return courses.filter(c => c.name.includes(term) || c.lecturer?.includes(term))
-  }, [courses, search])
+  const lecturerCourses = useMemo(() => courses.filter(c => c.lecturer === name), [courses, name])
 
   if (!ready || coursesLoading || ratingsLoading) return <div className="state-loading">טוען...</div>
 
   return (
-    <div className="text-right max-w-6xl mx-auto">
-      <PageHeader title="קטלוג קורסים" />
-      <div className="page-body pb-0">
-        <Input
-          type="search"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="חיפוש לפי שם קורס או מרצה"
-        />
+    <div className="text-right">
+      <PageHeader title={name} />
+      <div className="px-4 pt-3">
+        <Link to="/catalog" className="text-muted-foreground flex items-center gap-0.5 text-sm">
+          <ChevronRight size={16} />
+          חזרה לקטלוג
+        </Link>
       </div>
-      {filteredCourses.length === 0 ? (
-        <EmptyState message="לא נמצאו קורסים" />
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 px-4 py-4">
-          {filteredCourses.map(course => (
+      {lecturerCourses.length === 0
+        ? <EmptyState message="לא נמצאו קורסים" />
+        : lecturerCourses.map(course => (
             <CourseListItem
               key={course.id}
               course={course}
               aggregate={computeAggregate(ratingsByCourse[course.id] ?? [])}
             />
-          ))}
-        </div>
-      )}
+          ))
+      }
     </div>
   )
 }

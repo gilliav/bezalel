@@ -28,11 +28,29 @@ it('shows "no ratings yet" when aggregate count is 0', () => {
 it('shows recommend percent and rating count when ratings exist', () => {
   render(
     <MemoryRouter>
-      <CourseListItem course={course} aggregate={{ count: 12, recommendPercent: 83 }} />
+      <CourseListItem course={course} aggregate={{ count: 12, recommendPercent: 83, profGood: null }} />
     </MemoryRouter>,
   )
-  expect(screen.getByText(/83% ממליצים/)).toBeInTheDocument()
+  expect(screen.getByText('83%')).toBeInTheDocument()
   expect(screen.getByText(/12 דירוגים/)).toBeInTheDocument()
+})
+
+it('shows the profGood star stat when it has data', () => {
+  render(
+    <MemoryRouter>
+      <CourseListItem course={course} aggregate={{ count: 12, recommendPercent: 83, profGood: 4.2 }} />
+    </MemoryRouter>,
+  )
+  expect(screen.getByText('4.2')).toBeInTheDocument()
+})
+
+it('omits the profGood star stat when nobody has rated it', () => {
+  render(
+    <MemoryRouter>
+      <CourseListItem course={course} aggregate={{ count: 12, recommendPercent: 83, profGood: null }} />
+    </MemoryRouter>,
+  )
+  expect(screen.queryByText('4.2')).not.toBeInTheDocument()
 })
 
 it('links to the course detail page', () => {

@@ -37,6 +37,13 @@ export function computeAggregate(ratings) {
   }
 }
 
+export function getAttendanceLabel(percent) {
+  if (percent === null) return null
+  if (percent > 80) return 'כן'
+  if (percent < 20) return 'לא'
+  return 'לא ברור'
+}
+
 export function groupRatingsByCourseCode(ratings) {
   const map = {}
   for (const rating of ratings) {

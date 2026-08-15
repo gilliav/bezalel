@@ -19,6 +19,20 @@
 //   real numeric code) with a note explaining this.
 
 export const CATALOG_COURSES = [
+  // ---- קורס דמה לבדיקות ----
+  {
+    courseCode: 'TEST-DUMMY-001',
+    name: 'קורס לא אמיתי שנועד לבדיקות נא להתעלם',
+    lecturer: 'מרצה בדיקות',
+    category: 'חובה כללית',
+    semester: 'א',
+    day: 'ראשון',
+    hours: '10:00-08:30',
+    credits: { weeklyHours: 2, points: 2 },
+    language: 'עברית',
+    description: 'זהו קורס דמה שנוצר לצורכי בדיקות בלבד. אין להירשם אליו.',
+  },
+
   // ---- חובה כללית לשנה ב' (choose one) ----
   {
     courseCode: '2600811',
