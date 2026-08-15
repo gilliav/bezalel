@@ -12,6 +12,7 @@ import { CourseListItem } from '../components/Catalog/CourseListItem'
 
 const SORT_OPTIONS = [
   { key: 'name', label: 'שם (א-ת)', dirIcon: ArrowUp },
+  { key: 'name-reverse', label: 'שם (א-ת)', dirIcon: ArrowDown },
   { key: 'recommend', label: 'מומלץ ביותר', dirIcon: ArrowDown },
   { key: 'profGood', label: 'דירוג מרצה', dirIcon: ArrowDown },
   { key: 'count', label: 'הכי הרבה דירוגים', dirIcon: ArrowDown },
@@ -28,7 +29,7 @@ export default function CatalogList({ onError }) {
   const { courses, loading: coursesLoading, error: coursesError } = useCatalogCourses()
   const { ratings, loading: ratingsLoading, error: ratingsError } = useAllCatalogRatings()
   const [search, setSearch] = useState('')
-  const [sortBy, setSortBy] = useState('name')
+  const [sortBy, setSortBy] = useState('count')
 
   useEffect(() => {
     if (authError) onError?.('שגיאה בהתחברות')
@@ -59,6 +60,7 @@ export default function CatalogList({ onError }) {
     const list = [...filteredCourses]
 
     if (sortBy === 'name') return list.sort(byName)
+    if (sortBy === 'name-reverse') return list.sort(byName).reverse()
 
     const metricKey = AGGREGATE_KEY_BY_SORT[sortBy]
     return list.sort((a, b) => {

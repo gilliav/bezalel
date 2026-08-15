@@ -74,7 +74,7 @@
     --foreground: #1a1714;
     --card: #f7f3ec;
     --card-foreground: #1a1714;
-    --primary: #6884a1;
+    --primary: #7e5b51;
     --primary-foreground: #f7f3ec;
     --secondary: #5c574e;
     --secondary-foreground: #1c1b1a;
@@ -86,10 +86,10 @@
     --radius: 0px;
     --tertiary: #77716b;
     /* Rating accent palette — shared by the catalog swipe/browse/detail icons */
-    --rating-positive: #73b58e;
-    --rating-negative: #c86565;
-    --rating-star: #8a85dd;
-    --rating-neutral: #c9a227;
+    --rating-positive: #98bb7c;
+    --rating-negative: #c27070;
+    --rating-star: #e1ae7b;
+    --rating-neutral: #dcc371;
     font-size: 18px;
   }
 
@@ -214,7 +214,7 @@
   }
 
   .field-label {
-    @apply text-base text-muted-foreground font-medium text-sm;
+    @apply text-base text-muted-foreground font-light text-sm;
   }
 
   .field-input {

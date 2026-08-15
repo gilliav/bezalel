@@ -38,10 +38,10 @@ export function SwipeCard({ course, onSubmit, onCancel, showCourseInfo = true })
         <ThumbsField value={recommend} onChange={setRecommend} />
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
       <StarField label="איכות ההוראה" value={profGood} onChange={setProfGood} />
-      <LoadGauge label="רמת הקושי" value={difficulty} onChange={setDifficulty} heavyLabel="קשה" />
       <StarField label="עניין" value={interesting} onChange={setInteresting} />
+      <LoadGauge label="רמת הקושי" value={difficulty} onChange={setDifficulty} heavyLabel="קשה" />
       <LoadGauge label="עומס העבודה" value={workload} onChange={setWorkload} heavyLabel="כבד" />
       </div>
 
@@ -86,7 +86,7 @@ function ThumbsField({ value, onChange }) {
       <ToggleButton onClick={() => onChange(value === true ? null : true)} aria-label="חיובי">
         <ThumbsUp
           size={24}
-          strokeWidth={1.5}
+          strokeWidth={1.25}
           fill={value === true ? 'currentColor' : 'none'}
           stroke="var(--foreground)"
           style={{ color: value === true ? 'var(--rating-positive)' : 'currentColor' }}
@@ -95,7 +95,7 @@ function ThumbsField({ value, onChange }) {
       <ToggleButton onClick={() => onChange(value === false ? null : false)} aria-label="שלילי">
         <ThumbsDown
           size={24}
-          strokeWidth={1.5}
+          strokeWidth={1.25}
           fill={value === false ? 'currentColor' : 'none'}
           stroke="var(--foreground)"
           style={{ color: value === false ? 'var(--rating-negative)' : 'currentColor' }}
@@ -107,11 +107,11 @@ function ThumbsField({ value, onChange }) {
 
 function YesNoField({ value, onChange }) {
   return (
-    <div className="flex gap-2">
+    <div className="flex">
       <Button
         type="button"
         size="sm"
-        variant={value === true ? 'default' : 'outline'}
+        variant={value === true ? 'primary' : 'outline'}
         onClick={() => onChange(value === true ? null : true)}
       >
         כן
@@ -119,7 +119,7 @@ function YesNoField({ value, onChange }) {
       <Button
         type="button"
         size="sm"
-        variant={value === false ? 'default' : 'outline'}
+        variant={value === false ? 'primary' : 'outline'}
         onClick={() => onChange(value === false ? null : false)}
       >
         לא
@@ -132,7 +132,7 @@ function StarField({ label, value, onChange }) {
   return (
     <div className="field">
       <label className="field-label">{label}</label>
-      <div className="flex gap-1">
+      <div className="flex gap-0.5">
         {[1, 2, 3, 4, 5].map(n => (
           <button
             key={n}
@@ -143,9 +143,9 @@ function StarField({ label, value, onChange }) {
           >
             <Star
               size={24}
-              strokeWidth={1.5}
+              strokeWidth={1.25}
               fill={value >= n ? 'var(--rating-star)' : 'none'}
-              stroke="currentColor"
+              stroke="var(--foreground)"
             />
           </button>
         ))}

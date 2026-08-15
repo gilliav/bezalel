@@ -8,8 +8,8 @@ export function LoadGauge({ label, value, onChange, heavyLabel = 'כבד' }) {
   return (
     <div className="field">
       <label className="field-label">{label}</label>
-      <div className="flex items-center gap-1.5">
-        <span className="text-xs font-semibold" style={{ color: 'var(--foreground)' }}>קל</span>
+      <div className="grid items-center">
+        {/* <span className="text-xs font-semibold" style={{ color: 'var(--secondary)' }}>קל</span> */}
         <div className="flex gap-0.5 flex-1">
           {SEGMENTS.map(n => (
             <button
@@ -22,7 +22,11 @@ export function LoadGauge({ label, value, onChange, heavyLabel = 'כבד' }) {
             />
           ))}
         </div>
-        <span className="text-xs font-semibold" style={{ color: 'var(--foreground)' }}>{heavyLabel}</span>
+        <div className="flex flex-row justify-between gap-0.5">
+                  <span className="text-xs font-semibold" style={{ color: 'var(--secondary)' }}>קל</span>
+
+            <span className="text-xs font-semibold" style={{ color: 'var(--secondary)' }}>{heavyLabel}</span>
+        </div>
       </div>
     </div>
   )

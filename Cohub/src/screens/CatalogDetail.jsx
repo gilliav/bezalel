@@ -165,9 +165,8 @@ export default function CatalogDetail({ onError }) {
             <p>אין דירוגים עדיין</p>
             <p className="text-caption mt-1">
               למדת את הקורס?{' '}
-              <Link to={`/catalog/${course.id}/rate`} className="action-link underline decoration-1 underline-offset-2">
-                תוסיפ.י דירוג כאן
-              </Link>
+              <Link to={`/catalog/${course.id}/rate`} className="underline decoration-1 underline-offset-2">
+הוסיפ.י דירוג             </Link>
             </p>
           </div>
         ) : (
