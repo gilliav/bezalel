@@ -79,8 +79,8 @@ function ReviewCard({ review }) {
         <ReviewStat label="עומס" value={review.workload} heavyLabel="כבד" />
         {review.attendanceTaken != null && (
           <span className="flex items-center gap-1 text-muted-foreground">
-            נוכחות נבדקת?:
-            <span className="font-semibold" style={{ color: review.attendanceTaken ? 'var(--rating-positive)' : 'var(--rating-negative)' }}>
+            נוכחות נבדקת:
+            <span className="font-semibold">
               {review.attendanceTaken ? 'כן' : 'לא'}
             </span>
           </span>
@@ -176,7 +176,7 @@ export default function CatalogDetail({ onError }) {
               className="flex flex-col items-center rounded-lg py-4 text-white"
               style={{ backgroundColor: 'var(--rating-positive)' }}
             >
-              <span className="h1 font-display">
+              <span className="font-display">
                 {aggregate.recommendPercent !== null ? `${aggregate.recommendPercent}% ממליצים` : '--'}
               </span>
               <span className="text-sm opacity-90">מתוך {formatRatingCount(aggregate.count)}</span>
@@ -192,7 +192,7 @@ export default function CatalogDetail({ onError }) {
             <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2 mt-2 text-sm">
               <span className="text-muted-foreground">נוכחות נבדקת?</span>
               <span className="flex items-center gap-1.5">
-                <span className="font-semibold" style={{ color: attendanceLabel ? ATTENDANCE_COLOR[attendanceLabel] : undefined }}>
+                <span className="font-semibold">
                   {attendanceLabel ?? '--'}
                 </span>
                 {aggregate.attendanceTakenPercent !== null && (
