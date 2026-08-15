@@ -81,6 +81,16 @@ describe('CatalogDetail', () => {
     expect(screen.getByText('קורס מעולה')).toBeInTheDocument()
   })
 
+  it('shows a colored bucket label under workload and difficulty averages', () => {
+    mockUseCourseRatings.mockReturnValue({
+      ratings: [{ id: 'r1', status: 'rated', recommend: true, difficulty: 4, workload: 2 }],
+      loading: false,
+    })
+    renderDetail()
+    expect(within(screen.getByTestId('stat-difficulty')).getByText('בינוני')).toBeInTheDocument()
+    expect(within(screen.getByTestId('stat-workload')).getByText('קל')).toBeInTheDocument()
+  })
+
   it('shows the literal attendance label with the raw percent in parentheses', () => {
     mockUseCourseRatings.mockReturnValue({
       ratings: [
@@ -184,6 +194,8 @@ describe('CatalogDetail', () => {
     expect(within(review).getByText(/עומס/)).toBeInTheDocument()
     expect(within(review).getByText('כן')).toBeInTheDocument()
     expect(within(review).getByText('קורס מעולה')).toBeInTheDocument()
+    expect(within(review).getByText('בינוני')).toBeInTheDocument() // difficulty: 3
+    expect(within(review).getByText('קל')).toBeInTheDocument() // workload: 2
   })
 
   it('shows the reviewer as anonymous, with the rating date', () => {

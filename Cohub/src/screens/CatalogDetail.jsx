@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom'
-import { Star, ThumbsUp, ThumbsDown } from 'lucide-react'
+import { ThumbsUp, ThumbsDown } from 'lucide-react'
 import { useCatalogAuth } from '../hooks/useCatalogAuth'
 import { useCatalogCourses } from '../hooks/useCatalogCourses'
 import { useCourseRatings, submitRating } from '../hooks/useCatalogRatings'
-import { computeAggregate, getAttendanceLabel } from '../utils/catalogAggregate'
+import { computeAggregate, getAttendanceLabel, getLoadBucket } from '../utils/catalogAggregate'
 import { formatDateShort } from '../utils/dates'
 import { PageHeader } from '../components/PageHeader'
 import { Button } from '../components/ui/button'
@@ -16,20 +16,40 @@ const ATTENDANCE_COLOR = {
   'לא': 'var(--rating-negative)',
 }
 
-function StatCard({ label, value }) {
+function StatCard({ label, value, bucket, testId }) {
   return (
-    <div className="border border-border rounded-lg py-2 px-3 text-center bg-card">
+    <div
+      className="border border-border rounded-lg py-2 px-3 text-center bg-card"
+      data-testid={testId ? `stat-${testId}` : undefined}
+    >
       <div className="text-xs text-muted-foreground mb-1">{label}</div>
-      <div className="flex items-center justify-center gap-1 font-bold" style={{ color: 'var(--rating-star)' }}>
-        <Star size={14} fill="currentColor" />
-        {value !== null ? value.toFixed(1) : '--'}
+      <div className="font-bold" style={{ color: 'var(--foreground)' }}>
+        <span>{value !== null ? value.toFixed(1) : '--'}</span>
+        <span className="text-xs font-normal text-muted-foreground">/5</span>
       </div>
+      {bucket && (
+        <span
+          className="inline-block text-xs font-semibold rounded mt-1 px-2 py-0.5"
+          style={{ color: bucket.colorVar, backgroundColor: `color-mix(in srgb, ${bucket.colorVar} 16%, transparent)` }}
+        >
+          {bucket.label}
+        </span>
+      )}
     </div>
   )
 }
 
-function ReviewStat({ label, value }) {
+function ReviewStat({ label, value, heavyLabel }) {
   if (value == null) return null
+  if (heavyLabel) {
+    const bucket = getLoadBucket(value, heavyLabel)
+    return (
+      <span className="flex items-center gap-1">
+        <span className="text-muted-foreground">{label}:</span>
+        <span className="font-semibold" style={{ color: bucket.colorVar }}>{bucket.label}</span>
+      </span>
+    )
+  }
   return (
     <span className="flex items-center gap-1">
       <span className="text-muted-foreground">{label}:</span>
@@ -57,9 +77,9 @@ function ReviewCard({ review }) {
           </span>
         )}
         <ReviewStat label="הוראה" value={review.profGood} />
-        <ReviewStat label="קושי" value={review.difficulty} />
+        <ReviewStat label="קושי" value={review.difficulty} heavyLabel="קשה" />
         <ReviewStat label="עניין" value={review.interesting} />
-        <ReviewStat label="עומס" value={review.workload} />
+        <ReviewStat label="עומס" value={review.workload} heavyLabel="כבד" />
         {review.attendanceTaken != null && (
           <span className="flex items-center gap-1 text-muted-foreground">
             נוכחות:
@@ -166,10 +186,10 @@ export default function CatalogDetail({ onError }) {
             </div>
 
             <div className="grid grid-cols-2 gap-2 mt-3">
-              <StatCard label="איכות ההוראה" value={aggregate.profGood} />
-              <StatCard label="רמת הקושי" value={aggregate.difficulty} />
-              <StatCard label="עניין" value={aggregate.interesting} />
-              <StatCard label="עומס העבודה" value={aggregate.workload} />
+              <StatCard label="איכות ההוראה" value={aggregate.profGood} testId="profGood" />
+              <StatCard label="רמת הקושי" value={aggregate.difficulty} bucket={getLoadBucket(aggregate.difficulty, 'קשה')} testId="difficulty" />
+              <StatCard label="עניין" value={aggregate.interesting} testId="interesting" />
+              <StatCard label="עומס העבודה" value={aggregate.workload} bucket={getLoadBucket(aggregate.workload, 'כבד')} testId="workload" />
             </div>
 
             <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2 mt-2 text-sm">
