@@ -51,6 +51,11 @@ export function getLoadBucket(value, heavyLabel = 'כבד') {
   return { label: heavyLabel, colorVar: 'var(--rating-negative)' }
 }
 
+export function formatRatingCount(count) {
+  if (count === 1) return 'דירוג אחד'
+  return `${count} דירוגים`
+}
+
 export function groupRatingsByCourseCode(ratings) {
   const map = {}
   for (const rating of ratings) {

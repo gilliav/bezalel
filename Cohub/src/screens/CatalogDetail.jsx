@@ -4,7 +4,7 @@ import { ThumbsUp, ThumbsDown } from 'lucide-react'
 import { useCatalogAuth } from '../hooks/useCatalogAuth'
 import { useCatalogCourses } from '../hooks/useCatalogCourses'
 import { useCourseRatings, submitRating } from '../hooks/useCatalogRatings'
-import { computeAggregate, getAttendanceLabel, getLoadBucket } from '../utils/catalogAggregate'
+import { computeAggregate, getAttendanceLabel, getLoadBucket, formatRatingCount } from '../utils/catalogAggregate'
 import { formatDateShort } from '../utils/dates'
 import { PageHeader } from '../components/PageHeader'
 import { Button } from '../components/ui/button'
@@ -19,15 +19,17 @@ const ATTENDANCE_COLOR = {
 function StatCard({ label, value, bucket, testId }) {
   return (
     <div
-      className="border border-border rounded-lg py-2 px-3 text-center bg-card"
+      className="border border-border rounded-lg py-2 px-2 text-center bg-card"
       data-testid={testId ? `stat-${testId}` : undefined}
     >
-      <div className="text-xs text-muted-foreground mb-1">{label}</div>
-      <div className="font-bold" style={{ color: 'var(--foreground)' }}>
-        <span>{value !== null ? value.toFixed(1) : '--'}</span>
-        <span className="text-xs font-normal text-muted-foreground">/5</span>
+      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="font-bold flex flex-row gap-1 items-baseline justify-center">
+        <div>
+          <span>{value !== null ? value : '--'}</span>
+          <span className="text-sm font-light text-muted-foreground">/5</span>
+        </div>
         {bucket && (
-          <span className="text-xs font-semibold" style={{ color: bucket.colorVar }}> {bucket.label}</span>
+          <div className="text-sm font-semibold" style={{ color: bucket.colorVar }}>{bucket.label}</div>
         )}
       </div>
     </div>
@@ -174,10 +176,10 @@ export default function CatalogDetail({ onError }) {
               className="flex flex-col items-center rounded-lg py-4 text-white"
               style={{ backgroundColor: 'var(--rating-positive)' }}
             >
-              <span className="text-3xl font-extrabold">
-                {aggregate.recommendPercent !== null ? `${aggregate.recommendPercent}%` : '--'}
+              <span className="h1 font-display">
+                {aggregate.recommendPercent !== null ? `${aggregate.recommendPercent}% ממליצים` : '--'}
               </span>
-              <span className="text-sm opacity-90">ממליצים · {aggregate.count} דירוגים</span>
+              <span className="text-sm opacity-90">מתוך {formatRatingCount(aggregate.count)}</span>
             </div>
 
             <div className="grid grid-cols-2 gap-2 mt-3">

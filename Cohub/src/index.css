@@ -214,7 +214,7 @@
   }
 
   .field-label {
-    @apply text-base text-muted-foreground font-medium;
+    @apply text-base text-muted-foreground font-medium text-sm;
   }
 
   .field-input {

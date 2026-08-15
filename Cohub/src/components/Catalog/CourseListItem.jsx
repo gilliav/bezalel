@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ThumbsUp, Star } from 'lucide-react'
+import { formatRatingCount } from '../../utils/catalogAggregate'
 
 export function CourseListItem({ course, aggregate }) {
   return (
@@ -19,7 +20,7 @@ export function CourseListItem({ course, aggregate }) {
           <Star size={14} fill="currentColor" />
           {aggregate.profGood !== null ? aggregate.profGood.toFixed(1) : '--'}
         </span>
-        <span className="text-muted-foreground">({aggregate.count} דירוגים)</span>
+        <span className="text-muted-foreground">({formatRatingCount(aggregate.count)})</span>
       </div>
     </Link>
   )
