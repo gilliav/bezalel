@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import {ChevronRight} from 'lucide-react';
+import { ChevronRight } from 'lucide-react'
+import { IconButton } from './ui/IconButton'
 
 export function PageHeader({ title, action, hasBackButton, authSlot }) {
   const navigate = useNavigate()
@@ -7,9 +8,7 @@ export function PageHeader({ title, action, hasBackButton, authSlot }) {
   return (
     <header className="page-header">
       {hasBackButton && (
-        <button onClick={() => navigate(-1)} className="back-button ml-2">
-          <ChevronRight size={16} />
-        </button>
+        <IconButton icon={ChevronRight} size={20} onClick={() => navigate(-1)} className="ml-2 -my-1" aria-label="חזרה" />
       )}
       <h1>{title}</h1>
       <div className="flex items-baseline gap-2">

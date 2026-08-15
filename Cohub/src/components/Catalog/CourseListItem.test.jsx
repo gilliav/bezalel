@@ -5,7 +5,7 @@ import { CourseListItem } from './CourseListItem'
 
 const course = { id: '1700686', name: 'תולדות האיור', lecturer: 'אורנה גרנות', category: 'בחירה עיוני' }
 
-it('shows course name, lecturer, and category', () => {
+it('shows course name and lecturer', () => {
   render(
     <MemoryRouter>
       <CourseListItem course={course} aggregate={{ count: 0, recommendPercent: null, profGood: null }} />
@@ -13,7 +13,6 @@ it('shows course name, lecturer, and category', () => {
   )
   expect(screen.getByText('תולדות האיור')).toBeInTheDocument()
   expect(screen.getByText('אורנה גרנות')).toBeInTheDocument()
-  expect(screen.getByText('בחירה עיוני')).toBeInTheDocument()
 })
 
 it('shows dash placeholders and 0 ratings when there is no data', () => {

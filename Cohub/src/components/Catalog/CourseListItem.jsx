@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { ThumbsUp, Star } from 'lucide-react'
-import { Badge } from '../ui/badge'
 
 export function CourseListItem({ course, aggregate }) {
   return (
@@ -8,10 +7,7 @@ export function CourseListItem({ course, aggregate }) {
       to={`/catalog/${course.id}`}
       className="block border border-border rounded-lg bg-card p-4"
     >
-      <div className="flex items-center justify-between gap-2">
-        <span className="font-semibold text-foreground">{course.name}</span>
-        <Badge variant="muted">{course.category}</Badge>
-      </div>
+      <span className="font-semibold text-foreground">{course.name}</span>
       <div className="text-base text-muted-foreground">{course.lecturer}</div>
 
       <div className="flex items-center gap-3 mt-1 text-sm">

@@ -27,6 +27,14 @@
     font-size: 18px;
   }
 
+  /*
+   * Type scale — edit sizes/weights here, they apply everywhere the tag is used.
+   *   h1     page title (rendered by PageHeader)
+   *   h2     section heading (e.g. "דירוגים", "תגובות")
+   *   h3     sub-section heading, not yet used but defined for consistency
+   *   body   default paragraph/copy text
+   *   label  field labels
+   */
   body {
     @apply font-body text-foreground text-xl;
     direction: rtl;
@@ -161,6 +169,11 @@
   /* Action link */
   .action-link {
     @apply text-base text-primary font-medium;
+  }
+
+  /* Small muted text — captions, secondary stats, timestamps */
+  .text-caption {
+    @apply text-sm text-muted-foreground;
   }
 
   /* Inline color dot */

@@ -49,10 +49,11 @@ describe('CatalogDetail', () => {
     expect(screen.getByText('איורים הם יצירות האמנות הראשונות שאנו מכירים.')).toBeInTheDocument()
   })
 
-  it('shows dash placeholders and 0 ratings when there are no ratings', () => {
+  it('prompts to be the first rater instead of showing a stat breakdown when there are no ratings', () => {
     renderDetail()
-    expect(screen.getAllByText('--').length).toBeGreaterThan(0)
-    expect(screen.getByText(/0 דירוגים/)).toBeInTheDocument()
+    expect(screen.getByText('אין דירוגים עדיין')).toBeInTheDocument()
+    expect(screen.getByText(/היו הראשונים לדרג אותו/)).toBeInTheDocument()
+    expect(screen.queryByText(/איכות ההוראה/)).not.toBeInTheDocument()
   })
 
   it('shows aggregate stats and written comments when ratings exist', () => {
@@ -116,7 +117,7 @@ describe('CatalogDetail', () => {
     renderDetail()
 
     expect(screen.queryByText(/סמסטר undefined/)).not.toBeInTheDocument()
-    expect(screen.getByText(/בחירה עיוני/)).toBeInTheDocument()
+    expect(screen.getByText('אורנה גרנות')).toBeInTheDocument()
   })
 
   it('renders without crashing when the course has no credits', () => {
