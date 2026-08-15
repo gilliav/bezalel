@@ -80,12 +80,12 @@ describe('getLoadBucket', () => {
     expect(getLoadBucket(2)).toEqual({ label: 'קל', colorVar: 'var(--rating-positive)' })
   })
 
-  it('buckets 3-4 as בינוני, amber', () => {
+  it('buckets 3 as בינוני, amber', () => {
     expect(getLoadBucket(3)).toEqual({ label: 'בינוני', colorVar: 'var(--rating-neutral)' })
-    expect(getLoadBucket(4)).toEqual({ label: 'בינוני', colorVar: 'var(--rating-neutral)' })
   })
 
-  it('buckets 5 as the heavy label, red', () => {
+  it('buckets 4-5 as the heavy label, red', () => {
+    expect(getLoadBucket(4)).toEqual({ label: 'כבד', colorVar: 'var(--rating-negative)' })
     expect(getLoadBucket(5)).toEqual({ label: 'כבד', colorVar: 'var(--rating-negative)' })
   })
 
@@ -96,7 +96,7 @@ describe('getLoadBucket', () => {
   it('buckets continuous averages using the same thresholds', () => {
     expect(getLoadBucket(2.4)).toEqual({ label: 'קל', colorVar: 'var(--rating-positive)' })
     expect(getLoadBucket(3.4)).toEqual({ label: 'בינוני', colorVar: 'var(--rating-neutral)' })
-    expect(getLoadBucket(4.6)).toEqual({ label: 'כבד', colorVar: 'var(--rating-negative)' })
+    expect(getLoadBucket(4.1)).toEqual({ label: 'כבד', colorVar: 'var(--rating-negative)' })
   })
 })
 

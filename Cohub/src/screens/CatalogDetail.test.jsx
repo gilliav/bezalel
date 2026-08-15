@@ -83,7 +83,7 @@ describe('CatalogDetail', () => {
 
   it('shows a colored bucket label under workload and difficulty averages', () => {
     mockUseCourseRatings.mockReturnValue({
-      ratings: [{ id: 'r1', status: 'rated', recommend: true, difficulty: 4, workload: 2 }],
+      ratings: [{ id: 'r1', status: 'rated', recommend: true, difficulty: 3, workload: 2 }],
       loading: false,
     })
     renderDetail()
