@@ -2,6 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Self-hosted so the display/body fonts render on every device, not just
+   ones with them installed locally (they were relying on that before). */
+@font-face {
+  font-family: 'Ezer Standard';
+  src: url('/fonts/EzerStandard-SemiBold.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Ezer Standard';
+  src: url('/fonts/EzerStandard-Black.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NextExit';
+  src: url('/fonts/NextExit-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NextExit';
+  src: url('/fonts/NextExit-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NextExit';
+  src: url('/fonts/NextExit-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NextExit';
+  src: url('/fonts/NextExit-ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --background: #f7f3ec;
