@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { ChevronRight } from 'lucide-react'
+import { useParams } from 'react-router-dom'
 import { useCatalogAuth } from '../hooks/useCatalogAuth'
 import { useCatalogCourses } from '../hooks/useCatalogCourses'
 import { useAllCatalogRatings } from '../hooks/useCatalogRatings'
@@ -31,13 +30,8 @@ export default function LecturerDetail({ onError }) {
 
   return (
     <div className="text-right">
-      <PageHeader title={name} />
-      <div className="px-4 pt-3">
-        <Link to="/catalog" className="text-muted-foreground flex items-center gap-0.5 text-sm">
-          <ChevronRight size={16} />
-          חזרה לקטלוג
-        </Link>
-      </div>
+      <PageHeader title={name} hasBackButton />
+      <div className="flex">
       {lecturerCourses.length === 0
         ? <EmptyState message="לא נמצאו קורסים" />
         : lecturerCourses.map(course => (
@@ -48,6 +42,7 @@ export default function LecturerDetail({ onError }) {
             />
           ))
       }
+      </div>
     </div>
   )
 }
