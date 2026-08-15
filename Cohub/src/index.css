@@ -8,19 +8,19 @@
     --foreground: #1a1714;
     --card: #f7f3ec;
     --card-foreground: #1a1714;
-    --primary: #1a1714;
+    --primary: #6884a1;
     --primary-foreground: #f7f3ec;
     --secondary: #5c574e;
     --secondary-foreground: #1c1b1a;
     --muted: #e8e2d6;
-    --muted-foreground: rgba(26,23,20,0.42);
-    --border: rgba(26,23,20,0.09);
+    --muted-foreground: #a0887e;
+    --border: #e2dbcc;
     --destructive: #c0392b;
     --destructive-foreground: #ffffff;
     --radius: 0px;
     --tertiary: #77716b;
     /* Rating accent palette — shared by the catalog swipe/browse/detail icons */
-    --rating-positive: #56a77f;
+    --rating-positive: #73b58e;
     --rating-negative: #c86565;
     --rating-star: #8a85dd;
     --rating-neutral: #c9a227;
@@ -42,15 +42,15 @@
   }
 
   h1 {
-    @apply font-display text-2xl font-bold;
+    @apply font-display text-2xl font-normal;
   }
 
   h2 {
-    @apply font-display text-xl font-bold text-foreground;
+    @apply font-display text-xl font-normal text-foreground;
   }
 
   h3 {
-    @apply font-display text-lg font-bold text-foreground;
+    @apply font-display text-lg font-normal text-foreground;
   }
 
   label {
@@ -148,7 +148,7 @@
   }
 
   .field-label {
-    @apply text-base text-muted-foreground;
+    @apply text-base text-muted-foreground font-medium;
   }
 
   .field-input {
@@ -173,7 +173,7 @@
 
   /* Small muted text — captions, secondary stats, timestamps */
   .text-caption {
-    @apply text-sm text-muted-foreground;
+    @apply text-sm text-muted-foreground font-medium;
   }
 
   /* Inline color dot */

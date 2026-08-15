@@ -66,7 +66,7 @@ export default function CatalogDetail({ onError }) {
         </div>
         <p className="text-base">{course.description}</p>
 
-        <Link to={`/catalog/rate?start=${course.id}`}>
+        <Link to={`/catalog/${course.id}/rate`}>
           <Button className="w-full mt-2">דרג/י את הקורס</Button>
         </Link>
       </div>
@@ -76,7 +76,12 @@ export default function CatalogDetail({ onError }) {
         {aggregate.count === 0 ? (
           <div className="text-center py-4">
             <p>אין דירוגים עדיין</p>
-            <p className="text-caption mt-1">למדת את הקורס? היו הראשונים לדרג אותו!</p>
+            <p className="text-caption mt-1">
+              למדת את הקורס?{' '}
+              <Link to={`/catalog/${course.id}/rate`} className="action-link underline decoration-1 underline-offset-2">
+                תוסיפ.י דירוג כאן
+              </Link>
+            </p>
           </div>
         ) : (
           <>

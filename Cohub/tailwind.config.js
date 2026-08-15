@@ -32,8 +32,8 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        display: ['"Almoni ML v5 AAA"', 'Arial', 'sans-serif'],
-        body: ['"Almoni Tzar ML v5 AAA"', '"Almoni ML v5 AAA"', 'Arial', 'sans-serif'],
+        display: ['"Ezer Standard"', 'Arial', 'sans-serif'],
+        body: ['"NextExit"', '"Ezer Standard"', 'Arial', 'sans-serif'],
       },
     },
   },

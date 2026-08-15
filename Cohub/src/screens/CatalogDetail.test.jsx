@@ -52,7 +52,7 @@ describe('CatalogDetail', () => {
   it('prompts to be the first rater instead of showing a stat breakdown when there are no ratings', () => {
     renderDetail()
     expect(screen.getByText('אין דירוגים עדיין')).toBeInTheDocument()
-    expect(screen.getByText(/היו הראשונים לדרג אותו/)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'תוסיפ.י דירוג כאן' })).toHaveAttribute('href', '/catalog/c1/rate')
     expect(screen.queryByText(/איכות ההוראה/)).not.toBeInTheDocument()
   })
 

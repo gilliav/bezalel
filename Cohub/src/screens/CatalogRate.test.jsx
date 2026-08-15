@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 
 const mockUseCatalogAuth = vi.hoisted(() => vi.fn())
@@ -36,6 +36,20 @@ function getRecommendButton(name) {
   return within(field).getByRole('button', { name })
 }
 
+// CatalogRate reads an optional :courseId route param (present only at
+// /catalog/:courseId/rate), so it needs real route matching, not just a
+// bare MemoryRouter.
+function renderRate(entry, props = {}) {
+  return render(
+    <MemoryRouter initialEntries={[entry]}>
+      <Routes>
+        <Route path="/catalog/rate" element={<CatalogRate {...props} />} />
+        <Route path="/catalog/:courseId/rate" element={<CatalogRate {...props} />} />
+      </Routes>
+    </MemoryRouter>,
+  )
+}
+
 describe('CatalogRate', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -49,13 +63,13 @@ describe('CatalogRate', () => {
   })
 
   it('shows the checklist first', () => {
-    render(<MemoryRouter initialEntries={['/catalog/rate']}><CatalogRate /></MemoryRouter>)
+    renderRate('/catalog/rate')
     expect(screen.getByText('אילו קורסים למדת?')).toBeInTheDocument()
   })
 
   it('moves to the swipe deck for the checked courses after Done', async () => {
     const user = userEvent.setup()
-    render(<MemoryRouter initialEntries={['/catalog/rate']}><CatalogRate /></MemoryRouter>)
+    renderRate('/catalog/rate')
 
     await user.click(screen.getByRole('checkbox', { name: /תולדות האיור/ }))
     await user.click(screen.getByRole('button', { name: /סיימתי/ }))
@@ -66,25 +80,25 @@ describe('CatalogRate', () => {
 
   it('advances to the next card and calls submitRating after Submit', async () => {
     const user = userEvent.setup()
-    render(<MemoryRouter initialEntries={['/catalog/rate']}><CatalogRate /></MemoryRouter>)
+    renderRate('/catalog/rate')
 
     await user.click(screen.getByRole('checkbox', { name: /תולדות האיור/ }))
     await user.click(screen.getByRole('checkbox', { name: /זכויות יוצרים/ }))
     await user.click(screen.getByRole('button', { name: /סיימתי/ }))
 
     await user.click(getRecommendButton('חיובי'))
-    await user.click(screen.getByRole('button', { name: 'שליחה והמשך' }))
+    await user.click(screen.getByRole('button', { name: 'אישור' }))
 
     expect(mockSubmitRating).toHaveBeenCalledWith(expect.objectContaining({ uid: 'u1', courseCode: 'c1', recommend: true }))
     expect(screen.getByText('זכויות יוצרים')).toBeInTheDocument()
   })
 
-  it('navigates back to /catalog once the deck (from ?start=) is empty', async () => {
+  it('navigates back to /catalog once the deck (from /catalog/:courseId/rate) is empty', async () => {
     const user = userEvent.setup()
-    render(<MemoryRouter initialEntries={['/catalog/rate?start=c1']}><CatalogRate /></MemoryRouter>)
+    renderRate('/catalog/c1/rate')
 
     await user.click(getRecommendButton('חיובי'))
-    await user.click(screen.getByRole('button', { name: 'שליחה והמשך' }))
+    await user.click(screen.getByRole('button', { name: 'אישור' }))
 
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/catalog'))
   })
@@ -96,7 +110,7 @@ describe('CatalogRate', () => {
     const resolvers = []
     mockSubmitRating.mockImplementation(() => new Promise(res => resolvers.push(res)))
 
-    render(<MemoryRouter initialEntries={['/catalog/rate']}><CatalogRate /></MemoryRouter>)
+    renderRate('/catalog/rate')
 
     await user.click(screen.getByRole('checkbox', { name: /תולדות האיור/ }))
     await user.click(screen.getByRole('checkbox', { name: /זכויות יוצרים/ }))
@@ -105,7 +119,7 @@ describe('CatalogRate', () => {
 
     // Two taps land before the awaited write resolves, so both handlers
     // capture the same queue[0].
-    const submit = screen.getByRole('button', { name: 'שליחה והמשך' })
+    const submit = screen.getByRole('button', { name: 'אישור' })
     fireEvent.click(submit)
     fireEvent.click(submit)
 
@@ -119,25 +133,15 @@ describe('CatalogRate', () => {
     expect(screen.queryByText(/סיימת לדרג/)).not.toBeInTheDocument()
   })
 
-  it('drops only one course when "not taken" is double-tapped', async () => {
+  it('navigates to /catalog when ביטול is clicked', async () => {
     const user = userEvent.setup()
-    const resolvers = []
-    mockMarkNotTaken.mockImplementation(() => new Promise(res => resolvers.push(res)))
-
-    render(<MemoryRouter initialEntries={['/catalog/rate']}><CatalogRate /></MemoryRouter>)
+    renderRate('/catalog/rate')
 
     await user.click(screen.getByRole('checkbox', { name: /תולדות האיור/ }))
-    await user.click(screen.getByRole('checkbox', { name: /זכויות יוצרים/ }))
     await user.click(screen.getByRole('button', { name: /סיימתי/ }))
 
-    const notTaken = screen.getByRole('button', { name: 'לא למדתי את הקורס' })
-    fireEvent.click(notTaken)
-    fireEvent.click(notTaken)
+    await user.click(screen.getByRole('button', { name: 'ביטול' }))
 
-    expect(resolvers).toHaveLength(2)
-    await act(async () => { resolvers.forEach(r => r()) })
-
-    expect(screen.getByText('זכויות יוצרים')).toBeInTheDocument()
-    expect(screen.queryByText(/סיימת לדרג/)).not.toBeInTheDocument()
+    expect(mockNavigate).toHaveBeenCalledWith('/catalog')
   })
 })

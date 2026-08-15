@@ -3,7 +3,13 @@ import { ThumbsUp, ThumbsDown, Star } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Textarea } from '../ui/textarea'
 
-export function SwipeCard({ course, onSubmit, onSkip, onNotTaken }) {
+// Skipping a single course or marking one "not taken" mid-deck isn't wired
+// to a button here for now — no login means no reliable way to let a
+// student revisit a checklist mistake later anyway, so the flow is just
+// rate-and-continue (אישור) or cancel-the-whole-thing (ביטול). The handlers
+// for both still exist in CatalogRate.jsx, commented out, ready to bring
+// back if that changes.
+export function SwipeCard({ course, onSubmit, onCancel }) {
   const [recommend, setRecommend] = useState(null)
   const [profGood, setProfGood] = useState(null)
   const [difficulty, setDifficulty] = useState(null)
@@ -44,18 +50,13 @@ export function SwipeCard({ course, onSubmit, onSkip, onNotTaken }) {
         <Textarea value={comment} onChange={e => setComment(e.target.value)} />
       </div>
 
-      <div className="flex flex-col gap-2 mt-2">
-        <Button onClick={handleSubmit} disabled={recommend === null}>
-          שליחה והמשך
+      <div className="flex flex-row gap-2 mt-2">
+        <Button className="w-full" onClick={handleSubmit} disabled={recommend === null}>
+          אישור
         </Button>
-        <div className="flex gap-1">
-          <Button type="button" variant="outline" size="sm" onClick={onSkip} className="flex-1">
-            דלג/י
-          </Button>
-          <Button type="button" variant="outline" size="sm" onClick={onNotTaken} className="flex-1">
-            לא למדתי את הקורס
-          </Button>
-        </div>
+        <Button type="button" variant="outline" className="w-full" onClick={onCancel}>
+          ביטול
+        </Button>
       </div>
     </div>
   )

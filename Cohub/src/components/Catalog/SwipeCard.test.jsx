@@ -20,23 +20,23 @@ function getRecommendButton(name) {
 
 describe('SwipeCard', () => {
   it('shows the course name and description', () => {
-    render(<SwipeCard course={course} onSubmit={vi.fn()} onSkip={vi.fn()} onNotTaken={vi.fn()} />)
+    render(<SwipeCard course={course} onSubmit={vi.fn()} onCancel={vi.fn()} />)
     expect(screen.getByText('תולדות האיור')).toBeInTheDocument()
     expect(screen.getByText('איורים הם יצירות האמנות הראשונות שאנו מכירים.')).toBeInTheDocument()
   })
 
   it('disables submit until recommend is chosen', () => {
-    render(<SwipeCard course={course} onSubmit={vi.fn()} onSkip={vi.fn()} onNotTaken={vi.fn()} />)
-    expect(screen.getByRole('button', { name: 'שליחה והמשך' })).toBeDisabled()
+    render(<SwipeCard course={course} onSubmit={vi.fn()} onCancel={vi.fn()} />)
+    expect(screen.getByRole('button', { name: 'אישור' })).toBeDisabled()
   })
 
   it('submits with the chosen recommend value and defaults for untouched optional fields', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn()
-    render(<SwipeCard course={course} onSubmit={onSubmit} onSkip={vi.fn()} onNotTaken={vi.fn()} />)
+    render(<SwipeCard course={course} onSubmit={onSubmit} onCancel={vi.fn()} />)
 
     await user.click(getRecommendButton('חיובי'))
-    await user.click(screen.getByRole('button', { name: 'שליחה והמשך' }))
+    await user.click(screen.getByRole('button', { name: 'אישור' }))
 
     expect(onSubmit).toHaveBeenCalledWith({
       recommend: true,
@@ -49,19 +49,11 @@ describe('SwipeCard', () => {
     })
   })
 
-  it('calls onSkip when skip is clicked', async () => {
+  it('calls onCancel when ביטול is clicked', async () => {
     const user = userEvent.setup()
-    const onSkip = vi.fn()
-    render(<SwipeCard course={course} onSubmit={vi.fn()} onSkip={onSkip} onNotTaken={vi.fn()} />)
-    await user.click(screen.getByRole('button', { name: 'דלג/י' }))
-    expect(onSkip).toHaveBeenCalled()
-  })
-
-  it('calls onNotTaken when "לא למדתי את הקורס" is clicked', async () => {
-    const user = userEvent.setup()
-    const onNotTaken = vi.fn()
-    render(<SwipeCard course={course} onSubmit={vi.fn()} onSkip={vi.fn()} onNotTaken={onNotTaken} />)
-    await user.click(screen.getByRole('button', { name: 'לא למדתי את הקורס' }))
-    expect(onNotTaken).toHaveBeenCalled()
+    const onCancel = vi.fn()
+    render(<SwipeCard course={course} onSubmit={vi.fn()} onCancel={onCancel} />)
+    await user.click(screen.getByRole('button', { name: 'ביטול' }))
+    expect(onCancel).toHaveBeenCalled()
   })
 })

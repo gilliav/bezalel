@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useCatalogAuth } from '../hooks/useCatalogAuth'
 import { useCatalogCourses } from '../hooks/useCatalogCourses'
 import { useUserRatingStatus, submitRating, markNotTaken } from '../hooks/useCatalogRatings'
@@ -8,8 +8,10 @@ import { CourseChecklist } from '../components/Catalog/CourseChecklist'
 import { SwipeCard } from '../components/Catalog/SwipeCard'
 
 export default function CatalogRate({ onError }) {
-  const [searchParams] = useSearchParams()
-  const startCourseId = searchParams.get('start')
+  // Present only when mounted at /catalog/:courseId/rate (rating one course
+  // directly from its detail page) — absent at /catalog/rate, which starts
+  // with the take-courses checklist instead.
+  const { courseId: startCourseId } = useParams()
   const navigate = useNavigate()
   const { uid, ready } = useCatalogAuth()
   const { courses, loading: coursesLoading } = useCatalogCourses()
@@ -39,18 +41,28 @@ export default function CatalogRate({ onError }) {
     }
   }
 
-  async function handleNotTaken() {
-    const courseId = queue[0]
-    try {
-      await markNotTaken({ uid, courseCode: courseId })
-      setQueue(q => q.filter(id => id !== courseId))
-    } catch {
-      onError?.('שגיאה בשמירה')
-    }
-  }
+  // handleNotTaken/handleSkip are dormant — SwipeCard only offers "אישור"
+  // (rate and continue) or "ביטול" (cancel the whole session) for now, since
+  // there's no login yet to reliably let a student revisit a checklist
+  // mistake later. Kept here, ready to wire back into SwipeCard if that
+  // changes.
+  //
+  // async function handleNotTaken() {
+  //   const courseId = queue[0]
+  //   try {
+  //     await markNotTaken({ uid, courseCode: courseId })
+  //     setQueue(q => q.filter(id => id !== courseId))
+  //   } catch {
+  //     onError?.('שגיאה בשמירה')
+  //   }
+  // }
+  //
+  // function handleSkip() {
+  //   setQueue(q => (q.length <= 1 ? q : [...q.slice(1), q[0]]))
+  // }
 
-  function handleSkip() {
-    setQueue(q => (q.length <= 1 ? q : [...q.slice(1), q[0]]))
+  function handleCancel() {
+    navigate('/catalog')
   }
 
   if (!ready || coursesLoading || statusLoading) return <div className="state-loading">טוען...</div>
@@ -74,8 +86,7 @@ export default function CatalogRate({ onError }) {
         key={currentCourse.id}
         course={currentCourse}
         onSubmit={handleSubmit}
-        onSkip={handleSkip}
-        onNotTaken={handleNotTaken}
+        onCancel={handleCancel}
       />
     </div>
   )
