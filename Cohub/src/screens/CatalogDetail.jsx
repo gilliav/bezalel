@@ -5,6 +5,7 @@ import { useCatalogAuth } from '../hooks/useCatalogAuth'
 import { useCatalogCourses } from '../hooks/useCatalogCourses'
 import { useCourseRatings, submitRating } from '../hooks/useCatalogRatings'
 import { computeAggregate, getAttendanceLabel } from '../utils/catalogAggregate'
+import { formatDateShort } from '../utils/dates'
 import { PageHeader } from '../components/PageHeader'
 import { Button } from '../components/ui/button'
 import { SwipeCard } from '../components/Catalog/SwipeCard'
@@ -27,24 +28,44 @@ function StatCard({ label, value }) {
   )
 }
 
+function ReviewStat({ label, value }) {
+  if (value == null) return null
+  return (
+    <span className="flex items-center gap-1">
+      <span className="text-muted-foreground">{label}:</span>
+      {value}
+      /5
+    </span>
+  )
+}
+
 function ReviewCard({ review }) {
   return (
     <div
       data-testid={`review-${review.id}`}
-      className="flex flex-col gap-2 border-b border-border pb-3 last:border-b-0 last:pb-0"
+      className="flex flex-col gap-2 rounded-lg border border-border bg-card p-3"
     >
-      <div className="flex items-center gap-3 text-sm">
+      <div className="flex items-center justify-between text-xs text-muted-foreground">
+        <span>אנונימי</span>
+        {review.createdAt && <span>{formatDateShort(review.createdAt)}</span>}
+      </div>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
         {review.recommend != null && (
-          review.recommend ? (
-            <ThumbsUp size={16} fill="currentColor" style={{ color: 'var(--rating-positive)' }} />
-          ) : (
-            <ThumbsDown size={16} fill="currentColor" style={{ color: 'var(--rating-negative)' }} />
-          )
+          <span className="flex items-center gap-1 font-semibold" style={{ color: review.recommend ? 'var(--rating-positive)' : 'var(--rating-negative)' }}>
+            {review.recommend ? <ThumbsUp size={14} fill="currentColor" /> : <ThumbsDown size={14} fill="currentColor" />}
+            {review.recommend ? 'ממליץ/ה' : 'לא ממליץ/ה'}
+          </span>
         )}
-        {review.profGood != null && (
-          <span className="flex items-center gap-1 font-semibold" style={{ color: 'var(--rating-star)' }}>
-            <Star size={14} fill="currentColor" />
-            {review.profGood}
+        <ReviewStat label="הוראה" value={review.profGood} />
+        <ReviewStat label="קושי" value={review.difficulty} />
+        <ReviewStat label="עניין" value={review.interesting} />
+        <ReviewStat label="עומס" value={review.workload} />
+        {review.attendanceTaken != null && (
+          <span className="flex items-center gap-1 text-muted-foreground">
+            נוכחות:
+            <span className="font-semibold" style={{ color: review.attendanceTaken ? 'var(--rating-positive)' : 'var(--rating-negative)' }}>
+              {review.attendanceTaken ? 'כן' : 'לא'}
+            </span>
           </span>
         )}
       </div>
@@ -152,7 +173,7 @@ export default function CatalogDetail({ onError }) {
             </div>
 
             <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2 mt-2 text-sm">
-              <span className="text-muted-foreground">נוכחות נבדקת</span>
+              <span className="text-muted-foreground">נוכחות נבדקת?</span>
               <span className="flex items-center gap-1.5">
                 <span className="font-semibold" style={{ color: attendanceLabel ? ATTENDANCE_COLOR[attendanceLabel] : undefined }}>
                   {attendanceLabel ?? '--'}

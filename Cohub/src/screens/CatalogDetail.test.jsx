@@ -157,6 +157,55 @@ describe('CatalogDetail', () => {
     expect(screen.getByTestId('review-r2')).toBeInTheDocument()
   })
 
+  it('shows all of a single review\'s stats together inside its own card', () => {
+    mockUseCourseRatings.mockReturnValue({
+      ratings: [
+        {
+          id: 'r1',
+          status: 'rated',
+          recommend: true,
+          profGood: 5,
+          difficulty: 3,
+          interesting: 4,
+          workload: 2,
+          attendanceTaken: true,
+          comment: 'קורס מעולה',
+        },
+      ],
+      loading: false,
+    })
+    renderDetail()
+
+    const review = screen.getByTestId('review-r1')
+    expect(within(review).getByText('ממליץ/ה')).toBeInTheDocument()
+    expect(within(review).getByText(/הוראה/)).toBeInTheDocument()
+    expect(within(review).getByText(/קושי/)).toBeInTheDocument()
+    expect(within(review).getByText(/עניין/)).toBeInTheDocument()
+    expect(within(review).getByText(/עומס/)).toBeInTheDocument()
+    expect(within(review).getByText('כן')).toBeInTheDocument()
+    expect(within(review).getByText('קורס מעולה')).toBeInTheDocument()
+  })
+
+  it('shows the reviewer as anonymous, with the rating date', () => {
+    mockUseCourseRatings.mockReturnValue({
+      ratings: [
+        {
+          id: 'r1',
+          status: 'rated',
+          recommend: true,
+          comment: 'קורס מעולה',
+          createdAt: { toDate: () => new Date('2026-03-05') },
+        },
+      ],
+      loading: false,
+    })
+    renderDetail()
+
+    const review = screen.getByTestId('review-r1')
+    expect(within(review).getByText('אנונימי')).toBeInTheDocument()
+    expect(within(review).getByText('5.3')).toBeInTheDocument()
+  })
+
   it('shows the rate button instead of the swipe form when not at the /rate url', () => {
     renderDetail()
     expect(screen.getByRole('link', { name: 'דרג/י את הקורס' })).toBeInTheDocument()
