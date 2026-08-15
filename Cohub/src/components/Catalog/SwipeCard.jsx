@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ThumbsUp, ThumbsDown, Star } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Textarea } from '../ui/textarea'
+import { LoadGauge } from './LoadGauge'
 
 // Skipping a single course or marking one "not taken" mid-deck isn't wired
 // to a button here for now — no login means no reliable way to let a
@@ -39,14 +40,14 @@ export function SwipeCard({ course, onSubmit, onCancel, showCourseInfo = true })
 
       <div className="grid grid-cols-2 gap-2">
       <StarField label="איכות ההוראה" value={profGood} onChange={setProfGood} />
-      <StarField label="רמת הקושי" value={difficulty} onChange={setDifficulty} />
+      <LoadGauge label="רמת הקושי" value={difficulty} onChange={setDifficulty} heavyLabel="קשה" />
       <StarField label="עניין" value={interesting} onChange={setInteresting} />
-      <StarField label="עומס העבודה" value={workload} onChange={setWorkload} />
+      <LoadGauge label="עומס העבודה" value={workload} onChange={setWorkload} heavyLabel="כבד" />
       </div>
 
       <div className="field">
         <label className="field-label">האם נבדקת נוכחות?</label>
-        <ThumbsField value={attendanceTaken} onChange={setAttendanceTaken} />
+        <YesNoField value={attendanceTaken} onChange={setAttendanceTaken} />
       </div>
 
       <div className="field">
@@ -87,7 +88,7 @@ function ThumbsField({ value, onChange }) {
           size={24}
           strokeWidth={1.5}
           fill={value === true ? 'currentColor' : 'none'}
-          stroke="#000000"
+          stroke="var(--foreground)"
           style={{ color: value === true ? 'var(--rating-positive)' : 'currentColor' }}
         />
       </ToggleButton>
@@ -96,10 +97,33 @@ function ThumbsField({ value, onChange }) {
           size={24}
           strokeWidth={1.5}
           fill={value === false ? 'currentColor' : 'none'}
-          stroke="#000000"
+          stroke="var(--foreground)"
           style={{ color: value === false ? 'var(--rating-negative)' : 'currentColor' }}
         />
       </ToggleButton>
+    </div>
+  )
+}
+
+function YesNoField({ value, onChange }) {
+  return (
+    <div className="flex gap-2">
+      <Button
+        type="button"
+        size="sm"
+        variant={value === true ? 'default' : 'outline'}
+        onClick={() => onChange(value === true ? null : true)}
+      >
+        כן
+      </Button>
+      <Button
+        type="button"
+        size="sm"
+        variant={value === false ? 'default' : 'outline'}
+        onClick={() => onChange(value === false ? null : false)}
+      >
+        לא
+      </Button>
     </div>
   )
 }

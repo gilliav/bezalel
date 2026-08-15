@@ -11,8 +11,9 @@ const course = {
   description: 'איורים הם יצירות האמנות הראשונות שאנו מכירים.',
 }
 
-// The recommend and attendance fields both render a "חיובי"/"שלילי" thumbs
-// toggle, so queries must be scoped to the recommend field's own container.
+// Scoped to the recommend field's own container even though, post-change,
+// it's the only field using "חיובי"/"שלילי" labels — keeps the query robust
+// if that ever changes again.
 function getRecommendButton(name) {
   const field = screen.getByText('האם תמליץ/י על הקורס?').closest('.field')
   return within(field).getByRole('button', { name })
@@ -62,5 +63,17 @@ describe('SwipeCard', () => {
     expect(screen.queryByText('תולדות האיור')).not.toBeInTheDocument()
     expect(screen.queryByText('איורים הם יצירות האמנות הראשונות שאנו מכירים.')).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'אישור' })).toBeInTheDocument()
+  })
+
+  it('toggles attendance yes/no independently of the recommend thumbs field', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    render(<SwipeCard course={course} onSubmit={onSubmit} onCancel={vi.fn()} />)
+
+    await user.click(getRecommendButton('חיובי'))
+    await user.click(screen.getByRole('button', { name: 'כן' }))
+    await user.click(screen.getByRole('button', { name: 'אישור' }))
+
+    expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ attendanceTaken: true }))
   })
 })
