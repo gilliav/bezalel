@@ -28,12 +28,9 @@ function StatCard({ label, value, bucket, testId }) {
         <span className="text-xs font-normal text-muted-foreground">/5</span>
       </div>
       {bucket && (
-        <span
-          className="font-display inline-block text-xs font-bold mt-1 px-2 py-0.5"
-          style={{ color: bucket.colorVar, backgroundColor: `color-mix(in srgb, ${bucket.colorVar} 16%, transparent)` }}
-        >
+        <div className="text-xs font-semibold mt-1" style={{ color: bucket.colorVar }}>
           {bucket.label}
-        </span>
+        </div>
       )}
     </div>
   )
