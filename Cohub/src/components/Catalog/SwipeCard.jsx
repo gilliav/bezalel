@@ -9,7 +9,7 @@ import { Textarea } from '../ui/textarea'
 // rate-and-continue (אישור) or cancel-the-whole-thing (ביטול). The handlers
 // for both still exist in CatalogRate.jsx, commented out, ready to bring
 // back if that changes.
-export function SwipeCard({ course, onSubmit, onCancel }) {
+export function SwipeCard({ course, onSubmit, onCancel, showCourseInfo = true }) {
   const [recommend, setRecommend] = useState(null)
   const [profGood, setProfGood] = useState(null)
   const [difficulty, setDifficulty] = useState(null)
@@ -23,10 +23,14 @@ export function SwipeCard({ course, onSubmit, onCancel }) {
   }
 
   return (
-    <div className="page-body border border-border rounded-lg">
-      <h2>{course.name}</h2>
-      <div className="text-sm text-muted-foreground">{course.lecturer} · {course.category}</div>
-      <p className="text-sm text-foreground">{course.description}</p>
+    <div className="flex flex-col border border-border rounded-[12px] p-[16px] gap-[12px]">
+      {showCourseInfo && (
+        <>
+          <h2>{course.name}</h2>
+          <div className="text-sm text-muted-foreground">{course.lecturer} · {course.category}</div>
+          <p className="text-sm text-foreground">{course.description}</p>
+        </>
+      )}
 
       <div className="field">
         <label className="field-label">האם תמליץ/י על הקורס?</label>
@@ -51,10 +55,10 @@ export function SwipeCard({ course, onSubmit, onCancel }) {
       </div>
 
       <div className="flex flex-row gap-2 mt-2">
-        <Button className="w-full" onClick={handleSubmit} disabled={recommend === null}>
+        <Button className="w-full rounded-[0px]" onClick={handleSubmit} disabled={recommend === null}>
           אישור
         </Button>
-        <Button type="button" variant="outline" className="w-full" onClick={onCancel}>
+        <Button type="button" variant="outline" className="w-full rounded-[0px]" onClick={onCancel}>
           ביטול
         </Button>
       </div>
@@ -80,18 +84,18 @@ function ThumbsField({ value, onChange }) {
     <div className="flex gap-1">
       <ToggleButton onClick={() => onChange(value === true ? null : true)} aria-label="חיובי">
         <ThumbsUp
-          className="w-6 h-6"
+          size={24}
           fill={value === true ? 'currentColor' : 'none'}
           stroke="black"
-          style={{ color: value === true ? '#56a77f' : 'currentColor' }}
+          style={{ color: value === true ? 'var(--rating-positive)' : 'currentColor' }}
         />
       </ToggleButton>
       <ToggleButton onClick={() => onChange(value === false ? null : false)} aria-label="שלילי">
         <ThumbsDown
-          className="w-6 h-6"
+          size={24}
           fill={value === false ? 'currentColor' : 'none'}
           stroke="black"
-          style={{ color: value === false ? '#c86565' : 'currentColor' }}
+          style={{ color: value === false ? 'var(--rating-negative)' : 'currentColor' }}
         />
       </ToggleButton>
     </div>
@@ -112,8 +116,8 @@ function StarField({ label, value, onChange }) {
             className="focus:outline-none"
           >
             <Star
-              className="w-6 h-6"
-              fill={value >= n ? '#8a85dd' : 'none'}
+              size={24}
+              fill={value >= n ? 'var(--rating-star)' : 'none'}
               stroke="currentColor"
             />
           </button>

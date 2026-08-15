@@ -56,4 +56,11 @@ describe('SwipeCard', () => {
     await user.click(screen.getByRole('button', { name: 'ביטול' }))
     expect(onCancel).toHaveBeenCalled()
   })
+
+  it('hides the course name and description when showCourseInfo is false', () => {
+    render(<SwipeCard course={course} onSubmit={vi.fn()} onCancel={vi.fn()} showCourseInfo={false} />)
+    expect(screen.queryByText('תולדות האיור')).not.toBeInTheDocument()
+    expect(screen.queryByText('איורים הם יצירות האמנות הראשונות שאנו מכירים.')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'אישור' })).toBeInTheDocument()
+  })
 })

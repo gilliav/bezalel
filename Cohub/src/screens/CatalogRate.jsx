@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useCatalogAuth } from '../hooks/useCatalogAuth'
 import { useCatalogCourses } from '../hooks/useCatalogCourses'
 import { useUserRatingStatus, submitRating, markNotTaken } from '../hooks/useCatalogRatings'
@@ -7,18 +7,18 @@ import { PageHeader } from '../components/PageHeader'
 import { CourseChecklist } from '../components/Catalog/CourseChecklist'
 import { SwipeCard } from '../components/Catalog/SwipeCard'
 
+// Rating a single course directly from its detail page is handled inline by
+// CatalogDetail at /catalog/:courseId/rate now. This screen only serves
+// /catalog/rate — the take-courses checklist followed by a swipe deck for
+// rating several courses in one session.
 export default function CatalogRate({ onError }) {
-  // Present only when mounted at /catalog/:courseId/rate (rating one course
-  // directly from its detail page) — absent at /catalog/rate, which starts
-  // with the take-courses checklist instead.
-  const { courseId: startCourseId } = useParams()
   const navigate = useNavigate()
   const { uid, ready } = useCatalogAuth()
   const { courses, loading: coursesLoading } = useCatalogCourses()
   const { ratedCodes, notTakenCodes, loading: statusLoading } = useUserRatingStatus(uid)
 
-  const [phase, setPhase] = useState(startCourseId ? 'deck' : 'checklist')
-  const [queue, setQueue] = useState(startCourseId ? [startCourseId] : [])
+  const [phase, setPhase] = useState('checklist')
+  const [queue, setQueue] = useState([])
 
   const excludeIds = useMemo(() => new Set([...ratedCodes, ...notTakenCodes]), [ratedCodes, notTakenCodes])
 

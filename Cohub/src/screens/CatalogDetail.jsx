@@ -1,12 +1,13 @@
 import { useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { Star } from 'lucide-react'
+import { useParams, useLocation, useNavigate, Link } from 'react-router-dom'
+import { Star, ThumbsUp, ThumbsDown } from 'lucide-react'
 import { useCatalogAuth } from '../hooks/useCatalogAuth'
 import { useCatalogCourses } from '../hooks/useCatalogCourses'
-import { useCourseRatings } from '../hooks/useCatalogRatings'
+import { useCourseRatings, submitRating } from '../hooks/useCatalogRatings'
 import { computeAggregate, getAttendanceLabel } from '../utils/catalogAggregate'
 import { PageHeader } from '../components/PageHeader'
 import { Button } from '../components/ui/button'
+import { SwipeCard } from '../components/Catalog/SwipeCard'
 
 const ATTENDANCE_COLOR = {
   'כן': 'var(--rating-positive)',
@@ -26,9 +27,37 @@ function StatCard({ label, value }) {
   )
 }
 
+function ReviewCard({ review }) {
+  return (
+    <div
+      data-testid={`review-${review.id}`}
+      className="flex flex-col gap-2 border-b border-border pb-3 last:border-b-0 last:pb-0"
+    >
+      <div className="flex items-center gap-3 text-sm">
+        {review.recommend != null && (
+          review.recommend ? (
+            <ThumbsUp size={16} fill="currentColor" style={{ color: 'var(--rating-positive)' }} />
+          ) : (
+            <ThumbsDown size={16} fill="currentColor" style={{ color: 'var(--rating-negative)' }} />
+          )
+        )}
+        {review.profGood != null && (
+          <span className="flex items-center gap-1 font-semibold" style={{ color: 'var(--rating-star)' }}>
+            <Star size={14} fill="currentColor" />
+            {review.profGood}
+          </span>
+        )}
+      </div>
+      {review.comment && <p className="text-sm text-foreground">{review.comment}</p>}
+    </div>
+  )
+}
+
 export default function CatalogDetail({ onError }) {
   const { courseId } = useParams()
-  const { ready, error: authError } = useCatalogAuth()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const { uid, ready, error: authError } = useCatalogAuth()
   const { courses, loading: coursesLoading, error: coursesError } = useCatalogCourses()
   const { ratings, loading: ratingsLoading, error: ratingsError } = useCourseRatings(courseId)
 
@@ -41,11 +70,25 @@ export default function CatalogDetail({ onError }) {
   }, [coursesError, ratingsError, onError])
 
   const course = courses.find(c => c.id === courseId)
+  const isRating = location.pathname.endsWith('/rate')
 
   if (!ready || coursesLoading || ratingsLoading || !course) return <div className="state-loading">טוען...</div>
 
+  async function handleRateSubmit(fields) {
+    try {
+      await submitRating({ uid, courseCode: course.id, ...fields })
+      navigate(`/catalog/${course.id}`)
+    } catch {
+      onError?.('שגיאה בשמירת הדירוג')
+    }
+  }
+
+  function handleRateCancel() {
+    navigate(`/catalog/${course.id}`)
+  }
+
   const aggregate = computeAggregate(ratings)
-  const comments = ratings.filter(r => r.status === 'rated' && r.comment)
+  const reviews = ratings.filter(r => r.status === 'rated')
   const attendanceLabel = getAttendanceLabel(aggregate.attendanceTakenPercent)
 
   return (
@@ -66,9 +109,15 @@ export default function CatalogDetail({ onError }) {
         </div>
         <p className="text-base">{course.description}</p>
 
-        <Link to={`/catalog/${course.id}/rate`}>
-          <Button className="w-full mt-2">דרג/י את הקורס</Button>
-        </Link>
+        {isRating ? (
+          <div className="mt-2">
+            <SwipeCard course={course} onSubmit={handleRateSubmit} onCancel={handleRateCancel} showCourseInfo={false} />
+          </div>
+        ) : (
+          <Link to={`/catalog/${course.id}/rate`}>
+            <Button className="w-full mt-2">דרג/י את הקורס</Button>
+          </Link>
+        )}
       </div>
 
       <div className="page-body border-b border-border pb-4">
@@ -117,12 +166,12 @@ export default function CatalogDetail({ onError }) {
         )}
       </div>
 
-      {comments.length > 0 && (
+      {reviews.length > 0 && (
         <div className="page-body">
-          <h2 className="mb-2">תגובות</h2>
+          <h2 className="mb-2">חוות דעת</h2>
           <div className="flex flex-col gap-3">
-            {comments.map(r => (
-              <div key={r.id} className="text-sm text-foreground">{r.comment}</div>
+            {reviews.map(r => (
+              <ReviewCard key={r.id} review={r} />
             ))}
           </div>
         </div>

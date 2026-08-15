@@ -1,14 +1,24 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 
 const mockUseCatalogAuth = vi.hoisted(() => vi.fn())
 const mockUseCatalogCourses = vi.hoisted(() => vi.fn())
 const mockUseCourseRatings = vi.hoisted(() => vi.fn())
+const mockSubmitRating = vi.hoisted(() => vi.fn().mockResolvedValue(undefined))
+const mockNavigate = vi.hoisted(() => vi.fn())
 
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal()
+  return { ...actual, useNavigate: () => mockNavigate }
+})
 vi.mock('../hooks/useCatalogAuth', () => ({ useCatalogAuth: mockUseCatalogAuth }))
 vi.mock('../hooks/useCatalogCourses', () => ({ useCatalogCourses: mockUseCatalogCourses }))
-vi.mock('../hooks/useCatalogRatings', () => ({ useCourseRatings: mockUseCourseRatings }))
+vi.mock('../hooks/useCatalogRatings', () => ({
+  useCourseRatings: mockUseCourseRatings,
+  submitRating: mockSubmitRating,
+}))
 
 import CatalogDetail from './CatalogDetail'
 
@@ -24,11 +34,12 @@ const course = {
   description: 'איורים הם יצירות האמנות הראשונות שאנו מכירים.',
 }
 
-function renderDetail(props = {}) {
+function renderDetail(props = {}, entry = '/catalog/c1') {
   return render(
-    <MemoryRouter initialEntries={['/catalog/c1']}>
+    <MemoryRouter initialEntries={[entry]}>
       <Routes>
         <Route path="/catalog/:courseId" element={<CatalogDetail {...props} />} />
+        <Route path="/catalog/:courseId/rate" element={<CatalogDetail {...props} />} />
       </Routes>
     </MemoryRouter>,
   )
@@ -129,5 +140,69 @@ describe('CatalogDetail', () => {
 
     expect(screen.getByText('אורנה גרנות')).toBeInTheDocument()
     expect(screen.queryByText(/ש"ס/)).not.toBeInTheDocument()
+  })
+
+  it('shows a reviews list with every rating, comment or not', () => {
+    mockUseCourseRatings.mockReturnValue({
+      ratings: [
+        { id: 'r1', status: 'rated', recommend: true, profGood: 5, comment: 'קורס מעולה' },
+        { id: 'r2', status: 'rated', recommend: false, profGood: 2 },
+      ],
+      loading: false,
+    })
+    renderDetail()
+
+    expect(screen.getByText('קורס מעולה')).toBeInTheDocument()
+    expect(screen.getByTestId('review-r1')).toBeInTheDocument()
+    expect(screen.getByTestId('review-r2')).toBeInTheDocument()
+  })
+
+  it('shows the rate button instead of the swipe form when not at the /rate url', () => {
+    renderDetail()
+    expect(screen.getByRole('link', { name: 'דרג/י את הקורס' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'אישור' })).not.toBeInTheDocument()
+  })
+
+  it('renders the rating form inline at /catalog/:courseId/rate', () => {
+    renderDetail({}, '/catalog/c1/rate')
+    expect(screen.getByRole('button', { name: 'אישור' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'ביטול' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'דרג/י את הקורס' })).not.toBeInTheDocument()
+  })
+
+  it('submits the rating and navigates back to the course on success', async () => {
+    const user = userEvent.setup()
+    renderDetail({}, '/catalog/c1/rate')
+
+    const recommendField = screen.getByText('האם תמליץ/י על הקורס?').closest('.field')
+    await user.click(within(recommendField).getByRole('button', { name: 'חיובי' }))
+    await user.click(screen.getByRole('button', { name: 'אישור' }))
+
+    await waitFor(() =>
+      expect(mockSubmitRating).toHaveBeenCalledWith(expect.objectContaining({ uid: 'u1', courseCode: 'c1', recommend: true })),
+    )
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/catalog/c1'))
+  })
+
+  it('reports a failed submit through onError', async () => {
+    mockSubmitRating.mockRejectedValueOnce(new Error('nope'))
+    const onError = vi.fn()
+    const user = userEvent.setup()
+    renderDetail({ onError }, '/catalog/c1/rate')
+
+    const recommendField = screen.getByText('האם תמליץ/י על הקורס?').closest('.field')
+    await user.click(within(recommendField).getByRole('button', { name: 'חיובי' }))
+    await user.click(screen.getByRole('button', { name: 'אישור' }))
+
+    await waitFor(() => expect(onError).toHaveBeenCalledWith('שגיאה בשמירת הדירוג'))
+  })
+
+  it('navigates back to the course when ביטול is clicked', async () => {
+    const user = userEvent.setup()
+    renderDetail({}, '/catalog/c1/rate')
+
+    await user.click(screen.getByRole('button', { name: 'ביטול' }))
+
+    expect(mockNavigate).toHaveBeenCalledWith('/catalog/c1')
   })
 })

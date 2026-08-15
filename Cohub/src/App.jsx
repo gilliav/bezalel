@@ -39,7 +39,7 @@ function AppShell({ toastMessage, setToastMessage, isOnline }) {
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/catalog" element={<CatalogList onError={setToastMessage} />} />
           <Route path="/catalog/rate" element={<CatalogRate onError={setToastMessage} />} />
-          <Route path="/catalog/:courseId/rate" element={<CatalogRate onError={setToastMessage} />} />
+          <Route path="/catalog/:courseId/rate" element={<CatalogDetail onError={setToastMessage} />} />
           <Route path="/catalog/:courseId" element={<CatalogDetail onError={setToastMessage} />} />
           <Route path="/lecturer/:lecturerName" element={<LecturerDetail onError={setToastMessage} />} />
         </Routes>

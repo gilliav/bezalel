@@ -36,15 +36,11 @@ function getRecommendButton(name) {
   return within(field).getByRole('button', { name })
 }
 
-// CatalogRate reads an optional :courseId route param (present only at
-// /catalog/:courseId/rate), so it needs real route matching, not just a
-// bare MemoryRouter.
 function renderRate(entry, props = {}) {
   return render(
     <MemoryRouter initialEntries={[entry]}>
       <Routes>
         <Route path="/catalog/rate" element={<CatalogRate {...props} />} />
-        <Route path="/catalog/:courseId/rate" element={<CatalogRate {...props} />} />
       </Routes>
     </MemoryRouter>,
   )
@@ -93,9 +89,12 @@ describe('CatalogRate', () => {
     expect(screen.getByText('זכויות יוצרים')).toBeInTheDocument()
   })
 
-  it('navigates back to /catalog once the deck (from /catalog/:courseId/rate) is empty', async () => {
+  it('navigates back to /catalog once the deck is empty', async () => {
     const user = userEvent.setup()
-    renderRate('/catalog/c1/rate')
+    renderRate('/catalog/rate')
+
+    await user.click(screen.getByRole('checkbox', { name: /תולדות האיור/ }))
+    await user.click(screen.getByRole('button', { name: /סיימתי/ }))
 
     await user.click(getRecommendButton('חיובי'))
     await user.click(screen.getByRole('button', { name: 'אישור' }))
