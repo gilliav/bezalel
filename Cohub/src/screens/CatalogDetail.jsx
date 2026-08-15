@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom'
-import { ThumbsUp, ThumbsDown } from 'lucide-react'
+import { ThumbsUp, ThumbsDown, Minus, Dot } from 'lucide-react'
 import { useCatalogAuth } from '../hooks/useCatalogAuth'
 import { useCatalogCourses } from '../hooks/useCatalogCourses'
 import { useCourseRatings, submitRating } from '../hooks/useCatalogRatings'
@@ -23,14 +23,18 @@ function StatCard({ label, value, bucket, testId }) {
       data-testid={testId ? `stat-${testId}` : undefined}
     >
       <div className="text-xs text-muted-foreground">{label}</div>
-      <div className="font-bold flex flex-row gap-1 items-baseline justify-center">
+      <div className="font-bold flex flex-row items-baseline justify-center">
         <div>
           <span>{value !== null ? value : '--'}</span>
           <span className="text-sm font-light text-muted-foreground">/5</span>
         </div>
         {bucket && (
-          <div className="text-sm font-semibold" style={{ color: bucket.colorVar }}>{bucket.label}</div>
-        )}
+        <>
+        <Dot size={18} fill="var(--foreground)" className="self-center mt-1"/>
+          <div className="text-xs font-semibold px-1.5 rounded-[4px]" style={{ backgroundColor: bucket.colorVar }}>{bucket.label}</div>
+        
+        </>)
+        }
       </div>
     </div>
   )
@@ -74,13 +78,13 @@ function ReviewCard({ review }) {
           </span>
         )}
         <ReviewStat label="הוראה" value={review.profGood} />
-        <ReviewStat label="רמת קושי" value={review.difficulty} heavyLabel="קשה" />
+        <ReviewStat label="רמת קושי" value={review.difficulty}  />
         <ReviewStat label="עניין" value={review.interesting} />
-        <ReviewStat label="עומס" value={review.workload} heavyLabel="כבד" />
+        <ReviewStat label="עומס" value={review.workload} />
         {review.attendanceTaken != null && (
           <span className="flex items-center gap-1 text-muted-foreground">
             נוכחות נבדקת:
-            <span className="font-semibold">
+            <span className="text-foreground">
               {review.attendanceTaken ? 'כן' : 'לא'}
             </span>
           </span>

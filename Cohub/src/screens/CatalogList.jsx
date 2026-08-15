@@ -11,8 +11,8 @@ import { ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react'
 import { CourseListItem } from '../components/Catalog/CourseListItem'
 
 const SORT_OPTIONS = [
-  { key: 'name', label: 'שם (א-ת)', dirIcon: ArrowUp },
-  { key: 'name-reverse', label: 'שם (א-ת)', dirIcon: ArrowDown },
+  { key: 'name', label: 'שם (א-ת)', dirIcon: ArrowDown },
+  { key: 'name-reverse', label: 'שם (א-ת)', dirIcon: ArrowUp },
   { key: 'recommend', label: 'מומלץ ביותר', dirIcon: ArrowDown },
   { key: 'profGood', label: 'דירוג מרצה', dirIcon: ArrowDown },
   { key: 'count', label: 'הכי הרבה דירוגים', dirIcon: ArrowDown },
