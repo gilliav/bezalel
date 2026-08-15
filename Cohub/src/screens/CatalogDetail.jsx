@@ -26,12 +26,10 @@ function StatCard({ label, value, bucket, testId }) {
       <div className="font-bold" style={{ color: 'var(--foreground)' }}>
         <span>{value !== null ? value.toFixed(1) : '--'}</span>
         <span className="text-xs font-normal text-muted-foreground">/5</span>
+        {bucket && (
+          <span className="text-xs font-semibold" style={{ color: bucket.colorVar }}> {bucket.label}</span>
+        )}
       </div>
-      {bucket && (
-        <div className="text-xs font-semibold mt-1" style={{ color: bucket.colorVar }}>
-          {bucket.label}
-        </div>
-      )}
     </div>
   )
 }
