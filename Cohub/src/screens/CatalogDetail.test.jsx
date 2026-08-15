@@ -49,9 +49,9 @@ describe('CatalogDetail', () => {
     expect(screen.getByText('איורים הם יצירות האמנות הראשונות שאנו מכירים.')).toBeInTheDocument()
   })
 
-  it('shows "no ratings yet" when there are none', () => {
+  it('shows a dash placeholder when there are no ratings', () => {
     renderDetail()
-    expect(screen.getByText('אין דירוגים עדיין')).toBeInTheDocument()
+    expect(screen.getByText('--')).toBeInTheDocument()
   })
 
   it('shows aggregate stats and written comments when ratings exist', () => {

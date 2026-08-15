@@ -16,13 +16,13 @@ it('shows course name, lecturer, and category', () => {
   expect(screen.getByText('בחירה עיוני')).toBeInTheDocument()
 })
 
-it('shows "no ratings yet" when aggregate count is 0', () => {
+it('shows a dash placeholder when aggregate count is 0', () => {
   render(
     <MemoryRouter>
       <CourseListItem course={course} aggregate={{ count: 0 }} />
     </MemoryRouter>,
   )
-  expect(screen.getByText('אין דירוגים עדיין')).toBeInTheDocument()
+  expect(screen.getByText('--')).toBeInTheDocument()
 })
 
 it('shows recommend percent and rating count when ratings exist', () => {

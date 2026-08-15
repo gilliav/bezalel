@@ -15,7 +15,7 @@ export function CourseListItem({ course, aggregate }) {
       <div className="text-base text-muted-foreground">{course.lecturer}</div>
 
       {aggregate.count === 0 ? (
-        <div className="text-sm text-muted-foreground mt-1">אין דירוגים עדיין</div>
+        <div className="text-sm text-muted-foreground mt-1">--</div>
       ) : (
         <div className="flex items-center gap-3 mt-1 text-sm">
           <span className="flex items-center gap-1 font-semibold" style={{ color: 'var(--rating-positive)' }}>

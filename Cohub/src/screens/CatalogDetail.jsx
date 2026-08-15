@@ -74,7 +74,7 @@ export default function CatalogDetail({ onError }) {
       <div className="page-body border-b border-border pb-4">
         <h2 className="mb-2">דירוגים</h2>
         {aggregate.count === 0 ? (
-          <div className="text-muted-foreground text-sm">אין דירוגים עדיין</div>
+          <div className="text-muted-foreground text-sm">--</div>
         ) : (
           <>
             <div
