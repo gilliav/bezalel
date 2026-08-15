@@ -32,8 +32,8 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        display: ['"Ezer Standard"', 'Arial', 'sans-serif'],
-        body: ['"NextExit"', '"Ezer Standard"', 'Arial', 'sans-serif'],
+        display: ['"Ezer Standard"', '-apple-system', 'system-ui', 'sans-serif'],
+        body: ['"NextExit"', '"Ezer Standard"', '-apple-system', 'system-ui', 'sans-serif'],
       },
     },
   },
