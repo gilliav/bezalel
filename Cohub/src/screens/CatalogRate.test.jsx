@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { vi, describe, it, expect, beforeEach } from 'vitest'
@@ -8,7 +8,12 @@ const mockUseCatalogCourses = vi.hoisted(() => vi.fn())
 const mockUseUserRatingStatus = vi.hoisted(() => vi.fn())
 const mockSubmitRating = vi.hoisted(() => vi.fn().mockResolvedValue(undefined))
 const mockMarkNotTaken = vi.hoisted(() => vi.fn().mockResolvedValue(undefined))
+const mockNavigate = vi.hoisted(() => vi.fn())
 
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal()
+  return { ...actual, useNavigate: () => mockNavigate }
+})
 vi.mock('../hooks/useCatalogAuth', () => ({ useCatalogAuth: mockUseCatalogAuth }))
 vi.mock('../hooks/useCatalogCourses', () => ({ useCatalogCourses: mockUseCatalogCourses }))
 vi.mock('../hooks/useCatalogRatings', () => ({
@@ -74,14 +79,14 @@ describe('CatalogRate', () => {
     expect(screen.getByText('זכויות יוצרים')).toBeInTheDocument()
   })
 
-  it('shows a finished message once the deck (from ?start=) is empty', async () => {
+  it('navigates back to /catalog once the deck (from ?start=) is empty', async () => {
     const user = userEvent.setup()
     render(<MemoryRouter initialEntries={['/catalog/rate?start=c1']}><CatalogRate /></MemoryRouter>)
 
     await user.click(getRecommendButton('חיובי'))
     await user.click(screen.getByRole('button', { name: 'שליחה והמשך' }))
 
-    expect(screen.getByText(/סיימת לדרג/)).toBeInTheDocument()
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/catalog'))
   })
 
   it('drops only one course when Submit is double-tapped during the pending write', async () => {

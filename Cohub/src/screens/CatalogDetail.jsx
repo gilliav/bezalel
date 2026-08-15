@@ -1,12 +1,30 @@
 import { useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, Star } from 'lucide-react'
 import { useCatalogAuth } from '../hooks/useCatalogAuth'
 import { useCatalogCourses } from '../hooks/useCatalogCourses'
 import { useCourseRatings } from '../hooks/useCatalogRatings'
-import { computeAggregate } from '../utils/catalogAggregate'
+import { computeAggregate, getAttendanceLabel } from '../utils/catalogAggregate'
 import { PageHeader } from '../components/PageHeader'
 import { Button } from '../components/ui/button'
+
+const ATTENDANCE_COLOR = {
+  'כן': 'var(--rating-positive)',
+  'לא ברור': 'var(--rating-neutral)',
+  'לא': 'var(--rating-negative)',
+}
+
+function StatCard({ label, value }) {
+  return (
+    <div className="border border-border rounded-lg py-2 px-3 text-center bg-card">
+      <div className="text-xs text-muted-foreground mb-1">{label}</div>
+      <div className="flex items-center justify-center gap-1 font-bold" style={{ color: 'var(--rating-star)' }}>
+        <Star size={14} fill="currentColor" />
+        {value.toFixed(1)}
+      </div>
+    </div>
+  )
+}
 
 export default function CatalogDetail({ onError }) {
   const { courseId } = useParams()
@@ -28,6 +46,7 @@ export default function CatalogDetail({ onError }) {
 
   const aggregate = computeAggregate(ratings)
   const comments = ratings.filter(r => r.status === 'rated' && r.comment)
+  const attendanceLabel = getAttendanceLabel(aggregate.attendanceTakenPercent)
 
   return (
     <div className="text-right">
@@ -57,14 +76,34 @@ export default function CatalogDetail({ onError }) {
         {aggregate.count === 0 ? (
           <div className="text-muted-foreground text-sm">אין דירוגים עדיין</div>
         ) : (
-          <div className="flex flex-col gap-1 text-sm">
-            <div>{aggregate.recommendPercent}% ממליצים · {aggregate.count} דירוגים</div>
-            {aggregate.profGood !== null && <div>איכות הוראה: {aggregate.profGood.toFixed(1)}/5</div>}
-            {aggregate.difficulty !== null && <div>קושי: {aggregate.difficulty.toFixed(1)}/5</div>}
-            {aggregate.interesting !== null && <div>מעניין: {aggregate.interesting.toFixed(1)}/5</div>}
-            {aggregate.workload !== null && <div>עומס: {aggregate.workload.toFixed(1)}/5</div>}
-            {aggregate.attendanceTakenPercent !== null && <div>נוכחות נבדקת: {aggregate.attendanceTakenPercent}%</div>}
-          </div>
+          <>
+            <div
+              className="flex flex-col items-center rounded-lg py-4 text-white"
+              style={{ backgroundColor: 'var(--rating-positive)' }}
+            >
+              <span className="text-3xl font-extrabold">{aggregate.recommendPercent}%</span>
+              <span className="text-sm opacity-90">ממליצים · {aggregate.count} דירוגים</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              {aggregate.profGood !== null && <StatCard label="איכות ההוראה" value={aggregate.profGood} />}
+              {aggregate.difficulty !== null && <StatCard label="רמת הקושי" value={aggregate.difficulty} />}
+              {aggregate.interesting !== null && <StatCard label="עניין" value={aggregate.interesting} />}
+              {aggregate.workload !== null && <StatCard label="עומס העבודה" value={aggregate.workload} />}
+            </div>
+
+            {aggregate.attendanceTakenPercent !== null && (
+              <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2 mt-2 text-sm">
+                <span className="text-muted-foreground">נוכחות נבדקת</span>
+                <span className="flex items-center gap-1.5">
+                  <span className="font-semibold" style={{ color: ATTENDANCE_COLOR[attendanceLabel] }}>
+                    {attendanceLabel}
+                  </span>
+                  <span className="text-muted-foreground text-xs">({aggregate.attendanceTakenPercent}%)</span>
+                </span>
+              </div>
+            )}
+          </>
         )}
         <Link to={`/catalog/rate?start=${course.id}`}>
           <Button size="sm" className="mt-3">דרג/י את הקורס</Button>

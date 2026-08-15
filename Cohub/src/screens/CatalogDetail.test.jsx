@@ -62,8 +62,25 @@ describe('CatalogDetail', () => {
       loading: false,
     })
     renderDetail()
-    expect(screen.getByText(/100% ממליצים/)).toBeInTheDocument()
+    expect(screen.getByText('100%')).toBeInTheDocument()
+    expect(screen.getByText(/ממליצים · 1 דירוגים/)).toBeInTheDocument()
+    expect(screen.getByText('5.0')).toBeInTheDocument()
     expect(screen.getByText('קורס מעולה')).toBeInTheDocument()
+  })
+
+  it('shows the literal attendance label with the raw percent in parentheses', () => {
+    mockUseCourseRatings.mockReturnValue({
+      ratings: [
+        { id: 'r1', status: 'rated', recommend: true, attendanceTaken: true },
+        { id: 'r2', status: 'rated', recommend: true, attendanceTaken: true },
+        { id: 'r3', status: 'rated', recommend: true, attendanceTaken: false },
+      ],
+      loading: false,
+    })
+    renderDetail()
+    // 2/3 = 67% → lands in the 20-80 "unclear" band
+    expect(screen.getByText('לא ברור')).toBeInTheDocument()
+    expect(screen.getByText('(67%)')).toBeInTheDocument()
   })
 
   it('waits for anonymous auth before rendering the course', () => {
