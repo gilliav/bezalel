@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { computeAggregate, groupRatingsByCourseCode, getAttendanceLabel } from './catalogAggregate'
+import { computeAggregate, groupRatingsByCourseCode, getAttendanceLabel, getLoadBucket } from './catalogAggregate'
 
 describe('computeAggregate', () => {
   it('returns all-null aggregate when there are no ratings', () => {
@@ -67,6 +67,36 @@ describe('getAttendanceLabel', () => {
     expect(getAttendanceLabel(74)).toBe('לא ברור')
     expect(getAttendanceLabel(80)).toBe('לא ברור')
     expect(getAttendanceLabel(20)).toBe('לא ברור')
+  })
+})
+
+describe('getLoadBucket', () => {
+  it('returns null when there is no value', () => {
+    expect(getLoadBucket(null)).toBe(null)
+  })
+
+  it('buckets 1-2 as קל, green', () => {
+    expect(getLoadBucket(1)).toEqual({ label: 'קל', colorVar: 'var(--rating-positive)' })
+    expect(getLoadBucket(2)).toEqual({ label: 'קל', colorVar: 'var(--rating-positive)' })
+  })
+
+  it('buckets 3-4 as בינוני, amber', () => {
+    expect(getLoadBucket(3)).toEqual({ label: 'בינוני', colorVar: 'var(--rating-neutral)' })
+    expect(getLoadBucket(4)).toEqual({ label: 'בינוני', colorVar: 'var(--rating-neutral)' })
+  })
+
+  it('buckets 5 as the heavy label, red', () => {
+    expect(getLoadBucket(5)).toEqual({ label: 'כבד', colorVar: 'var(--rating-negative)' })
+  })
+
+  it('uses a custom heavy label when provided', () => {
+    expect(getLoadBucket(5, 'קשה')).toEqual({ label: 'קשה', colorVar: 'var(--rating-negative)' })
+  })
+
+  it('buckets continuous averages using the same thresholds', () => {
+    expect(getLoadBucket(2.4)).toEqual({ label: 'קל', colorVar: 'var(--rating-positive)' })
+    expect(getLoadBucket(3.4)).toEqual({ label: 'בינוני', colorVar: 'var(--rating-neutral)' })
+    expect(getLoadBucket(4.6)).toEqual({ label: 'כבד', colorVar: 'var(--rating-negative)' })
   })
 })
 

@@ -44,6 +44,13 @@ export function getAttendanceLabel(percent) {
   return 'לא ברור'
 }
 
+export function getLoadBucket(value, heavyLabel = 'כבד') {
+  if (value === null) return null
+  if (value < 2.5) return { label: 'קל', colorVar: 'var(--rating-positive)' }
+  if (value < 4.5) return { label: 'בינוני', colorVar: 'var(--rating-neutral)' }
+  return { label: heavyLabel, colorVar: 'var(--rating-negative)' }
+}
+
 export function groupRatingsByCourseCode(ratings) {
   const map = {}
   for (const rating of ratings) {
