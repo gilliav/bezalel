@@ -29,7 +29,7 @@ function StatCard({ label, value, bucket, testId }) {
       </div>
       {bucket && (
         <span
-          className="inline-block text-xs font-semibold rounded mt-1 px-2 py-0.5"
+          className="font-display inline-block text-xs font-bold mt-1 px-2 py-0.5"
           style={{ color: bucket.colorVar, backgroundColor: `color-mix(in srgb, ${bucket.colorVar} 16%, transparent)` }}
         >
           {bucket.label}
@@ -77,12 +77,12 @@ function ReviewCard({ review }) {
           </span>
         )}
         <ReviewStat label="הוראה" value={review.profGood} />
-        <ReviewStat label="קושי" value={review.difficulty} heavyLabel="קשה" />
+        <ReviewStat label="רמת קושי" value={review.difficulty} heavyLabel="קשה" />
         <ReviewStat label="עניין" value={review.interesting} />
         <ReviewStat label="עומס" value={review.workload} heavyLabel="כבד" />
         {review.attendanceTaken != null && (
           <span className="flex items-center gap-1 text-muted-foreground">
-            נוכחות:
+            נוכחות נבדקת?:
             <span className="font-semibold" style={{ color: review.attendanceTaken ? 'var(--rating-positive)' : 'var(--rating-negative)' }}>
               {review.attendanceTaken ? 'כן' : 'לא'}
             </span>
