@@ -23,7 +23,7 @@ export function SwipeCard({ course, onSubmit, onCancel, showCourseInfo = true })
   }
 
   return (
-    <div className="flex flex-col border border-border rounded-[12px] p-[16px] gap-[12px]">
+    <div className="flex flex-col border border-border rounded-[8px] p-[16px] gap-[12px]">
       {showCourseInfo && (
         <>
           <h2>{course.name}</h2>
@@ -85,16 +85,18 @@ function ThumbsField({ value, onChange }) {
       <ToggleButton onClick={() => onChange(value === true ? null : true)} aria-label="חיובי">
         <ThumbsUp
           size={24}
+          strokeWidth={1.5}
           fill={value === true ? 'currentColor' : 'none'}
-          stroke="black"
+          stroke="#000000"
           style={{ color: value === true ? 'var(--rating-positive)' : 'currentColor' }}
         />
       </ToggleButton>
       <ToggleButton onClick={() => onChange(value === false ? null : false)} aria-label="שלילי">
         <ThumbsDown
           size={24}
+          strokeWidth={1.5}
           fill={value === false ? 'currentColor' : 'none'}
-          stroke="black"
+          stroke="#000000"
           style={{ color: value === false ? 'var(--rating-negative)' : 'currentColor' }}
         />
       </ToggleButton>
@@ -117,6 +119,7 @@ function StarField({ label, value, onChange }) {
           >
             <Star
               size={24}
+              strokeWidth={1.5}
               fill={value >= n ? 'var(--rating-star)' : 'none'}
               stroke="currentColor"
             />
