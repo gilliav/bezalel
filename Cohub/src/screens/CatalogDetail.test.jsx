@@ -49,9 +49,10 @@ describe('CatalogDetail', () => {
     expect(screen.getByText('איורים הם יצירות האמנות הראשונות שאנו מכירים.')).toBeInTheDocument()
   })
 
-  it('shows a dash placeholder when there are no ratings', () => {
+  it('shows dash placeholders and 0 ratings when there are no ratings', () => {
     renderDetail()
-    expect(screen.getByText('--')).toBeInTheDocument()
+    expect(screen.getAllByText('--').length).toBeGreaterThan(0)
+    expect(screen.getByText(/0 דירוגים/)).toBeInTheDocument()
   })
 
   it('shows aggregate stats and written comments when ratings exist', () => {

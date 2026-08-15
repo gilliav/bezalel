@@ -8,7 +8,7 @@ const course = { id: '1700686', name: 'תולדות האיור', lecturer: 'או
 it('shows course name, lecturer, and category', () => {
   render(
     <MemoryRouter>
-      <CourseListItem course={course} aggregate={{ count: 0 }} />
+      <CourseListItem course={course} aggregate={{ count: 0, recommendPercent: null, profGood: null }} />
     </MemoryRouter>,
   )
   expect(screen.getByText('תולדות האיור')).toBeInTheDocument()
@@ -16,13 +16,14 @@ it('shows course name, lecturer, and category', () => {
   expect(screen.getByText('בחירה עיוני')).toBeInTheDocument()
 })
 
-it('shows a dash placeholder when aggregate count is 0', () => {
+it('shows dash placeholders and 0 ratings when there is no data', () => {
   render(
     <MemoryRouter>
-      <CourseListItem course={course} aggregate={{ count: 0 }} />
+      <CourseListItem course={course} aggregate={{ count: 0, recommendPercent: null, profGood: null }} />
     </MemoryRouter>,
   )
-  expect(screen.getByText('--')).toBeInTheDocument()
+  expect(screen.getAllByText('--')).toHaveLength(2)
+  expect(screen.getByText(/0 דירוגים/)).toBeInTheDocument()
 })
 
 it('shows recommend percent and rating count when ratings exist', () => {
@@ -44,19 +45,19 @@ it('shows the profGood star stat when it has data', () => {
   expect(screen.getByText('4.2')).toBeInTheDocument()
 })
 
-it('omits the profGood star stat when nobody has rated it', () => {
+it('shows a dash for the star stat when nobody has answered profGood', () => {
   render(
     <MemoryRouter>
       <CourseListItem course={course} aggregate={{ count: 12, recommendPercent: 83, profGood: null }} />
     </MemoryRouter>,
   )
-  expect(screen.queryByText('4.2')).not.toBeInTheDocument()
+  expect(screen.getByText('--')).toBeInTheDocument()
 })
 
 it('links to the course detail page', () => {
   render(
     <MemoryRouter>
-      <CourseListItem course={course} aggregate={{ count: 0 }} />
+      <CourseListItem course={course} aggregate={{ count: 0, recommendPercent: null, profGood: null }} />
     </MemoryRouter>,
   )
   expect(screen.getByRole('link')).toHaveAttribute('href', '/catalog/1700686')

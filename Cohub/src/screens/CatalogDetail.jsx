@@ -20,7 +20,7 @@ function StatCard({ label, value }) {
       <div className="text-xs text-muted-foreground mb-1">{label}</div>
       <div className="flex items-center justify-center gap-1 font-bold" style={{ color: 'var(--rating-star)' }}>
         <Star size={14} fill="currentColor" />
-        {value.toFixed(1)}
+        {value !== null ? value.toFixed(1) : '--'}
       </div>
     </div>
   )
@@ -73,38 +73,34 @@ export default function CatalogDetail({ onError }) {
 
       <div className="page-body border-b border-border pb-4">
         <h2 className="mb-2">דירוגים</h2>
-        {aggregate.count === 0 ? (
-          <div className="text-muted-foreground text-sm">--</div>
-        ) : (
-          <>
-            <div
-              className="flex flex-col items-center rounded-lg py-4 text-white"
-              style={{ backgroundColor: 'var(--rating-positive)' }}
-            >
-              <span className="text-3xl font-extrabold">{aggregate.recommendPercent}%</span>
-              <span className="text-sm opacity-90">ממליצים · {aggregate.count} דירוגים</span>
-            </div>
+        <div
+          className="flex flex-col items-center rounded-lg py-4 text-white"
+          style={{ backgroundColor: 'var(--rating-positive)' }}
+        >
+          <span className="text-3xl font-extrabold">
+            {aggregate.recommendPercent !== null ? `${aggregate.recommendPercent}%` : '--'}
+          </span>
+          <span className="text-sm opacity-90">ממליצים · {aggregate.count} דירוגים</span>
+        </div>
 
-            <div className="grid grid-cols-2 gap-2 mt-3">
-              {aggregate.profGood !== null && <StatCard label="איכות ההוראה" value={aggregate.profGood} />}
-              {aggregate.difficulty !== null && <StatCard label="רמת הקושי" value={aggregate.difficulty} />}
-              {aggregate.interesting !== null && <StatCard label="עניין" value={aggregate.interesting} />}
-              {aggregate.workload !== null && <StatCard label="עומס העבודה" value={aggregate.workload} />}
-            </div>
+        <div className="grid grid-cols-2 gap-2 mt-3">
+          <StatCard label="איכות ההוראה" value={aggregate.profGood} />
+          <StatCard label="רמת הקושי" value={aggregate.difficulty} />
+          <StatCard label="עניין" value={aggregate.interesting} />
+          <StatCard label="עומס העבודה" value={aggregate.workload} />
+        </div>
 
+        <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2 mt-2 text-sm">
+          <span className="text-muted-foreground">נוכחות נבדקת</span>
+          <span className="flex items-center gap-1.5">
+            <span className="font-semibold" style={{ color: attendanceLabel ? ATTENDANCE_COLOR[attendanceLabel] : undefined }}>
+              {attendanceLabel ?? '--'}
+            </span>
             {aggregate.attendanceTakenPercent !== null && (
-              <div className="flex items-center justify-between rounded-lg border border-border bg-card px-3 py-2 mt-2 text-sm">
-                <span className="text-muted-foreground">נוכחות נבדקת</span>
-                <span className="flex items-center gap-1.5">
-                  <span className="font-semibold" style={{ color: ATTENDANCE_COLOR[attendanceLabel] }}>
-                    {attendanceLabel}
-                  </span>
-                  <span className="text-muted-foreground text-xs">({aggregate.attendanceTakenPercent}%)</span>
-                </span>
-              </div>
+              <span className="text-muted-foreground text-xs">({aggregate.attendanceTakenPercent}%)</span>
             )}
-          </>
-        )}
+          </span>
+        </div>
         <Link to={`/catalog/rate?start=${course.id}`}>
           <Button size="sm" className="mt-3">דרג/י את הקורס</Button>
         </Link>
