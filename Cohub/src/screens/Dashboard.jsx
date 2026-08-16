@@ -1,5 +1,5 @@
 // src/screens/Dashboard.jsx
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useProgress } from '../hooks/useProgress'
@@ -21,10 +21,6 @@ export default function Dashboard({ onError }) {
   const { courses, loading: cLoading, error: cError } = useCourses()
   const { projects, loading: pLoading, error: pError } = useAllProjects()
   const [pastExpanded, setPastExpanded] = useState(false)
-
-  useEffect(() => {
-    if (mlError || cError || pError) onError?.('שגיאה בטעינת הנתונים')
-  }, [mlError, cError, pError, onError])
 
   const courseMap = Object.fromEntries(courses.map(c => [c.id, c]))
 
@@ -50,7 +46,7 @@ export default function Dashboard({ onError }) {
   const { hot, later, past } = splitIntoTiers(allItems)
 
   if (mlLoading || cLoading || pLoading) {
-    return <div className="state-loading">טוען...</div>
+    return <div className="state-loading"/>
   }
 
   const hasContent = hot.length > 0 || later.length > 0 || past.length > 0

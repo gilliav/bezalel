@@ -75,7 +75,7 @@ export default function CatalogList({ onError }) {
 
   const currentSortOption = SORT_OPTIONS.find(option => option.key === sortBy) ?? SORT_OPTIONS[0]
 
-  if (!ready || coursesLoading || ratingsLoading) return <div className="state-loading">טוען...</div>
+  if (!ready || coursesLoading || ratingsLoading) return <div className="state-loading"/>
 
   return (
     <div className="text-right max-w-6xl mx-auto">

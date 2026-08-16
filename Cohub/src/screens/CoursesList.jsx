@@ -28,7 +28,7 @@ export default function CoursesList({ onError }) {
     }
   }
 
-  if (loading) return <div className="state-loading">טוען...</div>
+  if (loading) return <div className="state-loading"/>
 
   return (
     <div className="text-right">

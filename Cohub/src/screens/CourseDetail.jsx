@@ -72,7 +72,7 @@ export default function CourseDetail({ onError }) {
     }
   }
 
-  if (loading || !course) return <div className="state-loading">טוען...</div>
+  if (loading || !course) return <div className="state-loading"/>
 
   return (
     <div className="text-right">

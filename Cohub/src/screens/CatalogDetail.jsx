@@ -114,7 +114,7 @@ export default function CatalogDetail({ onError }) {
   const course = courses.find(c => c.id === courseId)
   const isRating = location.pathname.endsWith('/rate')
 
-  if (!ready || coursesLoading || ratingsLoading || !course) return <div className="state-loading">טוען...</div>
+  if (!ready || coursesLoading || ratingsLoading || !course) return <div className="state-loading"/>
 
   async function handleRateSubmit(fields) {
     try {

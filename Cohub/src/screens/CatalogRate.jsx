@@ -65,7 +65,7 @@ export default function CatalogRate({ onError }) {
     navigate('/catalog')
   }
 
-  if (!ready || coursesLoading || statusLoading) return <div className="state-loading">טוען...</div>
+  if (!ready || coursesLoading || statusLoading) return <div className="state-loading"/>
 
   if (phase === 'checklist') {
     return (

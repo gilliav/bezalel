@@ -39,7 +39,7 @@ function AppShell({ toastMessage, setToastMessage, isOnline }) {
       <Toast message={toastMessage} onDismiss={() => setToastMessage(null)} />
       <div className={`min-h-screen pb-16 ${isWideRoute ? '' : 'max-w-lg mx-auto'}`}>
         {authNotReady ? (
-          <div className="state-loading">טוען...</div>
+          <div className="state-loading"/>
         ) : (
           <Routes>
             <Route path="/" element={<Home />} />

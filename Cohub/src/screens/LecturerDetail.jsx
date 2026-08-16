@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import { useCatalogAuth } from '../hooks/useCatalogAuth'
 import { useCatalogCourses } from '../hooks/useCatalogCourses'
@@ -15,18 +15,10 @@ export default function LecturerDetail({ onError }) {
   const { courses, loading: coursesLoading, error: coursesError } = useCatalogCourses()
   const { ratings, loading: ratingsLoading, error: ratingsError } = useAllCatalogRatings()
 
-  useEffect(() => {
-    if (authError) onError?.('שגיאה בהתחברות')
-  }, [authError, onError])
-
-  useEffect(() => {
-    if (coursesError || ratingsError) onError?.('שגיאה בטעינת הנתונים')
-  }, [coursesError, ratingsError, onError])
-
   const ratingsByCourse = useMemo(() => groupRatingsByCourseCode(ratings), [ratings])
   const lecturerCourses = useMemo(() => courses.filter(c => c.lecturer === name), [courses, name])
 
-  if (!ready || coursesLoading || ratingsLoading) return <div className="state-loading">טוען...</div>
+  if (!ready || coursesLoading || ratingsLoading) return <div className="state-loading"/>
 
   return (
     <div className="text-right">

@@ -8,7 +8,7 @@ const DAY_ORDER = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמיש
 export default function Schedule() {
   const { courses, loading } = useCourses()
 
-  if (loading) return <div className="state-loading">טוען...</div>
+  if (loading) return <div className="state-loading"/>
 
   const regularCourses = courses.filter(c => !c.isOnline)
   const onlineCourses = courses.filter(c => c.isOnline)

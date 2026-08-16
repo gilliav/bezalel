@@ -223,15 +223,27 @@
     border-radius: 0;
   }
 
-  /* Loading / empty states */
   .state-empty {
     @apply p-8 text-center text-base text-muted-foreground;
   }
 
-  .state-loading {
-    @apply p-4 text-right text-muted-foreground;
-  }
-
+.state-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 35px;
+  aspect-ratio: 1;
+  border: 3px solid #591e1e;
+  animation: rec-circle 1s infinite;
+}
+@keyframes rec-circle {
+  0%  {aspect-ratio:1;border-radius:50px}
+  20% {aspect-ratio:2;border-radius:50px} 
+  50% {aspect-ratio:2;border-radius:0}  
+  80% {aspect-ratio:1;border-radius:0} 
+  100%{aspect-ratio:1;border-radius:50px}
+}
   /* Action link */
   .action-link {
     @apply text-base text-primary font-medium;
