@@ -14,6 +14,7 @@ import { PageHeader } from '../components/PageHeader'
 
 const DAY_OPTIONS = [0, 1, 2, 3, 4, 5, 6]
 
+// todo: add back some dry info like code
 export default function CourseDetail({ onError }) {
   const { courseId } = useParams()
   const { courses, error: cError } = useCourses()

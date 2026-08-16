@@ -8,6 +8,7 @@ import { PageHeader } from '../components/PageHeader'
 import { CourseListItem } from '../components/Catalog/CourseListItem'
 import { EmptyState } from '../components/EmptyState'
 
+// todo: link to their bezalel page
 export default function LecturerDetail({ onError }) {
   const { lecturerName } = useParams()
   const name = decodeURIComponent(lecturerName)
