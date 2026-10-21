@@ -25,7 +25,7 @@ import ProjectCalendar from './ProjectCalendar'
 const at = (y, m, d) => ({ toDate: () => new Date(y, m, d, 23, 59) })
 
 const courses = [
-  { id: 'c1', name: 'סטודיו 03', color: '#E63946' },
+  { id: 'c1', name: 'סטודיו 03', color: '#E63946', day: 3 },
   { id: 'c2', name: 'מושן', color: '#457B9D' },
 ]
 
@@ -113,6 +113,35 @@ describe('ProjectCalendar screen', () => {
     renderCalendar()
     await user.click(screen.getByRole('button', { name: /^יום שלישי, 6 באוקטובר$/ }))
     expect(screen.getByText('אין הגשות ביום הזה')).toBeInTheDocument()
+  })
+
+  it('offers that weekday\'s courses for a new project on an upcoming day', async () => {
+    const user = userEvent.setup()
+    renderCalendar()
+    // Oct 21, 2026 is a Wednesday (day 3) — סטודיו 03 meets then
+    await user.click(screen.getByRole('button', { name: /21 באוקטובר/ }))
+    expect(screen.getByText('פרויקט חדש ליום הזה')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'סטודיו 03' }))
+      .toHaveAttribute('href', '/projects/new?dueDate=2026-10-21&courseId=c1')
+    expect(screen.getByRole('link', { name: 'קורס אחר' }))
+      .toHaveAttribute('href', '/projects/new?dueDate=2026-10-21')
+    expect(screen.queryByRole('link', { name: 'מושן' })).not.toBeInTheDocument()
+  })
+
+  it('offers a plain new project when no course meets that day', async () => {
+    const user = userEvent.setup()
+    renderCalendar()
+    await user.click(screen.getByRole('button', { name: /^יום חמישי, 22 באוקטובר$/ }))
+    const links = screen.getAllByRole('link', { name: /פרויקט חדש/ }).map(l => l.getAttribute('href'))
+    expect(links).toContain('/projects/new?dueDate=2026-10-22')
+    expect(screen.queryByRole('link', { name: 'קורס אחר' })).not.toBeInTheDocument()
+  })
+
+  it('does not offer a new project on a past day', async () => {
+    const user = userEvent.setup()
+    renderCalendar()
+    await user.click(screen.getByRole('button', { name: /^יום שלישי, 6 באוקטובר$/ }))
+    expect(screen.queryByText('פרויקט חדש ליום הזה')).not.toBeInTheDocument()
   })
 
   it('moves to the next month', async () => {

@@ -6,43 +6,38 @@ import { Trash2 } from 'lucide-react'
 import { db, storage } from '../firebase'
 import { useCourses } from '../hooks/useCourses'
 import { useProject } from '../hooks/useProject'
-import { nextDatesForDay, dayIndexToHe } from '../utils/dates'
+import { nextDatesForDay } from '../utils/dates'
 import { Input } from '../components/ui/input'
 import { Button } from '../components/ui/button'
 import { PageHeader } from '../components/PageHeader'
 
-const HE_WEEK_NUMS = ['', 'א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳']
+// ?dueDate=YYYY-MM-DD presets the due date (e.g. when starting from the calendar)
+const DATE_PARAM = /^\d{4}-\d{2}-\d{2}$/
 
-function WeekPicker({ dates, value, onChange, dayName }) {
+function WeekPicker({ dates, value, onChange }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="text-sm text-muted-foreground">יום {dayName}</span>
-      <div className="grid grid-cols-6 gap-1">
-        {dates.map((d, i) => {
-          const isSelected = value === d
-          const dateObj = new Date(d + 'T00:00:00')
-          const dateLabel = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'numeric' }).format(dateObj)
-          return (
-            <button
-              key={d}
-              type="button"
-              onClick={() => onChange(isSelected ? '' : d)}
-              className={`
-                flex flex-col items-center gap-0.5 py-2 border text-center transition-all
-                ${isSelected
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'border-border text-muted-foreground hover:border-primary/50 hover:text-foreground bg-card'
-                }
-              `}
-            >
-              <span className={`text-xs font-bold leading-none ${isSelected ? 'text-primary-foreground/70' : 'text-muted-foreground/60'}`}>
-                שב׳ {HE_WEEK_NUMS[i + 1]}
-              </span>
-              <span className="text-sm font-medium leading-none mt-0.5">{dateLabel}</span>
-            </button>
-          )
-        })}
-      </div>
+    <div className="grid grid-cols-6 gap-1">
+      {dates.map(d => {
+        const isSelected = value === d
+        const dateObj = new Date(d + 'T00:00:00')
+        const dateLabel = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'numeric' }).format(dateObj)
+        return (
+          <button
+            key={d}
+            type="button"
+            onClick={() => onChange(isSelected ? '' : d)}
+            className={`
+              flex flex-col items-center gap-0.5 py-2 border text-center transition-all
+              ${isSelected
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'border-border text-muted-foreground hover:border-primary/50 hover:text-foreground bg-card'
+              }
+            `}
+          >
+            <span className="text-sm font-medium leading-none">{dateLabel}</span>
+          </button>
+        )
+      })}
     </div>
   )
 }
@@ -52,6 +47,8 @@ export default function ProjectForm({ onError }) {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const isEdit = Boolean(projectId)
+  const dueDateParam = searchParams.get('dueDate') ?? ''
+  const presetDueDate = !isEdit && DATE_PARAM.test(dueDateParam) ? dueDateParam : ''
 
   const { courses, loading: coursesLoading } = useCourses()
   const { project, milestones, loading: projectLoading } = useProject(projectId)
@@ -59,7 +56,7 @@ export default function ProjectForm({ onError }) {
   const [courseId, setCourseId] = useState(searchParams.get('courseId') ?? '')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [dueDate, setDueDate] = useState('')
+  const [dueDate, setDueDate] = useState(presetDueDate)
   const [attachmentFile, setAttachmentFile] = useState(null)
   const [saving, setSaving] = useState(false)
   const [isMultiDeadline, setIsMultiDeadline] = useState(false)
@@ -110,6 +107,8 @@ export default function ProjectForm({ onError }) {
   const loading = isEdit ? projectLoading || coursesLoading : coursesLoading
   const selectedCourse = courses.find(c => c.id === courseId)
   const quickDates = selectedCourse ? nextDatesForDay(selectedCourse.day) : []
+  // Fall back to a plain date input when the chosen date isn't one of the quick picks.
+  const useWeekPicker = quickDates.length > 0 && (!dueDate || quickDates.includes(dueDate))
 
   function handleFileChange(e) {
     const file = e.target.files?.[0]
@@ -228,7 +227,7 @@ export default function ProjectForm({ onError }) {
           <label className="field-label">קורס *</label>
           <select
             value={courseId}
-            onChange={e => { setCourseId(e.target.value); setDueDate('') }}
+            onChange={e => { setCourseId(e.target.value); setDueDate(presetDueDate) }}
             required
             className="field-input"
           >
@@ -281,12 +280,11 @@ export default function ProjectForm({ onError }) {
         {!isMultiDeadline && (
           <div className="flex flex-col gap-2 border-t border-border pt-3">
             <span className="text-base text-muted-foreground font-medium">תאריך הגשה (אופציונלי)</span>
-            {quickDates.length > 0 ? (
+            {useWeekPicker ? (
               <WeekPicker
                 dates={quickDates}
                 value={dueDate}
                 onChange={setDueDate}
-                dayName={dayIndexToHe(selectedCourse.day)}
               />
             ) : (
               <input
@@ -326,7 +324,6 @@ export default function ProjectForm({ onError }) {
                     dates={quickDates}
                     value={m.dueDate}
                     onChange={val => updateMilestone(m.localId, 'dueDate', val)}
-                    dayName={dayIndexToHe(selectedCourse.day)}
                   />
                 ) : (
                   <input

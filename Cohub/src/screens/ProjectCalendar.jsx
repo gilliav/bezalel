@@ -7,6 +7,7 @@ import { useMilestones } from '../hooks/useMilestones'
 import { useCourses } from '../hooks/useCourses'
 import { useAllProjects } from '../hooks/useProjects'
 import { buildDueItems } from '../utils/dueItems'
+import { courseDayHe, dayIndexToHe } from '../utils/dates'
 import { dateKey, monthWeeks, groupByDay, formatMonthHe, formatDayHe } from '../utils/calendar'
 import { PageHeader } from '../components/PageHeader'
 import { SectionTier } from '../components/SectionTier'
@@ -122,6 +123,9 @@ export default function ProjectCalendar() {
             <section key={key}>
               <SectionTier label={formatDayHe(date)} variant="normal" />
               {items.length === 0 && <EmptyState message="אין הגשות ביום הזה" />}
+              {selectedKey && key >= todayKey && (
+                <NewProjectOnDay day={key} courses={courses.filter(c => !c.isOnline && courseDayHe(c.day) === dayIndexToHe(date.getDay()))} />
+              )}
               {items.map(item => {
                 const course = courseMap[item.courseId]
                 return (
@@ -147,6 +151,32 @@ export default function ProjectCalendar() {
             </section>
           )
         })}
+      </div>
+    </div>
+  )
+}
+
+// Starts a new project due on the selected day, offering that weekday's courses.
+function NewProjectOnDay({ day, courses }) {
+  const base = `/projects/new?dueDate=${day}`
+  return (
+    <div className="flex flex-col gap-2 px-4 py-3">
+      <span className="text-sm text-muted-foreground">פרויקט חדש ליום הזה</span>
+      <div className="flex flex-wrap gap-2">
+        {courses.map(course => (
+          <Link
+            key={course.id}
+            to={`${base}&courseId=${course.id}`}
+            className="inline-flex items-center gap-1.5 border border-border bg-card px-2 py-1 text-sm text-foreground"
+          >
+            <CourseIcon course={course} className="size-4" />
+            {course.name}
+          </Link>
+        ))}
+        <Link to={base} className="inline-flex items-center gap-1 px-2 py-1 action-link text-sm">
+          <PlusIcon size={14} />
+          {courses.length ? 'קורס אחר' : 'פרויקט חדש'}
+        </Link>
       </div>
     </div>
   )
