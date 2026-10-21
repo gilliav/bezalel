@@ -144,6 +144,24 @@ describe('ProjectCalendar screen', () => {
     expect(screen.queryByText('פרויקט חדש ליום הזה')).not.toBeInTheDocument()
   })
 
+  it('shows only Sunday to Thursday in the grid', () => {
+    renderCalendar()
+    // Oct 16 and 17, 2026 are Friday and Saturday
+    expect(screen.queryByRole('button', { name: /16 באוקטובר/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /17 באוקטובר/ })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /18 באוקטובר/ })).toBeInTheDocument()
+    expect(screen.queryByText('ו׳')).not.toBeInTheDocument()
+  })
+
+  it('still lists items due on a Friday in the month list', () => {
+    mockUseAllProjects.mockReturnValue({
+      projects: [...projects, { id: 'p3', title: 'מגזין', courseId: 'c2', dueDate: at(2026, 9, 16) }],
+      loading: false,
+    })
+    renderCalendar()
+    expect(screen.getByText('מגזין')).toBeInTheDocument()
+  })
+
   it('moves to the next month', async () => {
     const user = userEvent.setup()
     renderCalendar()

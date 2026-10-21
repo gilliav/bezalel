@@ -17,8 +17,9 @@ import { ProjectsViewToggle } from '../components/ProjectsViewToggle'
 import { IconButton } from '../components/ui/IconButton'
 import { CourseIcon } from '../components/CourseIcon'
 
-const WEEKDAYS = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳']
-const MAX_ICONS = 2
+// The grid shows study days only (Sunday–Thursday); Friday/Saturday items still appear in the month list.
+const WEEKDAYS = ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳']
+const MAX_ICONS = 3
 
 export default function ProjectCalendar() {
   const { user, signIn, signOut } = useAuth()
@@ -47,6 +48,10 @@ export default function ProjectCalendar() {
 
   // With a day selected, list that day; otherwise list the whole visible month.
   const monthDays = weeks.flat().filter(Boolean)
+  const gridDays = weeks
+    .map(week => week.slice(0, WEEKDAYS.length))
+    .filter(week => week.some(Boolean))
+    .flat()
   const listedDays = selectedKey
     ? monthDays.filter(d => dateKey(d) === selectedKey)
     : monthDays.filter(d => byDay[dateKey(d)])
@@ -68,11 +73,11 @@ export default function ProjectCalendar() {
         <IconButton icon={ChevronLeft} size={20} onClick={() => shiftMonth(1)} aria-label="חודש הבא" />
       </div>
 
-      <div className="grid grid-cols-7 px-2 text-center">
+      <div className="grid grid-cols-5 px-2 text-center">
         {WEEKDAYS.map(day => (
           <div key={day} className="text-xs text-muted-foreground pb-1">{day}</div>
         ))}
-        {weeks.flat().map((date, i) => {
+        {gridDays.map((date, i) => {
           if (!date) return <div key={`empty-${i}`} />
           const key = dateKey(date)
           const items = byDay[key] ?? []
