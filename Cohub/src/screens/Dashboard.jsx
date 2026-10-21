@@ -7,12 +7,14 @@ import { useMilestones } from '../hooks/useMilestones'
 import { useCourses } from '../hooks/useCourses'
 import { useAllProjects } from '../hooks/useProjects'
 import { splitIntoTiers } from '../utils/tiers'
+import { buildDueItems } from '../utils/dueItems'
 import { DashboardItem } from '../components/DashboardItem'
 import { SectionTier } from '../components/SectionTier'
 import { PageHeader } from '../components/PageHeader'
 import { EmptyState } from '../components/EmptyState'
 import { PlusIcon } from 'lucide-react'
 import { AuthSlot } from '../components/AuthSlot'
+import { ProjectsViewToggle } from '../components/ProjectsViewToggle'
 
 export default function Dashboard({ onError }) {
   const { user, signIn, signOut } = useAuth()
@@ -24,25 +26,7 @@ export default function Dashboard({ onError }) {
 
   const courseMap = Object.fromEntries(courses.map(c => [c.id, c]))
 
-  // Projects that have milestones are represented via their milestone rows.
-  // Only include a project as a standalone item if it has a top-level dueDate
-  // AND no milestones attached to it.
-  // See: docs/superpowers/plans/2026-04-07-dashboard-refactor.md — Domain Knowledge
-  const projectsWithMilestones = new Set(milestones.map(m => m.projectId))
-  const projectItems = projects
-    .filter(p => p.dueDate && !projectsWithMilestones.has(p.id))
-    .map(p => ({
-      id: `project-${p.id}`,
-      projectId: p.id,
-      title: p.title,
-      projectTitle: '',
-      dueDate: p.dueDate,
-      courseId: p.courseId,
-    }))
-
-  // Only include items that have a valid dueDate (guard against corrupt data)
-  // and hide items from courses outside the current semester.
-  const allItems = [...milestones, ...projectItems].filter(i => i.dueDate?.toDate && courseMap[i.courseId])
+  const allItems = buildDueItems(milestones, projects, courseMap)
 
   const { hot, later, past } = splitIntoTiers(allItems)
 
@@ -61,6 +45,7 @@ export default function Dashboard({ onError }) {
         action={<Link to="/projects/new" className="inline-flex items-baseline gap-1 action-link text-sm"><PlusIcon size={14} className='self-center' /> פרויקט חדש</Link>}
         authSlot={authSlot}
       />
+      <ProjectsViewToggle />
 
       {!hasContent && <EmptyState message="אין פרויקטים פעילים" />}
 

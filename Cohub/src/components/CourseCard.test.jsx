@@ -85,3 +85,10 @@ describe('CourseCard online course', () => {
     expect(screen.getByText(/כהן דנה/)).toBeInTheDocument()
   })
 })
+
+it('shows the course subject icon', () => {
+  const { container } = render(
+    <MemoryRouter><CourseCard course={{ ...course, name: 'גריד' }} onSave={vi.fn()} /></MemoryRouter>,
+  )
+  expect(container.querySelector('.course-icon').style.getPropertyValue('--icon')).toMatch(/grid\.svg/)
+})

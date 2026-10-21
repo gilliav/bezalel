@@ -11,6 +11,7 @@ import { Pencil, ChevronRight } from 'lucide-react'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { PageHeader } from '../components/PageHeader'
+import { CourseIcon } from '../components/CourseIcon'
 
 const DAY_OPTIONS = [0, 1, 2, 3, 4, 5, 6]
 
@@ -78,7 +79,7 @@ export default function CourseDetail({ onError }) {
   return (
     <div className="text-right">
       <PageHeader
-        title={course?.name}
+        title={<span className="inline-flex items-center gap-2"><CourseIcon course={course} className="size-7" />{course.name}</span>}
         action={
           <Link to={`/projects/new?courseId=${courseId}`} className="action-link text-sm">
             + פרויקט חדש

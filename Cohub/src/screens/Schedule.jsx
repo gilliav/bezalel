@@ -3,6 +3,7 @@ import { PageHeader } from '../components/PageHeader'
 import { SectionTier } from '../components/SectionTier'
 import { EmptyState } from '../components/EmptyState'
 import { courseDayHe } from '../utils/dates'
+import { CourseIcon } from '../components/CourseIcon'
 
 const DAY_ORDER = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי']
 
@@ -33,7 +34,7 @@ export default function Schedule() {
             <SectionTier label={day} variant="normal" />
             {dayCourses.map(course => (
               <div key={course.id} className="list-row items-start">
-                <div className="color-dot mt-0.5" style={{ backgroundColor: course.color }} />
+                <CourseIcon course={course} className="mt-0.5" />
                 <div className="flex flex-col gap-0.5">
                   <span className="text-base font-medium text-foreground">{course.name}</span>
                   <span className="text-sm text-muted-foreground">{course.hours} · {course.location}</span>
@@ -52,7 +53,7 @@ export default function Schedule() {
           <SectionTier label="אונליין" variant="normal" />
           {onlineCourses.map(course => (
             <div key={course.id} className="list-row items-start">
-              <div className="color-dot mt-0.5" style={{ backgroundColor: course.color }} />
+              <CourseIcon course={course} className="mt-0.5" />
               <div className="flex flex-col gap-0.5">
                 <span className="text-base font-medium text-foreground">{course.name}</span>
                 <span className="text-sm text-muted-foreground">קורס מקוון · {course.lecturer}</span>

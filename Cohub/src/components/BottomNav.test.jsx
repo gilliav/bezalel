@@ -27,3 +27,12 @@ it('highlights the active tab based on current route', () => {
   const coursesTab = screen.getByText('קורסים').closest('a')
   expect(coursesTab).toHaveAttribute('aria-current', 'page')
 })
+
+it('keeps the projects tab active on the calendar view', () => {
+  render(
+    <MemoryRouter initialEntries={['/cohub/calendar']}>
+      <BottomNav />
+    </MemoryRouter>,
+  )
+  expect(screen.getByText('פרויקטים').closest('a')).toHaveAttribute('aria-current', 'page')
+})

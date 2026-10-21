@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { dayIndexToHe } from '../utils/dates'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
+import { CourseIcon } from './CourseIcon'
 
 export function CourseCard({ course, onSave }) {
   const [editing, setEditing] = useState(false)
@@ -18,7 +19,7 @@ export function CourseCard({ course, onSave }) {
     <div className="list-row-stacked">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="color-dot" style={{ backgroundColor: course.color }} />
+          <CourseIcon course={course} />
           <Link to={`/courses/${course.id}`} className="font-semibold text-foreground">
             {course.name}
           </Link>

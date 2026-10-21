@@ -51,6 +51,12 @@ describe('Schedule screen', () => {
     expect(screen.queryByText('אין קורסים')).not.toBeInTheDocument()
   })
 
+  it('shows each course with its subject icon', () => {
+    mockUseCourses.mockReturnValue({ courses: [{ ...regularCourse, name: 'דימוי' }], loading: false })
+    const { container } = render(<MemoryRouter><Schedule /></MemoryRouter>)
+    expect(container.querySelector('.course-icon').style.getPropertyValue('--icon')).toMatch(/candle\.svg/)
+  })
+
   it('renders online courses under אונליין section', () => {
     mockUseCourses.mockReturnValue({ courses: [onlineCourse], loading: false })
     render(<MemoryRouter><Schedule /></MemoryRouter>)

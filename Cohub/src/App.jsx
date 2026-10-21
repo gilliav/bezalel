@@ -7,6 +7,7 @@ import { useOnlineStatus } from './hooks/useOnlineStatus'
 import { useAuth } from './hooks/useAuth'
 import Home from './screens/Home'
 import Dashboard from './screens/Dashboard'
+import ProjectCalendar from './screens/ProjectCalendar'
 import CoursesList from './screens/CoursesList'
 import CourseDetail from './screens/CourseDetail'
 import ProjectDetail from './screens/ProjectDetail'
@@ -44,6 +45,7 @@ function AppShell({ toastMessage, setToastMessage, isOnline }) {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/cohub" element={<Dashboard onError={setToastMessage} />} />
+            <Route path="/cohub/calendar" element={<ProjectCalendar />} />
             <Route path="/courses" element={<CoursesList onError={setToastMessage} />} />
             <Route path="/courses/:courseId" element={<CourseDetail onError={setToastMessage} />} />
             <Route path="/projects/new" element={<ProjectForm onError={setToastMessage} />} />

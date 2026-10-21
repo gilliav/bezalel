@@ -259,6 +259,13 @@
     @apply w-3 h-3 rounded-full shrink-0;
   }
 
+  /* Course subject icon — SVG from --icon used as a mask, filled by background-color */
+  .course-icon {
+    @apply inline-block shrink-0;
+    -webkit-mask: var(--icon) center / contain no-repeat;
+    mask: var(--icon) center / contain no-repeat;
+  }
+
   /* Section label (legacy, keep for CourseDetail) */
   .section-label {
     @apply px-4 py-2 text-sm font-semibold uppercase tracking-wide;
