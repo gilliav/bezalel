@@ -34,6 +34,11 @@ export function dayIndexToHe(dayIndex) {
   return HE_DAY_NAMES[dayIndex] ?? ''
 }
 
+// Course `day` is a 0–6 index, but legacy (א1) courses store the Hebrew name.
+export function courseDayHe(day) {
+  return typeof day === 'number' ? dayIndexToHe(day) : (day ?? '')
+}
+
 // Returns next `count` dates (as YYYY-MM-DD strings) for the given day index (0–6)
 export function nextDatesForDay(dayIndex, count = 6) {
   const target = Number(dayIndex)

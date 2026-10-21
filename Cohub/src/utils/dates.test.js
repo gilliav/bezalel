@@ -1,5 +1,18 @@
 import { Timestamp } from 'firebase/firestore'
-import { isOverdue, formatDateHe, sortByDueDate, formatRelativeDateHe } from './dates'
+import { isOverdue, formatDateHe, sortByDueDate, formatRelativeDateHe, courseDayHe } from './dates'
+
+describe('courseDayHe', () => {
+  it('maps a day index to its Hebrew name', () => {
+    expect(courseDayHe(0)).toBe('ראשון')
+    expect(courseDayHe(4)).toBe('חמישי')
+  })
+  it('passes legacy Hebrew day names through', () => {
+    expect(courseDayHe('שני')).toBe('שני')
+  })
+  it('returns empty string for a missing day', () => {
+    expect(courseDayHe(undefined)).toBe('')
+  })
+})
 
 // Helper: Firestore Timestamp N days from today (local-date-aligned, matches formatRelativeDateHe)
 function tsOffsetDays(n) {

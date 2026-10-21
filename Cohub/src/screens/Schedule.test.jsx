@@ -43,6 +43,14 @@ describe('Schedule screen', () => {
     expect(screen.getByText('טיפוגרפיה')).toBeInTheDocument()
   })
 
+  it('renders courses whose day is a numeric index under the matching day', () => {
+    mockUseCourses.mockReturnValue({ courses: [{ ...regularCourse, id: 'c3', name: 'גריד', day: 1 }], loading: false })
+    render(<MemoryRouter><Schedule /></MemoryRouter>)
+    expect(screen.getByText('גריד')).toBeInTheDocument()
+    expect(screen.getByText('שני')).toBeInTheDocument()
+    expect(screen.queryByText('אין קורסים')).not.toBeInTheDocument()
+  })
+
   it('renders online courses under אונליין section', () => {
     mockUseCourses.mockReturnValue({ courses: [onlineCourse], loading: false })
     render(<MemoryRouter><Schedule /></MemoryRouter>)

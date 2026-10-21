@@ -2,6 +2,7 @@ import { useCourses } from '../hooks/useCourses'
 import { PageHeader } from '../components/PageHeader'
 import { SectionTier } from '../components/SectionTier'
 import { EmptyState } from '../components/EmptyState'
+import { courseDayHe } from '../utils/dates'
 
 const DAY_ORDER = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי']
 
@@ -14,7 +15,7 @@ export default function Schedule() {
   const onlineCourses = courses.filter(c => c.isOnline)
 
   const byDay = DAY_ORDER.reduce((acc, day) => {
-    acc[day] = regularCourses.filter(c => c.day === day)
+    acc[day] = regularCourses.filter(c => courseDayHe(c.day) === day)
     return acc
   }, {})
 

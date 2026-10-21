@@ -5,6 +5,7 @@ import { COURSE_COLORS } from '../utils/colors'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
 import { dayIndexToHe } from '../utils/dates'
+import { CURRENT_SEMESTER } from '../utils/semester'
 
 const DAY_OPTIONS = [0, 1, 2, 3, 4, 5, 6]
 
@@ -50,6 +51,7 @@ export function AddCourseForm({ courses, onClose, onError }) {
         notes: form.notes,
         color: activeColor,
         isOnline,
+        semester: CURRENT_SEMESTER,
       }
       if (!isOnline) {
         payload.day = Number(form.day)

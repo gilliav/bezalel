@@ -41,7 +41,8 @@ export default function Dashboard({ onError }) {
     }))
 
   // Only include items that have a valid dueDate (guard against corrupt data)
-  const allItems = [...milestones, ...projectItems].filter(i => i.dueDate?.toDate)
+  // and hide items from courses outside the current semester.
+  const allItems = [...milestones, ...projectItems].filter(i => i.dueDate?.toDate && courseMap[i.courseId])
 
   const { hot, later, past } = splitIntoTiers(allItems)
 
